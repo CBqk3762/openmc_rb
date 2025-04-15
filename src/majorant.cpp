@@ -23,57 +23,55 @@ void create_majorant() {
   write_message("Creating majorant cross section...");
   // create a majorant XS for each nuclide
   for (const auto& nuclide : data::nuclides) {
-    data::nuclide_majorants.push_back(std::make_unique<Majorant>());
-    auto& majorant = data::nuclide_majorants.back();
+    auto majorant = std::make_unique<Majorant>();
 
     for (int t = 0; t < nuclide->kTs_.size(); t++) {
       auto total = xt::view(nuclide->xs_[t], xt::all(), 0);
       std::vector<double> xs(total.begin(), total.end());
       auto energies = nuclide->grid_[t].energy;
+
+      // Check monotonicity of energy grid
+      for (size_t i = 1; i < energies.size(); ++i) {
+        Expects(energies[i] > energies[i - 1]);
+      }
+
       majorant->update(energies, xs);
+      majorant->grid_.init();
 
       // include unresolved resonance region data
       // in the majorant if present
       if (nuclide->urr_present_) {
         const auto& urr_data = nuclide->urr_data_[t];
-        std::vector<double> energies(urr_data.energy_.begin(), urr_data.energy_.end());
-
-        //auto band_totals = xt::view(urr_data.prob_, xt::all(), URRTableParam::TOTAL, xt::all());
+        std::vector<double> urr_energies(urr_data.energy_.begin(), urr_data.energy_.end());
 
         double max_urr_total {0.0};
-
-        for (auto xs_vals : xt::view(urr_data.xs_values_, xt::all() )) {
+        // trying to prevent 
+        for (const auto& xs_vals : xt::view(urr_data.xs_values_, xt::all())) {
           max_urr_total = std::max(max_urr_total, xs_vals.total);
         }
 
-        if(urr_data.interp_ == Interpolation::log_log) {
+        if (urr_data.interp_ == Interpolation::log_log) {
           std::cout << fmt::format("Nuclide {} uses log-log interpolation", nuclide->name_) << std::endl;
         }
 
-        if (urr_data.multiply_smooth_) {
-          std::cout << "Multiplied URR: " << nuclide->name_ << std::endl;
-          majorant->grid_.init();
-          std::vector<double> xs_vals;
-          for (int i = 0; i < energies.size(); i++) {
-            xs_vals.push_back(majorant->calculate_xs(energies[i]) * max_urr_total);
-          }
-          majorant->update(energies, xs_vals);
-        } else {
-          std::vector<double> xs_vals(energies.size(), max_urr_total);
-          majorant->update(energies, xs_vals);
+        // Ciara - moved xs_vals to be set before we call majorant grid
+        std::vector<double> xs_vals;
+        // Clamping energies to ensure they will line up with normal xs grid
+        for (double e : urr_energies) {
+          e = std::clamp(e, data::energy_min[0], data::energy_max[0]);
+          xs_vals.push_back(majorant->calculate_xs(e) * max_urr_total);
         }
-        // majorant->update_urr(energies, xs, urr_data.interp_);
+
+        majorant->update(urr_energies, xs_vals);
       }
     }
     // initialize the energy grid for this nuclide
     majorant->grid_.init();
-    // majorant->write_ascii(nuclide->name_ + "_majorant.txt");
+    // Ciara - before we were pushing_back before we finished building the majorant, hopefully this is safer
+    data::nuclide_majorants.push_back(std::move(majorant));
   }
 
-  auto majorant_e_grid = compute_majorant_energy_grid();
-
-
-  std::vector<double> xs_vals;
+  std::vector<double> majorant_e_grid = compute_majorant_energy_grid();
 
   std::vector<Majorant> macro_majorants;
 
@@ -85,8 +83,8 @@ void create_majorant() {
 
       // See if thermal data is present for any of the material nuclides
       bool check_sab = material->thermal_tables_.size() > 0;
-      int thermal_table_idx = 0;
-
+      // Ciara - couldn't see that thermal_table_idx was used, j was being used to index thermal_tables =>removed
+      
       int j = 0;
 
       for (int i = 0; i < material->nuclide_.size(); i++) {
@@ -116,9 +114,10 @@ void create_majorant() {
           for (int k = 0; k < tdata->kTs_.size(); k++) {
             // compute the thermal xs at the temperature and energy
             double elastic, inelastic;
-            tdata->data_[k].calculate_xs(e_val, &elastic, &inelastic);
-            if (elastic + inelastic > thermal_xs) {
-              thermal_xs = elastic + inelastic;
+            // checks e_val doesn't go over energy_max_
+            if (e_val <= tdata->energy_max_) {
+              tdata->data_[k].calculate_xs(e_val, &elastic, &inelastic);
+              thermal_xs = std::max(thermal_xs, elastic + inelastic);
             }
           }
           // adjust the current xs_val for the thermal component
@@ -142,10 +141,13 @@ void create_majorant() {
 
   data::n_majorant->grid_.init();
   data::n_majorant->write_ascii("macro_majorant.txt");
+
 }
 
 std::vector<double>
 compute_majorant_energy_grid() {
+
+  
 
   std::vector<double> common_e_grid;
   for (const auto& nuc_maj : data::nuclide_majorants) {
@@ -162,14 +164,16 @@ compute_majorant_energy_grid() {
   int neutron = static_cast<int>(ParticleType::neutron);
   auto min_it = common_e_grid.begin();
   while (*min_it < data::energy_min[neutron]) { min_it++; }
-  common_e_grid.erase(common_e_grid.begin(), min_it + 1);
+  //Ciara edit
+  common_e_grid.erase(common_e_grid.begin(), min_it);
   // insert the minimum neutron energy at the beginning
   common_e_grid.insert(common_e_grid.begin(), data::energy_min[neutron]);
 
   // remove all values above the maximum neutron energy
-  auto max_it = --common_e_grid.end();
-  while (*max_it > data::energy_max[neutron]) { max_it--; }
-  common_e_grid.erase(max_it - 1, common_e_grid.end());
+  // Ciara edit
+  auto max_it = std::upper_bound(common_e_grid.begin(), common_e_grid.end(), data::energy_max[neutron]);
+  common_e_grid.erase(max_it, common_e_grid.end());
+
   // insert the maximum neutron energy at the end
   common_e_grid.insert(common_e_grid.end(), data::energy_max[neutron]);
 
@@ -186,7 +190,7 @@ Majorant::Majorant(const std::vector<double>& energy,
 
 double
 Majorant::calculate_xs(double energy) const
-{
+{ 
   // Find energy index on energy grid
   int neutron = static_cast<int>(ParticleType::neutron);
   int i_log_union = std::log(energy * data::energy_min_rcp[neutron]) * simulation::log_spacing_rcp;
@@ -205,18 +209,55 @@ Majorant::calculate_xs(double energy) const
     // Perform binary search over reduced range
     i_grid = i_low + lower_bound_index(&grid_.energy[i_low], &grid_.energy[i_high], energy);
   }
-
+  // Ciara - debug
+  if (energy < grid_.energy.front() || energy > grid_.energy.back()) {
+    std::cerr << "Energy " << energy << " out of bounds ["
+              << grid_.energy.front() << ", "
+              << grid_.energy.back() << "]" << std::endl;
+    return 0.0; // Meant as a sentinel
+  }
+  
   // check for rare case where two energy points are the same
-  if (grid_.energy[i_grid] == grid_.energy[i_grid + 1]) ++i_grid;
+  // Ciara edit to avoid out of bounds access in energy
+  if (i_grid + 1 < grid_.energy.size() &&
+    grid_.energy[i_grid] == grid_.energy[i_grid + 1]) {
+    ++i_grid;
+}
+
+  // Ciara edit - enforce that increased value of i_grid is within bounds
+  Expects(i_grid + 1 < grid_.energy.size());
+
+
+  // Ciara debug block
+  if (i_grid + 1 >= grid_.energy.size()) {
+    std::cerr << "[Majorant::calculate_xs] Index out of bounds:\n"
+              << "  energy: " << energy << "\n"
+              << "  i_grid: " << i_grid << "\n"
+              << "  grid size: " << grid_.energy.size() << "\n";
+  } else {
+    double e_low = grid_.energy[i_grid];
+    double e_high = grid_.energy[i_grid + 1];
+    double f_debug = (energy - e_low) / (e_high - e_low);
+  }
+
 
   // calculate interpolation factor
   double f = (energy - grid_.energy[i_grid]) /
               (grid_.energy[i_grid + 1]- grid_.energy[i_grid]);
 
+  // Ciara edit - debug
+  if (!(f <= 1.0)) {
+    std::cerr << "Bad interpolation: energy=" << energy
+              << ", i_grid=" << i_grid
+              << ", e_low=" << grid_.energy[i_grid]
+              << ", e_high=" << grid_.energy[i_grid + 1]
+              << ", f=" << f << std::endl;
+  }  
+
   Expects(f <= 1.0);
   double xs = (1.0 - f) * xs_[i_grid] + f * xs_[i_grid + 1];
 
-  return 1.0 * xs;
+  return 1.0 * xs; // Ciara - is this not already a double?
 }
 
 bool Majorant::intersect_2D(std::pair<double, double> p1,
@@ -298,26 +339,27 @@ void Majorant::update(std::vector<double> energy_other,
 
   // if the other cross section starts at a lower energy, its
   // value is considered to be higher
-  if (other_xs.get_e() < current_xs.get_e()) {
+  if (other_xs.safe_get_e() < current_xs.safe_get_e()) { //Ciara replaced with safer accessors
     std::swap(current_xs, other_xs);
   }
 
   // if the two cross sections start at the same energy
   // pick the one with the higher xs value
-  if (other_xs.get_e() == current_xs.get_e() && other_xs.get_xs() > current_xs.get_xs()) {
+  if (other_xs.safe_get_e() == current_xs.safe_get_e() &&
+    other_xs.safe_get_xs() > current_xs.safe_get_xs()) { //Ciara replaced with safer accessors
     std::swap(current_xs, other_xs);
   }
 
   // add the first point to the final cross section
-  e_out.push_back(current_xs.get_e());
-  xs_out.push_back(current_xs.get_xs());
+  e_out.push_back(current_xs.safe_get_e());
+  xs_out.push_back(current_xs.safe_get_xs()); //Ciara replaced with safer accessors
   current_xs++;
 
   // continue adding points until the other xs min
   // energy is lower than the output minimum energy
-  while(current_xs.get_e() < other_xs.get_e() && !current_xs.complete()) {
-    e_out.push_back(current_xs.get_e());
-    xs_out.push_back(current_xs.get_xs());
+  while(current_xs.safe_get_e() < other_xs.safe_get_e() && !current_xs.complete()) {
+    e_out.push_back(current_xs.safe_get_e());
+    xs_out.push_back(current_xs.safe_get_xs()); //Ciara replaced with safer accessors
     current_xs++;
   }
 
@@ -327,7 +369,7 @@ void Majorant::update(std::vector<double> energy_other,
   // in the current cross section, insert the point of the other cross
   // section, and swap the two.
   // NOTE: possible problem with computing intersections with vertical slopes here
-  if (current_xs.get_e() <= other_xs.get_e() && is_above({e_out.back(), xs_out.back()}, current_xs.get(), other_xs.get())) {
+  if (current_xs.safe_get_e() <= other_xs.safe_get_e() && is_above({e_out.back(), xs_out.back()}, current_xs.get(), other_xs.get())) {
     // insert point on current xs segment
     double slope = (current_xs.get_xs() - xs_out.back()) /
                     (current_xs.get_e() - e_out.back());
@@ -466,18 +508,45 @@ double Majorant::XS::get_e() const { return energies_.at(idx_); }
 
 double Majorant::XS::get_xs() const { return total_xs_.at(idx_); }
 
-std::pair<double, double>
-Majorant::XS::prev() const { return {energies_.at(idx_ - 1), total_xs_.at(idx_ - 1)}; }
-
-double Majorant::XS::prev_e() const { return energies_.at(idx_ - 1); }
-
-double Majorant::XS::prev_xs() const { return total_xs_.at(idx_ - 1); }
-
-void Majorant::XS::advance(double energy) {
-  double e = energies_[idx_];
-  while (e <= energy && !this->complete()) { e = energies_[++idx_]; }
+//Ciara added safety helpers to access energy and xs without going out of bounds
+double Majorant::XS::safe_get_e() const {
+  if (complete()) throw std::out_of_range("Energy index out of bounds in get_energy()");
+  return energies_[idx_];
 }
 
+double Majorant::XS::safe_get_xs() const {
+  if (complete()) throw std::out_of_range("XS index out of bounds in get_xs()");
+  return total_xs_[idx_];
+}
+
+
+std::pair<double, double>
+Majorant::XS::prev() const {
+  if (idx_ == 0) throw std::out_of_range("XS::prev() called with idx_ == 0");
+  return {energies_.at(idx_ - 1), total_xs_.at(idx_ - 1)};
+}
+
+//Ciara edit 
+double Majorant::XS::prev_e() const {
+  if (idx_ == 0) throw std::out_of_range("XS::prev_e() called with idx_ == 0");
+  return energies_.at(idx_ - 1);
+}
+
+double Majorant::XS::prev_xs() const {
+  if (idx_ == 0) throw std::out_of_range("XS::prev_xs() called with idx_ == 0");
+  return total_xs_.at(idx_ - 1);
+}
+
+//Ciara rewrote here - specfifically double e = energies_[idx_] seemed to have no purpose? Only added risk of trying to access energies_ out of bounds?
+void Majorant::XS::advance(double energy) {
+  // Increase idx_ until we pass the given energy
+  while (!this->complete() && energies_[idx_] <= energy) {
+    ++idx_;  
+  }
+}
+
+
 bool Majorant::XS::complete() const { return idx_ >= energies_.size(); }
+
 
 }

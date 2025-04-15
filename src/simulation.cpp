@@ -77,7 +77,7 @@ int openmc_simulation_init()
   if (settings::run_CE) {
     initialize_data();
   }
-
+  
   if (settings::delta_tracking) create_majorant();
 
   // Determine how much work each process should do
@@ -109,6 +109,22 @@ int openmc_simulation_init()
   for (auto& mat : model::materials) {
     mat->init_nuclide_index();
   }
+
+  // Ciara debug
+  for (auto& mat : model::materials) {
+    for (int i = 0; i < mat->nuclide_.size(); ++i) {
+      int i_nuc = mat->nuclide_[i];
+  
+      if (i_nuc < 0 || static_cast<size_t>(i_nuc) >= data::nuclide_majorants.size()) {
+        std::cerr << "Invalid nuclide index " << i_nuc
+                  << " in material ID " << mat->id_ << std::endl;
+      } else if (!data::nuclide_majorants[i_nuc]) {
+        std::cerr << "Null majorant for nuclide index " << i_nuc
+                  << " in material ID " << mat->id_ << std::endl;
+      }
+    }
+  }  
+  //-------------------------------------------------  
 
   // Reset global variables -- this is done before loading state point (as that
   // will potentially populate k_generation and entropy)
@@ -540,6 +556,15 @@ void initialize_history(Particle& p, int64_t index_source)
   if (settings::delta_tracking)
     p.update_majorant();
 
+  // Because event_delta_advance checks E_last need to make sure its initialised
+  if (settings::delta_tracking) {
+    // Just in case - probably not needed
+    p.delta_tracking() = true;
+    // Prevent incorrect “energy changed” logic in event_delta_advance()
+    p.E_last() = p.E();
+  }
+    
+
 // Add paricle's starting weight to count for normalizing tallies later
 #pragma omp atomic
   simulation::total_weight += p.wgt();
@@ -735,14 +760,24 @@ void transport_history_based()
 void transport_delta_tracking_single_particle(Particle& p) // function to handle transport of single particles via delta tracking
 {
   p.delta_tracking() = true; // checks that the particle has delta tracking switched on
+  p.event_calculate_xs(); // without this the total xs will be zero in event_delta_advance()
   while (true) { 
+
     p.event_delta_advance(); // performs a single delta tracking algorithmic loop to move particle forward by one event
     if (!p.alive()) 
       break;                // if the particle is found to no longer be alive - break
+
     p.event_calculate_xs();  // calculate the the particle's crosssection  
+
     Expects(p.macro_xs().total <= p.majorant());   // checks if the total cross section is larger than the majorant...
+
+    Expects(p.majorant() > 0.0);  // ensures sampling distance is valid
+
     if (prn(p.current_seed()) < (p.macro_xs().total / p.majorant())) {   // if the current epsilon is less than the ratio of the total xs to the majorant...
+      std::cout<< "[DELTA TRANSPORT] Initiated REAL collision "<< "\n";      
       p.event_collide();   // initiate a REAL collision
+    } else{
+      std::cout<< "[DELTA TRANSPORT] Virtual collision "<< "\n";
     }
     p.event_revive_from_secondary(); // check particle isn't dead from collisions.
     if (!p.alive())
@@ -757,6 +792,7 @@ void transport_delta_tracking() {
   #pragma omp parallel for schedule(runtime)
   for (int64_t i_work = 1; i_work <= simulation::work_per_rank; ++i_work) {
     Particle p;
+    
     initialize_history(p, i_work);
     transport_delta_tracking_single_particle(p);
   }

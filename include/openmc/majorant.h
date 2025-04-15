@@ -40,6 +40,13 @@ public:
     //! \brief Return the cross section of the current index
     double get_xs() const;
 
+    //! Ciara added \brief "safe" version to return the energy of the current index
+    double safe_get_e() const;
+
+    //! Ciara added \brief "safe" version to return the cross section of the current index
+    double safe_get_xs() const; 
+
+
     //! \brief Return the current energy value and advance one
     double pop_e();
 
