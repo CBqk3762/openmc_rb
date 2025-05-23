@@ -122,6 +122,7 @@ std::string particle_type_to_str(ParticleType type);
 
 ParticleType str_to_particle_type(std::string str);
 
+
 } // namespace openmc
 
 #endif // OPENMC_PARTICLE_H

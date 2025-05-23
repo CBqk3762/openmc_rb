@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<settings>
+  <run_mode>eigenvalue</run_mode>
+  <particles>10000</particles>
+  <batches>220</batches>
+  <inactive>20</inactive>
+  <output>
+    <tallies>false</tallies>
+  </output>
+  <state_point>
+    <batches />
+  </state_point>
+  <delta_tracking>false</delta_tracking>
+  <temperature_default>705.65</temperature_default>
+  <temperature_method>interpolation</temperature_method>
+</settings>

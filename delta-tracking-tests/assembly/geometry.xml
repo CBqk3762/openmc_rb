@@ -1,0 +1,37 @@
+<!-- PWR pin-cell lattice -->
+<?xml version='1.0' encoding='utf-8'?>
+<geometry>
+  <cell id="1" material="1" name="Fuel" region="-1" universe="1" />
+  <cell id="2" material="2" name="Clad" region="1 -2" universe="1" />
+  <cell id="3" material="3" name="Water" region="2" universe="1" />
+  <cell fill="2" id="4" name="Water" region="3 -4 5 -6" universe="3" />
+  <lattice id="2">
+    <pitch>1.26 1.26</pitch>
+    <dimension>17 17</dimension>
+    <lower_left>-10.71 -10.71</lower_left>
+    <universes>
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 </universes>
+  </lattice>
+  <surface coeffs="0.0 0.0 0.39218" id="1" type="z-cylinder" />
+  <surface coeffs="0.0 0.0 0.4572" id="2" type="z-cylinder" />
+  <surface boundary="reflecting" coeffs="-10.71" id="3" type="x-plane" />
+  <surface boundary="reflecting" coeffs="10.71" id="4" type="x-plane" />
+  <surface boundary="reflecting" coeffs="-10.71" id="5" type="y-plane" />
+  <surface boundary="reflecting" coeffs="10.71" id="6" type="y-plane" />
+</geometry>

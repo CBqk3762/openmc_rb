@@ -731,18 +731,21 @@ void transport_delta_tracking_single_particle(Particle& p)
 {
   p.delta_tracking() = true;
   p.event_calculate_xs();
+
   while (true) {
     p.event_delta_advance();
     if (!p.alive())
       break;
     p.event_calculate_xs();
+
     Expects(p.macro_xs().total <= p.majorant());
     if (prn(p.current_seed()) < (p.macro_xs().total / p.majorant())) {
       p.event_collide();
     }
     p.event_revive_from_secondary();
-    if (!p.alive())
+    if (!p.alive()) {
       break;
+    }
   }
   p.event_death();
 }

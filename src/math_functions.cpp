@@ -791,6 +791,13 @@ Direction rotate_angle(
   }
 }
 
+bool directions_equal(const Direction& a, const Direction& b, double tol)
+{
+  return (std::fabs(a.x - b.x) < tol &&
+          std::fabs(a.y - b.y) < tol &&
+          std::fabs(a.z - b.z) < tol);
+}
+
 void spline(int n, const double x[], const double y[], double z[])
 {
   vector<double> c_new(n - 1);

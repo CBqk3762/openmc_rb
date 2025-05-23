@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material depletable="true" id="1" name="U-TRU-10Zr" temperature="807.15" volume="89.15304673765142">
+    <density units="sum" />
+    <nuclide ao="1.1369e-06" name="U234" />
+    <nuclide ao="3.0421e-05" name="U235" />
+    <nuclide ao="2.4896e-06" name="U236" />
+    <nuclide ao="0.019613" name="U238" />
+    <nuclide ao="4.6686e-05" name="Np237" />
+    <nuclide ao="4.97e-10" name="Pu236" />
+    <nuclide ao="0.00011695" name="Pu238" />
+    <nuclide ao="0.0022076" name="Pu239" />
+    <nuclide ao="0.0013244" name="Pu240" />
+    <nuclide ao="0.00019375" name="Pu241" />
+    <nuclide ao="0.00029277" name="Pu242" />
+    <nuclide ao="0.00010791" name="Am241" />
+    <nuclide ao="9.2989e-06" name="Am242_m1" />
+    <nuclide ao="0.00010017" name="Am243" />
+    <nuclide ao="5.625e-06" name="Cm242" />
+    <nuclide ao="5.4321e-07" name="Cm243" />
+    <nuclide ao="6.724e-05" name="Cm244" />
+    <nuclide ao="1.7397e-05" name="Cm245" />
+    <nuclide ao="9.2285e-06" name="Cm246" />
+    <nuclide ao="0.0037456628999999997" name="Zr90" />
+    <nuclide ao="0.0008168384399999999" name="Zr91" />
+    <nuclide ao="0.0012485543000000001" name="Zr92" />
+    <nuclide ao="0.00126529876" name="Zr94" />
+    <nuclide ao="0.00020384559999999999" name="Zr96" />
+    <nuclide ao="9.04954512e-05" name="Mo100" />
+    <nuclide ao="0.0001360496577" name="Mo92" />
+    <nuclide ao="8.53224251e-05" name="Mo94" />
+    <nuclide ao="0.00014741731290000002" name="Mo95" />
+    <nuclide ao="0.00015484715289999998" name="Mo96" />
+    <nuclide ao="8.899090860000001e-05" name="Mo97" />
+    <nuclide ao="0.0002256070916" name="Mo98" />
+  </material>
+  <material id="2" name="HT9">
+    <density units="sum" />
+    <nuclide ao="0.00407484175" name="Fe54" />
+    <nuclide ao="0.0639663011" name="Fe56" />
+    <nuclide ao="0.00147726085" name="Fe57" />
+    <nuclide ao="0.0001965963" name="Fe58" />
+    <nuclide ao="0.00029262174696" name="Ni58" />
+    <nuclide ao="0.00011271737304" name="Ni60" />
+    <nuclide ao="4.89974616e-06" name="Ni61" />
+    <nuclide ao="1.56225348e-05" name="Ni62" />
+    <nuclide ao="3.97859904e-06" name="Ni64" />
+    <nuclide ao="0.00045040270000000005" name="Cr50" />
+    <nuclide ao="0.00868556774" name="Cr52" />
+    <nuclide ao="0.00098487366" name="Cr53" />
+    <nuclide ao="0.00024515590000000003" name="Cr54" />
+    <nuclide ao="0.00045921" name="Mn55" />
+    <nuclide ao="4.77524208e-05" name="Mo100" />
+    <nuclide ao="7.17903543e-05" name="Mo92" />
+    <nuclide ao="4.50227309e-05" name="Mo94" />
+    <nuclide ao="7.778881110000001e-05" name="Mo95" />
+    <nuclide ao="8.17093711e-05" name="Mo96" />
+    <nuclide ao="4.69585074e-05" name="Mo97" />
+    <nuclide ao="0.00011904780439999999" name="Mo98" />
+  </material>
+  <material id="3" name="Na">
+    <density units="sum" />
+    <nuclide ao="0.022272" name="Na23" />
+  </material>
+</materials>

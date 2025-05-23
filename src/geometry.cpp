@@ -157,7 +157,7 @@ bool find_cell_inner(Particle& p, const NeighborList* neighbor_list)
 
     // Announce the cell that the particle is entering.
     if (found && (settings::verbosity >= 10 || p.trace())) {
-      auto msg = fmt::format("    Entering cell {}", model::cells[i_cell]->id_);
+      auto msg = fmt::format("    Entering cell {}", model::cells[i_cell]->id_, "\n");
       write_message(msg, 1);
     }
 

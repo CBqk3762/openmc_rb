@@ -318,7 +318,7 @@ private:
   double keff_tally_tracklength_ {0.0};
   double keff_tally_leakage_ {0.0};
 
-  bool trace_ {false}; //!< flag to show debug information
+  bool trace_ {false}; // flag to show debug information
 
   double collision_distance_; // distance to particle's next closest collision
 
@@ -336,9 +336,11 @@ private:
 #endif
 
   int64_t n_progeny_ {0}; // Number of progeny produced by this particle
+  double speed_last_ {0.0}; // Previous Speed of the particle (initially set to 0.0)
+  int surf_last_ {-1}; // Previous expected surface of intersection (initially set to -1)
 
-  bool delta_tracking_ {false}; // !< Flag to indicate whether or not delta tracking is active
-  double majorant_ {0.0}; // !< most recent value for the majorant cross section
+  bool delta_tracking_ {false}; // Flag to indicate whether or not delta tracking is active
+  double majorant_ {0.0}; // most recent value for the majorant cross section
 
 public:
   //==========================================================================
@@ -472,9 +474,19 @@ public:
 
   int64_t& n_progeny() { return n_progeny_; }
 
+  // Accessors for delta_tracking
   bool& delta_tracking() { return delta_tracking_; }
   const bool& delta_tracking() const { return delta_tracking_; }
 
+  // Acessors for the previous speed of particle
+  double& speed_last() { return speed_last_; }
+  const double& speed_last() const { return speed_last_; }
+
+  // Acessors for the previous expected surface of intersection during delta tracking
+  int& surf_last() { return surf_last_; }
+  const int& surf_last() const { return surf_last_; }  
+
+  // Acessors for the majorant
   double& majorant() { return majorant_; }
   const double& majorant() const { return majorant_; }
 

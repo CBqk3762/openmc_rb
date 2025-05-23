@@ -115,6 +115,9 @@ extern "C" void calc_zn(int n, double rho, double phi, double zn[]);
 
 extern "C" void calc_zn_rad(int n, double rho, double zn_rad[]);
 
+// Detemine, within a given tolerance 'tol', if two Directions are equal
+bool directions_equal(const Direction& a, const Direction& b, double tol);
+
 //==============================================================================
 //! Rotate the direction cosines through a polar angle whose cosine is mu and
 //! through an azimuthal angle sampled uniformly.
