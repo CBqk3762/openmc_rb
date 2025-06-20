@@ -9,7 +9,7 @@
       <parameters>-161.2773 -161.2773 35.0 161.2773 161.2773 419.704</parameters>
     </space>
   </source>
-  <delta_tracking>false</delta_tracking>
+  <delta_tracking>true</delta_tracking>
   <output>
     <summary>true</summary>
     <tallies>false</tallies>

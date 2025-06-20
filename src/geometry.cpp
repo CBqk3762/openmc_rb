@@ -8,6 +8,7 @@
 #include "openmc/constants.h"
 #include "openmc/error.h"
 #include "openmc/lattice.h"
+#include "openmc/material.h"
 #include "openmc/settings.h"
 #include "openmc/simulation.h"
 #include "openmc/string_utils.h"
@@ -302,6 +303,93 @@ bool exhaustive_find_cell(Particle& p)
   return find_cell_inner(p, nullptr);
 }
 
+bool geometry_descent(Particle& p)
+{
+  //Check and descend if needed
+  int cell_idx = p.coord(p.n_coord() - 1).cell;
+  if (cell_idx < 0) {
+    p.mark_as_lost("Invalid cell index before geometry descent.");
+    p.log_coord_stack("Invalid cell index before geometry descent.");
+    p.wgt() = 0.0;
+    return false;
+  }
+
+  const auto& cell = model::cells[cell_idx];
+  if (cell->type_ != Fill::MATERIAL) {
+    if (!exhaustive_find_cell(p)) {
+      p.mark_as_lost("Could not descend into material cell after surface crossing.");
+      p.log_coord_stack("Could not descend into material cell after surface crossing.");
+      p.wgt() = 0.0;
+      return false;
+    }
+    cell_idx = p.coord(p.n_coord() - 1).cell;
+  }
+
+  // Assign material and update data
+  if (cell_idx >= 0 && cell_idx < static_cast<int>(model::cells.size())) {
+    const auto& material_cell = model::cells[cell_idx];
+    if (!material_cell->material_.empty() && material_cell->material_[0] != MATERIAL_VOID) {
+      p.material() = material_cell->material_[0];
+      model::materials[p.material()]->calculate_xs(p);
+      p.update_majorant();
+    } else {
+      std::cerr << "[DESCENT] Cell " << cell_idx << " has no valid material.\n";
+      p.log_coord_stack("[DESCENT] Cell " + std::to_string(cell_idx) + " has no valid material.\n");
+    }
+  } else {
+    std::cerr << "[DESCENT] Invalid cell index after geometry descent.\n";
+    p.mark_as_lost("Geometry descent returned invalid cell.");
+    p.log_coord_stack("Geometry descent returned invalid cell.");
+    p.wgt() = 0.0;
+    return false;
+  }
+
+  return true;
+}
+
+bool find_cell_fast(Particle& p)
+{
+  // Attempt to find in current coord level
+  for (int level = p.n_coord() -1; level >= 0; --level){
+    // Get universe at this level
+    const Universe* univ = model::universes[p.coord(level).universe].get();
+
+    // Find cell_id within this universe
+    int cell_id = -1;
+    for (int i : univ->cells_) {
+      const auto& c = model::cells[i];
+      if (c->contains(p.r(), p.u(), true)) {
+        cell_id = i;
+        break;
+      }
+    }
+    if (cell_id >=0){
+      // Found cell containing particle, update coord stack
+      p.coord(level).cell = cell_id;
+
+      // Truncate stack at this level
+      //p->n_coord = level + 1;
+
+      // particle was found, can return true
+      return true;
+    }
+  }
+
+  // Try starting from last known cell
+  if (p.n_coord_last() > 0) {
+    int last_cell_id = p.cell_last(0);
+    const Cell* last_cell = model::cells[last_cell_id].get();
+
+    // Check whether the particle still lies in that cell
+    if (last_cell->contains(p.r(), p.u(), true)) {
+      // Let exhaustive_find_cell rebuild coordinate stack
+      return exhaustive_find_cell(p);
+    }
+  }
+  // If no localisation succeeded
+  return false;
+}
+
 //==============================================================================
 
 void cross_lattice(Particle& p, const BoundaryInfo& boundary)
@@ -340,6 +428,9 @@ void cross_lattice(Particle& p, const BoundaryInfo& boundary)
       p.mark_as_lost(fmt::format("Could not locate particle {} after "
                                  "crossing a lattice boundary",
         p.id()));
+      p.log_coord_stack(fmt::format("Could not locate particle {} after "
+                                 "crossing a lattice boundary",
+        p.id()));
     }
 
   } else {
@@ -354,6 +445,9 @@ void cross_lattice(Particle& p, const BoundaryInfo& boundary)
       bool found = exhaustive_find_cell(p);
       if (!found && p.alive()) {
         p.mark_as_lost(fmt::format("Could not locate particle {} after "
+                                   "crossing a lattice boundary",
+          p.id()));
+          p.log_coord_stack(fmt::format("Could not locate particle {} after "
                                    "crossing a lattice boundary",
           p.id()));
       }
@@ -409,6 +503,8 @@ BoundaryInfo distance_to_boundary(Particle& p)
 
       if (d_lat < 0) {
         p.mark_as_lost(fmt::format(
+          "Particle {} had a negative distance to a lattice boundary", p.id()));
+        p.log_coord_stack(fmt::format(
           "Particle {} had a negative distance to a lattice boundary", p.id()));
       }
     }

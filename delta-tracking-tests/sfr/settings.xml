@@ -10,7 +10,7 @@
   <state_point>
     <batches />
   </state_point>
-  <delta_tracking>false</delta_tracking>
+  <delta_tracking>true</delta_tracking>
   <temperature_default>705.65</temperature_default>
   <temperature_method>interpolation</temperature_method>
 </settings>

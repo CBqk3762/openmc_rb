@@ -743,9 +743,8 @@ void transport_delta_tracking_single_particle(Particle& p)
       p.event_collide();
     }
     p.event_revive_from_secondary();
-    if (!p.alive()) {
+    if (!p.alive())
       break;
-    }
   }
   p.event_death();
 }
