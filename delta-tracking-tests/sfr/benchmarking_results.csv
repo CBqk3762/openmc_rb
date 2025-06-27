@@ -1,3 +1,0 @@
-Case Name,Tot Init Time (s),Tot Sim Time (s),Transport time (s),Time in Inactive Batches (s),Time in Active Batches (s),Time Accumulating Tallies (s),Tot Time (s),Calc Rate (Inactive) (parts/s),Calc Rate (Active) (parts/s),K-eff (Coll),K-eff (Abs),Combined K-eff,Leakage Frac
-sfr_Del1,2.1181e+01,3.3939e+02,3.3901e+02,3.1862e+01,3.0753e+02,7.3963e-04,3.7228e+02,6277.01,6503.49,0.18370,0.18280,0.18365,0.92180
-sfr_NoDel1,2.1406e+01,7.4825e+02,7.4788e+02,6.5888e+01,6.8236e+02,8.8196e-04,7.6977e+02,3035.46,2930.99,0.18404,0.18364,0.18400,0.92279

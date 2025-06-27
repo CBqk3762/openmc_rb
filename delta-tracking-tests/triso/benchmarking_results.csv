@@ -1,3 +1,0 @@
-Case Name,Tot Init Time (s),Tot Sim Time (s),Transport time (s),Time in Inactive Batches (s),Time in Active Batches (s),Time Accumulating Tallies (s),Tot Time (s),Calc Rate (Inactive) (parts/s),Calc Rate (Active) (parts/s),K-eff (Coll),K-eff (Abs),Combined K-eff,Leakage Frac
-triso_Nodel,2.9571e+01,6.2727e+02,6.2718e+02,3.3964e+02,2.8763e+02,4.3702e-05,6.6010e+02,736.078,869.169,0.00260,0.00266,0.00262,0.99873
-triso_Del,3.0787e+01,4.6304e+02,4.6294e+02,2.3119e+02,2.3185e+02,3.7016e-05,4.9925e+02,1081.38,1078.26,0.00260,0.00276,0.00260,0.99861

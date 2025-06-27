@@ -260,43 +260,58 @@ void Particle::event_advance()
 
 void Particle::trace_through_geom(double trace_dist)
 {
+  // Step backwards into geometry until we find a valid cell
+  constexpr double max_backtrack = 1.0;
+  constexpr double step = 1e-4;
+  double backtracked = 0.0;
 
-  double distance_traveled = 0;
+  while (backtracked <= max_backtrack) {
+    if (exhaustive_find_cell(*this)) break;
+    coord(n_coord() - 1).r -= step * u();
+    backtracked += step;
+  }
+
+  if (!exhaustive_find_cell(*this)) {
+    mark_as_lost("trace_through_geom: could not re-enter geometry");
+    return;
+  }
+  
+  double distance_traveled = 0.0;
   
   while (true) {
     boundary() = distance_to_boundary(*this);
 
     // stop if we've gone far enough
-    if (distance_traveled + boundary().distance > trace_dist)
+    if (distance_traveled + boundary().distance > trace_dist){
       break;
-
-    // update distance
-    distance_traveled += boundary().distance;
-
-    // advance the particle
-    for (auto& coord : coord()) {
-      coord.r += boundary().distance * coord.u;
     }
 
+    // Advance to surface
+    coord(n_coord() - 1).r += boundary().distance * u();
+    distance_traveled += boundary().distance;
+
     // cross the surface
-    this->event_cross_surface();
-    if (!alive())
-      break;
+    this->event_cross_surface_dt();
+    if (!alive()) return;
+
+    // Perform a small push to prevent crossing backwards
+    coord(n_coord() - 1).r += TINY_BIT * u();
   }
 
   // move the remaining distance if needed
-  if (distance_traveled < trace_dist) {
-    double remaining_distance = trace_dist - distance_traveled;
-    for (auto& coord : coord()) {
-      coord.r += remaining_distance * coord.u;
-    }
+  double remaining_distance = trace_dist - distance_traveled;
+  if (remaining_distance > 0.0) {
+    coord(n_coord() - 1).r += remaining_distance * u();
   }
 
-  // reset some information to make sure the particle is relocated
-  // before the next collision event
-  coord(n_coord() - 1).cell = C_NONE;
-  n_coord() = 1;
   material() = C_NONE;
+  
+    // Attempt relocation — if fails, cleanly terminate
+  if (!exhaustive_find_cell(*this)) {
+    mark_as_lost("Lost during trace_through_geom");  // Rather than mark_as_lost
+    return;
+  }
+
 }
 
 void Particle::event_delta_advance()
@@ -312,22 +327,10 @@ void Particle::event_delta_advance()
   // sample distance to next position
   if (type() == ParticleType::electron || type() == ParticleType::positron) {
     distance = 0.0;
-    // } else if (macro_xs_.total == 0.0) {
-    //   distance = INFINITY;
   } else {
     // calculate majorant value for this energy
     distance = -std::log(prn(this->current_seed())) / majorant();
   }
-
-  // store speed, will allow us to reduce calls to exhaustive_find_cell
-  speed_last() = speed();
-
-  // Calculating velocity
-  double v_mag = speed();
-  Direction velocity = v_mag * u();
-
-  double v_mag_last = ParticleData::speed_last();
-  Direction velocity_last = v_mag_last * u_last();
 
   bool crossed_surface = false;
   // loop will walk through multiple surfaces if needed
@@ -338,7 +341,7 @@ void Particle::event_delta_advance()
     boundary().coord_level = 1;
 
     // Check if particle slowed down or changed direction - change to velocity -/- velocity_last
-    if (first_step() || velocity!=velocity_last) {
+    if (first_step() || u()!=u_last()) {
       // Velocity changed — rescan all surfaces
       for (auto s_idx : model::boundary_surfaces) {
         // get surface, s, which has index s_idx
@@ -393,12 +396,18 @@ void Particle::event_delta_advance()
   }
 
   if (!exhaustive_find_cell(*this)) {
-    keff_tally_leakage() += wgt();
-    wgt() = 0.0;
     log_coord_stack("after post-crossing push ");
-    //coord() = coord_cache;
-    //trace_through_geom(distance);
-    return;
+    trace_through_geom(distance);
+
+    // Check if particle has fully left geom
+    if (!exhaustive_find_cell(*this)) {
+      keff_tally_leakage() += wgt();
+      mark_as_lost("Could not be found after boundary advancement.\n");
+      return;
+    } else{
+  //Particle was located successfully
+  return;
+    }
   }
 
   // Score flux derivative accumulators for differential tallies.
@@ -479,9 +488,8 @@ void Particle::event_cross_surface_dt()
    // Determine current cell location
    if (!exhaustive_find_cell(*this)) {
      //std::cerr << "Particle lost after surface crossing.\n";
-    mark_as_lost("Could not find cell after boundary advancement.");
+    event_death();
     log_coord_stack("After boundary advancement particle ");
-    wgt() = 0.0;
     return;
    }
 

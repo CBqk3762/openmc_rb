@@ -2,12 +2,9 @@
 <geometry>
   <cell id="1" material="1" name="Fuel" region="-1" universe="1" />
   <cell id="2" material="2" name="Clad" region="1 -2" universe="1" />
-  <cell id="3" material="3" name="Water gap" region="2" universe="1" />
-
-  <!-- Water moderator region used as the outer fill for lattice -->
-  <cell id="4" material="3" name="Outer moderator" region="3 -4 5 -6" universe="3" />
-
-  <lattice id="2" type="rect" outer="3">
+  <cell id="3" material="3" name="Water" region="2" universe="1" />
+  <cell fill="2" id="4" name="Water" region="3 -4 5 -6" universe="3" />
+  <lattice id="2">
     <pitch>1.26 1.26</pitch>
     <dimension>17 17</dimension>
     <lower_left>-10.71 -10.71</lower_left>
@@ -36,10 +33,4 @@
   <surface boundary="reflecting" coeffs="10.71" id="4" type="x-plane" />
   <surface boundary="reflecting" coeffs="-10.71" id="5" type="y-plane" />
   <surface boundary="reflecting" coeffs="10.71" id="6" type="y-plane" />
-
-  <!-- Top-Level Cell in Universe 0 that fills with the lattice -->
-  <surface id="7" type="z-plane" coeffs="-100.0" boundary="vacuum" />
-  <surface id="8" type="z-plane" coeffs="100.0" boundary="vacuum" />
-  <cell id="0" universe="0" fill="2" region="7 -8"/>
-  <root_universe>0</root_universe>
 </geometry>

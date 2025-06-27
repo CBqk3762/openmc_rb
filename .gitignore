@@ -40,6 +40,7 @@ src/utils/build
 results_error.dat
 inputs_error.dat
 results_test.dat
+delta-tracking-tests/
 
 # Test
 .pytest_cache/

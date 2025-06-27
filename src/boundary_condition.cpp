@@ -16,6 +16,9 @@ namespace openmc {
 
 void VacuumBC::handle_particle(Particle& p, const Surface& surf) const
 {
+  if (settings::verbosity >= 10 || p.trace()) {
+    write_message(1, "handle_particle for vacuum surface, id {}", surf.id_);
+  }
   p.cross_vacuum_bc(surf);
 }
 
