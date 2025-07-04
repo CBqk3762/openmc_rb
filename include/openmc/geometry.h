@@ -6,6 +6,7 @@
 
 #include "openmc/array.h"
 #include "openmc/constants.h"
+#include "openmc/position.h"
 #include "openmc/vector.h"
 
 namespace openmc {
@@ -72,10 +73,21 @@ void cross_lattice(Particle& p, const BoundaryInfo& boundary);
 
 //==============================================================================
 //! Find the next boundary a particle will intersect.
+//! BoundaryInfo should be used for particles inside the geometry and
+//! intersect_surface should be used for those outside. Note that
+//! intersect_surface will only return the distance
 //==============================================================================
 
 BoundaryInfo distance_to_boundary(Particle& p);
 
+//==============================================================================
+//! Find the distance away from a given surface(by id) a particle is. should be 
+//! used for those outside the geometry in place of 'distance_to_boundary' but
+//! will work for any particle. Note also that this will return INFTY if the
+//! particle path does not intersect the surface.
+//==============================================================================
+
+double intersect_surface(int model_surface, Position r, Direction u);
 
 
 } // namespace openmc

@@ -552,6 +552,15 @@ BoundaryInfo distance_to_boundary(Particle& p)
 }
 
 //==============================================================================
+double intersect_surface(int model_surface, Position r, Direction u)
+{
+  auto& surf = model::surfaces[model_surface];
+  double dist = surf->distance(r, u, false);
+  std::cout << "intersect_surface: r = " << r << ", u = " << u << ", dist = " << dist << "\n";
+  return dist;
+}
+
+//==============================================================================
 // C API
 //==============================================================================
 

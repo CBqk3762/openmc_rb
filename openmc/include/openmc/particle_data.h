@@ -524,6 +524,10 @@ public:
   {
     for (auto& level : coord_)
       level.reset();
+
+    surf_last_ = -1;
+    first_step_ = true;
+
     n_coord_ = 1;
   }
 
