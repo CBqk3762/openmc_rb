@@ -1292,11 +1292,15 @@ void read_surfaces(pugi::xml_node node)
       if (check_for_node(surf_node, "boundary")) {
         std::string surf_bc = get_node_value(surf_node, "boundary", true, true);
         if (surf_bc == "periodic") {
+          std::cerr << "[DEBUG] Found a surface with period BC" << "\n";
           if (check_for_node(surf_node, "periodic_surface_id")) {
             int i_periodic =
               std::stoi(get_node_value(surf_node, "periodic_surface_id"));
+            std::cerr << "[DEBUG] i_periodic = " << i_periodic << "\n";
             int lo_id = std::min(model::surfaces.back()->id_, i_periodic);
             int hi_id = std::max(model::surfaces.back()->id_, i_periodic);
+            std::cerr << "[DEBUG] lo_id = " << lo_id << "\n";
+            std::cerr << "[DEBUG] hi_id = " << hi_id << "\n";
             periodic_pairs.insert({lo_id, hi_id});
           } else {
             periodic_pairs.insert({model::surfaces.back()->id_, -1});

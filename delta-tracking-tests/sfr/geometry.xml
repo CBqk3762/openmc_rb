@@ -34,12 +34,12 @@
   </hex_lattice>
   <surface coeffs="0.0 0.0 0.3236" id="1" type="z-cylinder" />
   <surface coeffs="0.0 0.0 0.3857" id="2" type="z-cylinder" />
-  <surface boundary="vacuum" coeffs="8.12355" id="3" periodic_surface_id="4" type="y-plane" />
-  <surface boundary="vacuum" coeffs="-8.12355" id="4" periodic_surface_id="3" type="y-plane" />
-  <surface boundary="vacuum" coeffs="1.7320508075688772 1.0 0.0 16.2471" id="5" periodic_surface_id="7" type="plane" />
-  <surface boundary="vacuum" coeffs="-1.7320508075688772 1.0 0.0 -16.2471" id="6" periodic_surface_id="8" type="plane" />
-  <surface boundary="vacuum" coeffs="1.7320508075688772 1.0 0.0 -16.2471" id="7" periodic_surface_id="5" type="plane" />
-  <surface boundary="vacuum" coeffs="-1.7320508075688772 1.0 0.0 16.2471" id="8" periodic_surface_id="6" type="plane" />
+  <surface boundary="vacuum" coeffs="8.12355" id="3" type="y-plane" />
+  <surface boundary="vacuum" coeffs="-8.12355" id="4" type="y-plane" />
+  <surface boundary="vacuum" coeffs="1.7320508075688772 1.0 0.0 16.2471" id="5" type="plane" />
+  <surface boundary="vacuum" coeffs="-1.7320508075688772 1.0 0.0 -16.2471" id="6" type="plane" />
+  <surface boundary="vacuum" coeffs="1.7320508075688772 1.0 0.0 -16.2471" id="7" type="plane" />
+  <surface boundary="vacuum" coeffs="-1.7320508075688772 1.0 0.0 16.2471" id="8" type="plane" />
   <surface coeffs="7.90615" id="9" type="y-plane" />
   <surface coeffs="-7.90615" id="10" type="y-plane" />
   <surface coeffs="1.7320508075688772 1.0 0.0 15.8123" id="11" type="plane" />

@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <settings>
   <run_mode>eigenvalue</run_mode>
-  <particles>10000</particles>
-  <batches>220</batches>
+  <particles>100</particles>
+  <batches>10</batches>
   <inactive>0</inactive>
   <output>
     <tallies>false</tallies>
@@ -10,7 +10,7 @@
   <state_point>
     <batches />
   </state_point>
-  <verbosity>10</verbosity>
+  <verbosity>1</verbosity>
   <delta_tracking>true</delta_tracking>
   <temperature_default>705.65</temperature_default>
   <temperature_method>interpolation</temperature_method>

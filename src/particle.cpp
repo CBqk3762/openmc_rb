@@ -179,7 +179,6 @@ void Particle::event_calculate_xs()
       } else {
         mark_as_lost("Could not find the cell containing particle " +
                      std::to_string(id()));
-        log_coord_stack("Lost in 'create_secondary' ");
       }
       return;
     }
@@ -252,7 +251,7 @@ void Particle::event_advance()
 
   // Score track-length estimate of k-eff
   if (settings::run_mode == RunMode::EIGENVALUE &&
-      type() == ParticleType::neutron && !delta_tracking()) {
+      type() == ParticleType::neutron) {
     keff_tally_tracklength() += wgt() * distance * macro_xs().nu_fission;
   }
 
@@ -272,14 +271,8 @@ void Particle::trace_through_geom()
 
   auto& surf = model::surfaces[surf_idx];
 
-
   // Step back into the geometry using the last surface crossed
   double dist_to_geom = intersect_surface(surf_last(), coord(n_coord() - 1).r, -u());
-
-  std::cout << "[TRACE] surf_last = " << surf_last()
-            << ", r = " << coord(n_coord() - 1).r
-            << ", -u = " << -u()
-            << ", dist = " << dist_to_geom << "\n";
 
   if (dist_to_geom <= 0.0) {
     mark_as_lost("Could not intersect previous surface, distance was negative!");
@@ -293,10 +286,6 @@ void Particle::trace_through_geom()
 
   // Move just inside the surface
   coord(n_coord() - 1).r += (dist_to_geom + TINY_BIT) * u();
-
-
-  std::cout << "[TRACE] Stepped back into geometry by " << dist_to_geom + TINY_BIT
-            << ", new position = " << coord(n_coord() - 1).r << "\n";
 
   // Set boundary info manually - recall surf_last() is from model::surfaces so need +1
   boundary().surface_index = surf_idx + 1;
@@ -317,12 +306,6 @@ void Particle::trace_through_geom()
   this->event_cross_surface_dt();
   if (!alive()) return;
 
-  // Final safety check (should almost always pass)
-  if (!exhaustive_find_cell(*this)) {
-    mark_as_lost("Could not locate particle after re-crossing.");
-    return;
-  }
-
   // Ensure material is re-evaluated later
   material() = C_NONE;
 }
@@ -330,8 +313,6 @@ void Particle::trace_through_geom()
 void Particle::event_delta_advance()
 {
   double distance;
-  auto coord_cache = coord();
-
   // Update majorant if energy changed
   if (this->E() != this->E_last()) {
     this->update_majorant();
@@ -363,7 +344,9 @@ void Particle::event_delta_advance()
         first_step() = false ;
 
         // Find closest boundary surface through checking all
+        // reflect and vacuum only
         if (surf_dist < boundary().distance) {
+          // Try to recover 
           boundary().distance = surf_dist;
           boundary().surface_index = s_idx + 1;
           // check and store boundary sense
@@ -379,6 +362,10 @@ void Particle::event_delta_advance()
       // Velocity unchanged — reuse last known closest surface
       if (surf_last() >= 0 && surf_last() < static_cast<int>(model::surfaces.size())) {
         const auto& s = model::surfaces[surf_last()];
+
+          // Switch to surface tracking from here
+          //transport_history_based_single_particle(*this);
+
         double surf_dist = s->distance(r(), u(), false);
 
         if (surf_dist < boundary().distance) {
@@ -405,7 +392,6 @@ void Particle::event_delta_advance()
   }
 
   // Small push *after* crossing to ensure particle fully enters new region
-  r() += TINY_BIT * u();
 
   // Advance remaining distance after crossing
   for (int j = 0; j < n_coord(); ++j) {
@@ -413,25 +399,23 @@ void Particle::event_delta_advance()
     coord(j).reset();
   }
 
+  // Score flux derivative accumulators for differential tallies.
+  if (!model::active_tallies.empty()) {
+    score_track_derivative(*this, distance);
+  }
+
   if (!exhaustive_find_cell(*this)) {
-    log_coord_stack("after post-crossing push ");
-    trace_through_geom();
+    //trace_through_geom();
 
     // Check if particle has fully left geom
     if (!exhaustive_find_cell(*this)) {
       keff_tally_leakage() += wgt();
-      mark_as_lost("Could not be found after boundary advancement.\n");
-      return;
+      wgt() = 0.0;
     } else{
-  //Particle was located successfully
+  //Particle was located successfully, reset surf_last()
   surf_last() = -1;
   return;
     }
-  }
-
-  // Score flux derivative accumulators for differential tallies.
-  if (!model::active_tallies.empty()) {
-    score_track_derivative(*this, distance);
   }
 
   //Ensure XS recalc on E change
@@ -480,20 +464,15 @@ void Particle::event_cross_surface_dt()
     cell_last(j) = coord(j).cell;
   }
   n_coord_last() = n_coord();
-  std::cerr << "[DEBUG] Crossing into cell " << coord(0).cell
-            << ", surface index = " << surface() << "\n";
-
 
   if (boundary().lattice_translation[0] != 0 ||
       boundary().lattice_translation[1] != 0 ||
       boundary().lattice_translation[2] != 0) {
     // Particle crosses lattice boundary
-    std::cerr << "[DEBUG] Crossing lattice boundary.\n";
     cross_lattice(*this, boundary());
     event() = TallyEvent::LATTICE;
   } else {
     // Particle crosses surface
-    std::cerr << "[DEBUG] Crossing surface.\n";
     cross_surface();
     event() = TallyEvent::SURFACE;
   }
@@ -504,34 +483,14 @@ void Particle::event_cross_surface_dt()
 
    // Determine current cell location
    if (!exhaustive_find_cell(*this)) {
-    std::cerr << "Particle lost after surface crossing.\n";
     event_death();
     return;
    }
-
-  // Assign material after crossing
-  int c_indx = coord(n_coord() - 1).cell;
-  if (c_indx >= 0 && c_indx < static_cast<int>(model::cells.size())) {
-    const auto& cell_ptr = model::cells[c_indx];
-    std::cerr << "[DEBUG] Localised cell = " << c_indx
-          << ", material size = " << cell_ptr->material_.size() << "\n";
-
-    if (!cell_ptr->material_.empty() && cell_ptr->material_[0] != MATERIAL_VOID) {
-      material() = cell_ptr->material_[0];
-      std::cerr << "[DEBUG] Assigned material = " << material() << "\n";
-      if (delta_tracking()){
-        model::materials[material()]->calculate_xs(*this);
-        update_majorant();
-      }
-    }
-  }
 
   // Recalculating cross-sections after material update
   if (material() != MATERIAL_VOID && delta_tracking()) {
     model::materials[material()]->calculate_xs(*this);
     update_majorant();
-  } else {
-    std::cerr << "[CROSS SURFACE] No valid material after crossing; skipping XS and majorant update.\n";
   }
 
   // Score cell to cell partial currents
@@ -703,7 +662,7 @@ void Particle::cross_surface()
   // TODO: off-by-one
   const auto& surf {model::surfaces[i_surface - 1].get()};
   if (settings::verbosity >= 10 || trace()) {
-    write_message(1, "    Crossing surface {}", surf->id_);
+    write_message(1, "    Crossing surface {}", surf->id_, "\n");
   }
 
   if (surf->surf_source_ && simulation::current_batch == settings::n_batches) {
@@ -784,10 +743,7 @@ void Particle::cross_surface()
     if (!exhaustive_find_cell(*this)) {
       mark_as_lost("After particle " + std::to_string(id()) +
                    " crossed surface " + std::to_string(surf->id_) +
-                   " it could not be located in any cell and it did not leak.");
-      log_coord_stack("After particle " + std::to_string(id()) +
-                   " crossed surface " + std::to_string(surf->id_) +
-                   " it could not be located in any cell and it did not leak.");
+                   " it could not be located in any cell and it did not leak. \n");
       return;
     }
   }
@@ -815,7 +771,7 @@ void Particle::cross_vacuum_bc(const Surface& surf)
 
   // Display message
   if (settings::verbosity >= 10 || trace()) {
-    write_message(1, "    Leaked out of surface {}", surf.id_);
+    write_message(1, "    Leaked out of surface {}", surf.id_, "\n");
   }
 }
 
@@ -861,7 +817,7 @@ void Particle::cross_reflective_bc(const Surface& surf, Direction new_u)
   if (surf.geom_type_ != GeometryType::DAG && !neighbor_list_find_cell(*this)) {
     exhaustive_find_cell(*this);
     this->mark_as_lost("Couldn't find particle after reflecting from surface " +
-                       std::to_string(surf.id_) + ".");
+                       std::to_string(surf.id_) + "\n");
     return;
   }
 
@@ -870,7 +826,7 @@ void Particle::cross_reflective_bc(const Surface& surf, Direction new_u)
 
   // Diagnostic message
   if (settings::verbosity >= 10 || trace()) {
-    write_message(1, "    Reflected from surface {}", surf.id_);
+    write_message(1, "    Reflected from surface {}", surf.id_, "\n");
   }
 }
 
@@ -882,7 +838,7 @@ void Particle::cross_periodic_bc(
     mark_as_lost(
       "Cannot transfer particle " + std::to_string(id()) +
       " across surface in a lower universe. Boundary conditions must be "
-      "applied to root universe.");
+      "applied to root universe. \n");
     return;
   }
 
@@ -911,12 +867,7 @@ void Particle::cross_periodic_bc(
                  "boundary on surface " +
                  std::to_string(surf.id_) +
                  ". The normal vector "
-                 "of one periodic surface may need to be reversed.");
-    log_coord_stack("Couldn't find particle after hitting periodic "
-                 "boundary on surface " +
-                 std::to_string(surf.id_) +
-                 ". The normal vector "
-                 "of one periodic surface may need to be reversed.");
+                 "of one periodic surface may need to be reversed. \n");
     return;
   }
 
@@ -925,7 +876,7 @@ void Particle::cross_periodic_bc(
 
   // Diagnostic message
   if (settings::verbosity >= 10 || trace()) {
-    write_message(1, "    Hit periodic boundary on surface {}", surf.id_);
+    write_message(1, "    Hit periodic boundary on surface {}", surf.id_, "\n");
   }
 }
 
