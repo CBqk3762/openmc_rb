@@ -29,6 +29,10 @@ class Surface;
  */
 
 class Particle : public ParticleData {
+private:
+
+  bool dt_force_virtual_ = false; //! force virtual collisions in DT mode
+
 public:
   //==========================================================================
   // Constructors
@@ -71,6 +75,9 @@ public:
   //! Determine the surfaces crossed between the last and current particle position
   void trace_through_geom();
 
+  //! Check if virtual collisions are forced in delta-tracking mode-needed for CFE-min
+  bool& dt_force_virtual() { return dt_force_virtual_; }
+  const bool& dt_force_virtual() const { return dt_force_virtual_; }
 
   //! Cross a surface and handle boundary conditions
   void cross_surface();

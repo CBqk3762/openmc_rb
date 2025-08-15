@@ -4,5 +4,5 @@
   <particles>500</particles>
   <batches>10</batches>
   <inactive>5</inactive>
-  <delta_tracking>false</delta_tracking>
+  <delta_tracking>true</delta_tracking>
 </settings>

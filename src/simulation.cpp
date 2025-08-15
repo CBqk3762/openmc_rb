@@ -352,6 +352,15 @@ void initialize_batch()
 
   // Add user tallies to active tallies list
   setup_active_tallies();
+  // check this worked
+  for (int i : model::active_collision_tallies) {
+    const auto& T = *model::tallies[i];
+    std::cerr << "[tally] id=" << T.id_ 
+              << " estimator=" << static_cast<int>(T.estimator_)
+              << " scores=" << T.scores_.size()
+              << " n_filters=" << T.filters().size()
+              << "\n";
+  }
 }
 
 void finalize_batch()
@@ -734,17 +743,30 @@ void transport_delta_tracking_single_particle(Particle& p)
 
   while (true) {
     p.event_delta_advance();
-    if (!p.alive())
+    if (!p.alive()){
       break;
+    }
+
     p.event_calculate_xs();
 
+    // Def of majorant should be satisfied
     Expects(p.macro_xs().total <= p.majorant());
-    if (prn(p.current_seed()) < (p.macro_xs().total / p.majorant())) {
-      p.event_collide();
+
+    // real collisions handled the same for DT with/out l_max
+    if (!p.dt_force_virtual()){
+      if (prn(p.current_seed()) < (p.macro_xs().total / p.majorant())) {
+        // Only want to run for real collisions
+        p.event_collide();
+      }
+    } else {
+      // Step capped by l_max, site of a forced a virtual collision
+      p.dt_force_virtual() = false;
     }
+    
     p.event_revive_from_secondary();
-    if (!p.alive())
+    if (!p.alive()) {
       break;
+    }
   }
   p.event_death();
 }

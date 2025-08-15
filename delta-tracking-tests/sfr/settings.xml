@@ -10,7 +10,7 @@
   <state_point>
     <batches />
   </state_point>
-  <verbosity>1</verbosity>
+  <verbosity>10</verbosity>
   <delta_tracking>true</delta_tracking>
   <temperature_default>705.65</temperature_default>
   <temperature_method>interpolation</temperature_method>

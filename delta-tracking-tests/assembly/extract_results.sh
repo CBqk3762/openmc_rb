@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Output CSV file name
-output_csv="benchmarking_results.csv"
+Assembly_seed1_10000_delta="benchmarking_results.csv"
 
 # Add headers to the CSV file
-echo "Case Name,Tot Init Time (s),Tot Sim Time (s),Transport time (s),Time in Inactive Batches (s),Time in Active Batches (s),Time Accumulating Tallies (s),Tot Time (s),Calc Rate (Inactive) (parts/s),Calc Rate (Active) (parts/s),K-eff (Coll),K-eff (Abs),Combined K-eff,Leakage Frac" > "$output_csv"
+echo "Case Name,Tot Init Time (s),Tot Sim Time (s),Transport time (s),Time in Inactive Batches (s),Time in Active Batches (s),Time Accumulating Tallies (s),Tot Time (s),Calc Rate (Inactive) (parts/s),Calc Rate (Active) (parts/s),K-eff (Coll),K-eff (Abs),Combined K-eff,Leakage Frac" > "$Assembly_seed1_10000_delta"
 
 # Find all .log files in the current directory and subdirectories
 find . -type f -name "*.log" | while read logfile; do
@@ -27,8 +27,8 @@ find . -type f -name "*.log" | while read logfile; do
   leakage_fraction=$(grep -oP "Leakage Fraction\s*=\s*\K[0-9.e+-]+" "$logfile")
 
   # Write the extracted data to the CSV file
-  echo "$filename,$initialization_time,$simulation_time,$transport_time,$inactive_batches_time,$active_batches_time,$accum_tallies_time,$total_elapsed_time,$calc_rate_inactive,$calc_rate_active,$k_eff_collision,$k_eff_absorption,$k_eff_combined,$leakage_fraction" >> "$output_csv"
+  echo "$filename,$initialization_time,$simulation_time,$transport_time,$inactive_batches_time,$active_batches_time,$accum_tallies_time,$total_elapsed_time,$calc_rate_inactive,$calc_rate_active,$k_eff_collision,$k_eff_absorption,$k_eff_combined,$leakage_fraction" >> "$Assembly_seed1_10000_delta"
 done
 
-echo "CSV file '$output_csv' created successfully."
+echo "CSV file '$Assembly_seed1_10000_delta' created successfully."
 

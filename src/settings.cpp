@@ -118,6 +118,7 @@ int trigger_batch_interval {1};
 int verbosity {7};
 double weight_cutoff {0.25};
 double weight_survive {1.0};
+double dt_lmax {0.0};
 
 } // namespace settings
 
@@ -421,6 +422,11 @@ void read_settings_xml()
       warning("The <threads> element has been deprecated. Use "
               "the OMP_NUM_THREADS environment variable to set the number of "
               "threads.");
+  }
+
+  // value for max step size for delta-tracking
+  if (auto n = root.child("dt_cfe_lmax")) {
+    dt_lmax = n.text().as_double();
   }
 
   // ==========================================================================

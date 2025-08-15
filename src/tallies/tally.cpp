@@ -713,6 +713,8 @@ void read_tallies_xml()
     return;
 
   write_message("Reading tallies XML file...", 5);
+  std::cerr << "[tally] reading tallies.xml from"<< filename << "\n";
+
 
   // Parse tallies.xml file
   pugi::xml_document doc;
@@ -756,6 +758,18 @@ void read_tallies_xml()
   for (auto node_tal : root.children("tally")) {
     model::tallies.push_back(make_unique<Tally>(node_tal));
   }
+
+  // tally debug
+  for (auto& t_ptr : model::tallies) {
+    auto& t = *t_ptr;
+    std::cerr << "[tally] id=" << t.id_
+              << " estimator=" << static_cast<int>(t.estimator_)
+              << " scores=" << t.scores_.size()
+              << " n_filters=" << t.filters().size()
+              << "\n";
+  }
+
+
 }
 
 #ifdef OPENMC_MPI
@@ -892,7 +906,7 @@ void setup_active_tallies()
           model::active_tracklength_tallies.push_back(i);
           break;
         case TallyEstimator::COLLISION:
-          model::active_collision_tallies.push_back(i);
+            model::active_collision_tallies.push_back(i);
         }
         break;
 
@@ -905,7 +919,9 @@ void setup_active_tallies()
       }
     }
   }
+
 }
+
 
 void free_memory_tally()
 {

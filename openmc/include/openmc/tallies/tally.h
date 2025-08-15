@@ -185,6 +185,8 @@ void accumulate_tallies();
 //! Determine which tallies should be active
 void setup_active_tallies();
 
+
+
 // Alias for the type returned by xt::adapt(...). N is the dimension of the
 // multidimensional array
 template<std::size_t N>

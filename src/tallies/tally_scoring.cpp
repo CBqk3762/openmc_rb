@@ -520,6 +520,9 @@ double get_nuclide_xs(const Particle& p, int i_nuclide, int score_bin)
   return 0.0;
 }
 
+//! Helper function to check if tally has an outgoing-energy filter
+
+
 //! Update tally results for continuous-energy tallies with a tracklength or
 //! collision estimator.
 
@@ -2422,6 +2425,86 @@ void score_collision_tally(Particle& p)
   // Reset all the filter matches for the next tally event.
   for (auto& match : p.filter_matches())
     match.bins_present_ = false;
+}
+
+void score_collision_tally_dt_pre(Particle& p)
+{
+  // Determine the collision estimate of the flux (recall that majorant is used)
+
+  // Only neutrons/photons use the collision-flux estimator
+  if (p.type() != ParticleType::neutron && p.type() != ParticleType::photon) {
+    for (auto& m : p.filter_matches()) m.bins_present_ = false;
+    return;
+  }
+
+  // Calculate majorant
+  const double sigma_M = p.majorant();
+  if (!(sigma_M > 0.0) || !std::isfinite(sigma_M)) {
+    for (auto& m : p.filter_matches()) m.bins_present_ = false;
+    return;
+  }
+
+  // Collision flux estimator for DT
+  const double flux = p.wgt_last() / sigma_M;
+
+  // Loop over all the collision tallies and score to them
+  for (auto i_tally : model::active_collision_tallies) {
+    const Tally& tally {*model::tallies[i_tally]};
+
+
+    // Initialise filter iterator; skip if no valid combinations
+    auto filter_iter = FilterBinIter(tally, p);
+    auto end = FilterBinIter(tally, true, &p.filter_matches());
+    if (filter_iter == end)
+      continue;
+
+    // Loop over filter bins.
+    for (; filter_iter != end; ++filter_iter) {
+      auto filter_index  = filter_iter.index_;
+      auto filter_weight = filter_iter.weight_;
+
+      // Loop over nuclide bins.
+      for (auto i = 0; i < tally.nuclides_.size(); ++i) {
+        auto i_nuclide = tally.nuclides_[i];
+
+        double atom_density = 0.0;
+        if (i_nuclide >= 0) {
+          // Check on material validity as this is a DT tally
+          if (p.material() == MATERIAL_VOID || p.material() == C_NONE)
+            continue;
+          auto j = model::materials[p.material()]->mat_nuclide_index_[i_nuclide];
+          if (j == C_NONE)
+            continue;
+          atom_density = model::materials[p.material()]->atom_density_(j);
+        }
+
+        // TODO: replace "if" with pointers/templates in line with decision in
+        // score_collision_tally
+        if (settings::run_CE) {
+          score_general_ce_nonanalog(p, i_tally, i * tally.scores_.size(),
+            filter_index, filter_weight, i_nuclide, atom_density, flux);
+        } else {
+          score_general_mg(p, i_tally, i * tally.scores_.size(), filter_index,
+            filter_weight, i_nuclide, atom_density, flux);
+        }
+      }
+    }
+
+    // If the user has specified that we can assume all tallies are spatially
+    // separate, this implies that once a tally has been scored to, we needn't
+    // check the others. This cuts down on overhead when there are many
+    // tallies specified
+    if (settings::assume_separate){
+      break;
+    }
+
+  // Reset all the filter matches for the next tally event (same as stock)
+  for (auto& match : p.filter_matches()){
+    match.bins_present_ = false;
+    }
+
+  } 
+
 }
 
 void score_surface_tally(Particle& p, const vector<int>& tallies)

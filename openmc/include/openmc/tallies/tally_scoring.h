@@ -97,6 +97,22 @@ void score_tracklength_tally(Particle& p, double distance);
 //! \param tallies A vector of tallies to score to
 void score_surface_tally(Particle& p, const vector<int>& tallies);
 
+// Collision-flux estimator for delta-tracking (uses majorant).
+//
+//! \param p The particle being tracked
+void score_collision_tally_dt(Particle& p);
+
+// DT pre-collision: score all collision tallies EXCEPT those with ENERGY_OUT
+//
+//! \param p The particle being tracked
+void score_collision_tally_dt_pre(Particle& p);
+
+// DT post-collision: score ONLY collision tallies that have ENERGY_OUT
+// (after collision(), with outgoing energy known)
+//
+// \param p The particle being tracked
+//void score_collision_tally_dt_post(Particle& p);
+
 } // namespace openmc
 
 #endif // OPENMC_TALLIES_TALLY_SCORING_H

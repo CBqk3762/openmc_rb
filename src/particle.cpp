@@ -179,6 +179,7 @@ void Particle::event_calculate_xs()
       } else {
         mark_as_lost("Could not find the cell containing particle " +
                      std::to_string(id()));
+        log_coord_stack("Lost in 'create_secondary' ");
       }
       return;
     }
@@ -251,7 +252,7 @@ void Particle::event_advance()
 
   // Score track-length estimate of k-eff
   if (settings::run_mode == RunMode::EIGENVALUE &&
-      type() == ParticleType::neutron) {
+      type() == ParticleType::neutron && !delta_tracking()) {
     keff_tally_tracklength() += wgt() * distance * macro_xs().nu_fission;
   }
 
@@ -261,58 +262,12 @@ void Particle::event_advance()
   }
 }
 
-void Particle::trace_through_geom()
-{
-  int surf_idx = surf_last();
-  if (surf_idx < 0 || surf_idx >= static_cast<int>(model::surfaces.size())) {
-    mark_as_lost("surf_last is invalid.");
-    return;
-  }
-
-  auto& surf = model::surfaces[surf_idx];
-
-  // Step back into the geometry using the last surface crossed
-  double dist_to_geom = intersect_surface(surf_last(), coord(n_coord() - 1).r, -u());
-
-  if (dist_to_geom <= 0.0) {
-    mark_as_lost("Could not intersect previous surface, distance was negative!");
-    return;
-  }
-
-  if (dist_to_geom == INFTY) {
-    mark_as_lost("Could not intersect previous surface when tracing into geometry.");
-    return;
-  }
-
-  // Move just inside the surface
-  coord(n_coord() - 1).r += (dist_to_geom + TINY_BIT) * u();
-
-  // Set boundary info manually - recall surf_last() is from model::surfaces so need +1
-  boundary().surface_index = surf_idx + 1;
-  if (surf->sense(coord(n_coord() - 1).r, u())) {
-    boundary().surface_index *= -1;
-  }
-
-  boundary().distance = dist_to_geom;
-  boundary().coord_level = n_coord();
-
-    // Attempt to localise the particle fully (descend into geometry if needed)
-  if (!exhaustive_find_cell(*this)) {
-    mark_as_lost("Failed to localise particle after stepping back into geometry.");
-    return;
-  }
-
-  // Cross the surface outward
-  this->event_cross_surface_dt();
-  if (!alive()) return;
-
-  // Ensure material is re-evaluated later
-  material() = C_NONE;
-}
-
 void Particle::event_delta_advance()
 {
   double distance;
+  auto coord_cache = coord();
+  bool forced_virtual = false;
+
   // Update majorant if energy changed
   if (this->E() != this->E_last()) {
     this->update_majorant();
@@ -324,6 +279,13 @@ void Particle::event_delta_advance()
   } else {
     // calculate majorant value for this energy
     distance = -std::log(prn(this->current_seed())) / majorant();
+    // CFE-min toggle: cap step size at l_max if enabled
+    const double lmax = settings::dt_lmax;
+    if (lmax > 0.0 && std::isfinite(lmax) && distance > lmax) {
+      distance = lmax;
+      // This will force a virtual collision 
+      forced_virtual = true;
+    }
   }
 
   // loop will walk through multiple surfaces if needed
@@ -363,9 +325,6 @@ void Particle::event_delta_advance()
       if (surf_last() >= 0 && surf_last() < static_cast<int>(model::surfaces.size())) {
         const auto& s = model::surfaces[surf_last()];
 
-          // Switch to surface tracking from here
-          //transport_history_based_single_particle(*this);
-
         double surf_dist = s->distance(r(), u(), false);
 
         if (surf_dist < boundary().distance) {
@@ -376,22 +335,41 @@ void Particle::event_delta_advance()
           }
         }
       } else {
-      // Optional: guard against invalid surf_last
+      // guard against invalid surf_last
       std::cerr << "[WARNING] Reusing surf_last but it is out of range: " << surf_last() << "\n";
       }
     }
 
     // Stop if collision occurs before next boundary
-    if (distance < boundary().distance) break;
+    if (distance < boundary().distance) {
+      // Move particle the distance
+      r() += distance * u();
+
+      //PP Do we need to check if these are empty? these will have been set 
+      // earlier in simulations surely?
+      if (!model::active_collision_tallies.empty()) {
+        wgt_last() = wgt();
+        score_collision_tally_dt_pre(*this);
+      }
+
+      // Checking if we need to force a virtual collision
+      if (forced_virtual) {
+        dt_force_virtual() = true;
+      }
+
+      // rejection handled outside of this function
+      return;
+    }
 
     // Advance to just before surface, cross it
     r() += (boundary().distance - TINY_BIT) * u();
     this->event_cross_surface_dt();
+    // Small push *after* crossing to ensure particle fully enters new region
+    r() += TINY_BIT * u();
+
     material() = C_NONE;
     distance -= boundary().distance;
   }
-
-  // Small push *after* crossing to ensure particle fully enters new region
 
   // Advance remaining distance after crossing
   for (int j = 0; j < n_coord(); ++j) {
@@ -399,23 +377,24 @@ void Particle::event_delta_advance()
     coord(j).reset();
   }
 
-  // Score flux derivative accumulators for differential tallies.
-  if (!model::active_tallies.empty()) {
-    score_track_derivative(*this, distance);
-  }
-
   if (!exhaustive_find_cell(*this)) {
-    //trace_through_geom();
 
     // Check if particle has fully left geom
     if (!exhaustive_find_cell(*this)) {
       keff_tally_leakage() += wgt();
+      mark_as_lost("Could not be found after boundary advancement.\n");
+      return;
       wgt() = 0.0;
     } else{
   //Particle was located successfully, reset surf_last()
   surf_last() = -1;
   return;
     }
+  }
+
+  // Score flux derivative accumulators for differential tallies.
+  if (!model::active_tallies.empty()) {
+    score_track_derivative(*this, distance);
   }
 
   //Ensure XS recalc on E change
@@ -440,18 +419,34 @@ void Particle::event_cross_surface()
       boundary().lattice_translation[1] != 0 ||
       boundary().lattice_translation[2] != 0) {
     // Particle crosses lattice boundary
+    //std::cerr << "[DEBUG] Crossing lattice boundary.\n";
     cross_lattice(*this, boundary());
     event() = TallyEvent::LATTICE;
   } else {
     // Particle crosses surface
+    //std::cerr << "[DEBUG] Crossing surface.\n";
     cross_surface();
     event() = TallyEvent::SURFACE;
   }
+
+  // Nudge forward from the surface into the new cell
+  r() += TINY_BIT * u();
+
+  // Invalidate caches so next event_calculate_xs() recomputes
+  material()      = C_NONE;
+  material_last() = C_NONE;
+
+// Determine current cell location
+   if (!exhaustive_find_cell(*this)) {
+    event_death();
+    return;
+   }
+
   // Score cell to cell partial currents
   if (!model::active_surface_tallies.empty()) {
     score_surface_tally(*this, model::active_surface_tallies);
   }
-}
+}  
 
 void Particle::event_cross_surface_dt()
 {
@@ -477,6 +472,13 @@ void Particle::event_cross_surface_dt()
     event() = TallyEvent::SURFACE;
   }
 
+  // Nudge forward from the surface into the new cell
+  r() += TINY_BIT * u();
+
+  // Invalidate caches so next event_calculate_xs() recomputes
+  material()      = C_NONE;
+  material_last() = C_NONE;
+
    // Check if particle is in a 'fill' cell
    const int current_cell = coord(0).cell;
    const auto& cell = model::cells[current_cell];
@@ -496,18 +498,33 @@ void Particle::event_cross_surface_dt()
   // Score cell to cell partial currents
   if (!model::active_surface_tallies.empty()) {
     score_surface_tally(*this, model::active_surface_tallies);
+    //update_majorant();
+  } else {
+    std::cerr << "[CROSS SURFACE] No valid material after crossing; skipping XS and majorant update.\n";
   }
 }
 
 void Particle::event_collide()
 {
+  // Debug check if in valid material 
+  if (material() == MATERIAL_VOID || material() == C_NONE || !(macro_xs().total > 0.0)) {
+    std::ostringstream msg;
+    msg << "event_collide called with invalid material. "
+        << "mat=" << material() << " Σ_t=" << macro_xs().total
+        << " cell=" << coord(n_coord() - 1).cell
+        << " r=" << r();
+    throw std::runtime_error(msg.str());
+  }
+
+
+
   // Store pre-collision particle properties
   wgt_last() = wgt();
   E_last() = E();
   u_last() = u();
   r_last() = r();
 
-  // Score collision estimate of keff
+  // Score collision estimate of keff (real collisions only)
   if (settings::run_mode == RunMode::EIGENVALUE &&
       type() == ParticleType::neutron) {
     keff_tally_collision() += wgt() * macro_xs().nu_fission / macro_xs().total;
@@ -517,23 +534,32 @@ void Particle::event_collide()
   // since the direction of the particle will change and we need to use the
   // pre-collision direction to figure out what mesh surfaces were crossed
 
-  if (!model::active_meshsurf_tallies.empty())
+  if (!model::active_meshsurf_tallies.empty()){
     score_surface_tally(*this, model::active_meshsurf_tallies);
+  }
 
   // Clear surface component
   surface() = 0;
 
-  if (settings::run_CE) {
+  //if (settings::run_CE) {
     collision(*this);
-  } else {
-    collision_mg(*this);
+  //} else {
+  //  collision_mg(*this);
+  //}
+
+  // ----- Collision estimators -----
+  // Surface tracking: original collision scorer.
+  // Delta tracking: already scored earlier at the 'Woodcock site' using majorant
+  // cross section. Skip here to avoid double counting.
+  if (!model::active_collision_tallies.empty()) {
+    if (!delta_tracking()) {
+      score_collision_tally(*this);    // surface tracking only
+    }
+    // else (delta_tracking()==true):
+    // If we want to add ENERGY_OUT for DT then score tally here
   }
 
-  // Score collision estimator tallies -- this is done after a collision
-  // has occurred rather than before because we need information on the
-  // outgoing energy for any tallies with an outgoing energy filter
-  if (!model::active_collision_tallies.empty())
-    score_collision_tally(*this);
+  // Analog tallies (real collisions only) are unchanged
   if (!model::active_analog_tallies.empty()) {
     if (settings::run_CE) {
       score_analog_tally_ce(*this);
@@ -548,7 +574,7 @@ void Particle::event_collide()
   wgt_bank() = 0.0;
   zero_delayed_bank();
 
-  // Reset fission logical
+  // Reset fission
   fission() = false;
 
   // Save coordinates for tallying purposes
@@ -558,7 +584,7 @@ void Particle::event_collide()
   // re-evaluated
   material_last() = C_NONE;
 
-  // Set all directions to base level -- right now, after a collision, only
+  // Set all directions to base level, after a collision, only
   // the base level directions are changed
   for (int j = 0; j < n_coord() - 1; ++j) {
     if (coord(j + 1).rotated) {
