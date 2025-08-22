@@ -122,6 +122,10 @@ public:
 
   void update_majorant();
 
+  void update_material_from_coords();
+
+  bool is_boundary_surface(int surface_index);
+
   //! create a particle restart HDF5 file
   void write_restart() const;
 };

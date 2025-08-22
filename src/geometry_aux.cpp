@@ -278,7 +278,6 @@ void finalize_geometry()
 
   // Determine number of nested coordinate levels in the geometry
   model::n_coord_levels = maximum_levels(model::root_universe);
-  
 }
 
 //==============================================================================

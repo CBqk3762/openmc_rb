@@ -136,24 +136,40 @@ void Particle::from_source(const SourceSite* src)
   E_last() = E(); // maybe should be 0.0?
   time() = src->time;
   time_last() = src->time;
-  if (delta_tracking()) majorant() = 1.000001 * data::n_majorant->calculate_xs(this->E());
-  // Initialise delta tracking state
-  surf_last() = -1;
-  first_step() = true;
+  if (delta_tracking()) {
+    std::cerr << "[DT] Initializing particle from source site";
+    // Initialise delta tracking state including geometry coordinate stack
+    n_coord() = 1;
+    coord(0).r = r();
+    coord(0).cell = C_NONE;
+    coord(0).universe = model::root_universe;
+
+        // Must locate the cell and assign material before updating majorant
+    if (!exhaustive_find_cell(*this)) {
+      mark_as_lost("Could not locate source particle during from_source()");
+      log_coord_stack("lost in from_source()");
+      return;
+    }
+
+    update_material_from_coords();
+
+    if (material() == C_NONE || material() == MATERIAL_VOID) {
+      std::cerr << "[XS] [ERROR] Particle " << id()
+                << " is in invalid material (material = " << material()
+                << "), will be marked as lost.\n";
+      mark_as_lost("Invalid material during event_calculate_xs()");
+      return;
+    }
+    
+    majorant() = 1.000001 * data::n_majorant->calculate_xs(this->E());
+    surf_last() = -1;
+    first_step() = true;
+  }
 
 }
 
 void Particle::event_calculate_xs()
 {
-  // Set the random number stream
-  stream() = STREAM_TRACKING;
-
-  // Store pre-collision particle properties
-  wgt_last() = wgt();
-  E_last() = E();
-  u_last() = u();
-  r_last() = r();
-
   // Set the random number stream
   stream() = STREAM_TRACKING;
 
@@ -169,11 +185,21 @@ void Particle::event_calculate_xs()
   event_nuclide() = NUCLIDE_NONE;
   event_mt() = REACTION_NONE;
 
+  //DEBUG: Print particle state at start
+  std::cerr << "[XS] event_calculate_xs for particle " << id()
+            << " at r = " << r()
+            << ", E = " << E()
+            << ", material = " << material()
+            << ", cell = " << coord(n_coord() - 1).cell
+            << "\n";
+
   // If the cell hasn't been determined based on the particle's location,
   // initiate a search for the current cell. This generally happens at the
   // beginning of the history and again for any secondary particles
   if (coord(n_coord() - 1).cell == C_NONE) {
+    std::cerr << "[XS] Cell undefined, trying exhaustive_find_cell...\n";
     if (!exhaustive_find_cell(*this)) {
+      std::cerr << "[XS] Failed to locate particle. Killing.\n";
       if (!delta_tracking()) {
         wgt() = 0.0;
       } else {
@@ -183,12 +209,20 @@ void Particle::event_calculate_xs()
       }
       return;
     }
-
-    // Set birth cell attribute
-    if (cell_born() == C_NONE)
-      cell_born() = coord(n_coord() - 1).cell;
+    std::cerr << "[XS] Cell successfully found: " << coord(n_coord() - 1).cell << "\n";
+  }
+  
+  if (n_coord() > 0) {
+    this->update_material_from_coords();
+  } else {
+    std::cerr << "[XS] WARNING: Particle has n_coord = 0, cannot assign material.\n";
   }
 
+
+  // Set birth cell attribute
+  if (cell_born() == C_NONE)
+    cell_born() = coord(n_coord() - 1).cell;
+  
   // Write particle track.
   if (write_track())
     write_particle_track(*this);
@@ -198,11 +232,14 @@ void Particle::event_calculate_xs()
 
   // Calculate microscopic and macroscopic cross sections
   if (material() != MATERIAL_VOID) {
+    std::cerr << "[XS] Material = " << material()
+          << ", macro_xs().total = " << macro_xs().total << "\n";
     if (settings::run_CE) {
       if (material() != material_last() || sqrtkT() != sqrtkT_last()) {
         // If the material is the same as the last material and the
         // temperature hasn't changed, we don't need to lookup cross
         // sections again.
+        std::cerr << "[XS] Recalculating CE cross sections\n";
         model::materials[material()]->calculate_xs(*this);
       }
     } else {
@@ -213,8 +250,15 @@ void Particle::event_calculate_xs()
 
       // Update the particle's group while we know we are multi-group
       g_last() = g();
+
+      // Update majorant where material is always valid
+      if (delta_tracking()) {
+        std::cerr << "[MAJORANT] Updating for mat = " << material() << ", E = " << E() << "\n";
+        this->update_majorant();
+      }
     }
   } else {
+    std::cerr << "[XS] Void material: skipping cross section calculation\n";
     macro_xs().total = 0.0;
     macro_xs().absorption = 0.0;
     macro_xs().fission = 0.0;
@@ -262,16 +306,23 @@ void Particle::event_advance()
   }
 }
 
+// Check if a surface is a boundary surface, important for delta-tracking
+bool is_boundary_surface(int surface_index)
+{
+  if (surface_index == 0) return false; // 0 is always invalid
+
+  int i_surf = std::abs(surface_index) - 1;
+  if (i_surf < 0 || i_surf >= static_cast<int>(model::surfaces.size())) return false;
+
+  return std::find(model::boundary_surfaces.begin(),
+                   model::boundary_surfaces.end(),
+                   i_surf) != model::boundary_surfaces.end();
+}
+
 void Particle::event_delta_advance()
 {
   double distance;
-  auto coord_cache = coord();
   bool forced_virtual = false;
-
-  // Update majorant if energy changed
-  if (this->E() != this->E_last()) {
-    this->update_majorant();
-  }
 
   // sample distance to next position
   if (type() == ParticleType::electron || type() == ParticleType::positron) {
@@ -281,6 +332,8 @@ void Particle::event_delta_advance()
     distance = -std::log(prn(this->current_seed())) / majorant();
     // CFE-min toggle: cap step size at l_max if enabled
     const double lmax = settings::dt_lmax;
+
+    // Should disable CFE-min if l_max is not set (default is 0.0)
     if (lmax > 0.0 && std::isfinite(lmax) && distance > lmax) {
       distance = lmax;
       // This will force a virtual collision 
@@ -320,18 +373,25 @@ void Particle::event_delta_advance()
         }
       }
       first_step() = false;
+
     } else if (surf_last() >= 0 ) {
       // Velocity unchanged — reuse last known closest surface
-      if (surf_last() >= 0 && surf_last() < static_cast<int>(model::surfaces.size())) {
+      if (surf_last() < static_cast<int>(model::surfaces.size())) {
         const auto& s = model::surfaces[surf_last()];
-
         double surf_dist = s->distance(r(), u(), false);
 
         if (surf_dist < boundary().distance) {
           boundary().distance = surf_dist;
+          std::cerr << "[DEBUG] Closest surface candidate: idx=" << surf_last()
+          << ", sense=" << s->sense(r(), u())
+          << ", distance=" << surf_dist << "\n";
+
           boundary().surface_index = surf_last() + 1;
           if (s->sense(r(), u())) {
             boundary().surface_index *= -1;
+            std::cerr << "[DEBUG] Selected surface = " << boundary().surface_index
+          << ", distance = " << boundary().distance << "\n";
+
           }
         }
       } else {
@@ -340,7 +400,12 @@ void Particle::event_delta_advance()
       }
     }
 
-    // Stop if collision occurs before next boundary
+    std::cerr << "[DEBUG] Selected surface = " << boundary().surface_index
+          << ", distance = " << boundary().distance << "\n";
+
+
+    // PP this if loop should be checked
+    // Stop if collision occurs before next boundary - this loop replaced a 'break' statement
     if (distance < boundary().distance) {
       // Move particle the distance
       r() += distance * u();
@@ -349,7 +414,7 @@ void Particle::event_delta_advance()
       // earlier in simulations surely?
       if (!model::active_collision_tallies.empty()) {
         wgt_last() = wgt();
-        score_collision_tally_dt_pre(*this);
+        score_collision_tally_dt(*this);
       }
 
       // Checking if we need to force a virtual collision
@@ -363,6 +428,15 @@ void Particle::event_delta_advance()
 
     // Advance to just before surface, cross it
     r() += (boundary().distance - TINY_BIT) * u();
+
+
+    // Guard against invalid surface index
+    if (boundary().surface_index == 0) {
+      mark_as_lost("Delta-tracked particle attempted to cross an undefined surface.");
+      log_coord_stack("Lost due to surface index == 0 in event_delta_advance");
+      return;
+    }
+
     this->event_cross_surface_dt();
     // Small push *after* crossing to ensure particle fully enters new region
     r() += TINY_BIT * u();
@@ -371,26 +445,23 @@ void Particle::event_delta_advance()
     distance -= boundary().distance;
   }
 
-  // Advance remaining distance after crossing
+  // Advance remaining distance after crossing PP is this actually messing up coords?
   for (int j = 0; j < n_coord(); ++j) {
     coord(j).r += distance * u();
     coord(j).reset();
   }
 
+  // Check if particle has fully left geom
   if (!exhaustive_find_cell(*this)) {
-
-    // Check if particle has fully left geom
-    if (!exhaustive_find_cell(*this)) {
-      keff_tally_leakage() += wgt();
-      mark_as_lost("Could not be found after boundary advancement.\n");
-      return;
-      wgt() = 0.0;
-    } else{
-  //Particle was located successfully, reset surf_last()
-  surf_last() = -1;
-  return;
+    keff_tally_leakage() += wgt();
+    mark_as_lost("Could not be found after boundary advancement.\n");
+    return;
+    wgt() = 0.0;
+  } else{
+    //Particle was located successfully, reset surf_last()
+    surf_last() = -1;
+    return;
     }
-  }
 
   // Score flux derivative accumulators for differential tallies.
   if (!model::active_tallies.empty()) {
@@ -450,22 +521,41 @@ void Particle::event_cross_surface()
 
 void Particle::event_cross_surface_dt()
 {
+  // Validate surface index
+  if (boundary().surface_index == 0) {
+    std::cerr << "[ERROR] Invalid surface index 0 in event_cross_surface_dt().\n";
+    log_coord_stack("Invalid surface index");
+    mark_as_lost("Delta-tracked particle encountered surface index 0");
+    return;
+  }
+
   // Set surface that particle is on and adjust coordinate levels
   surface() = boundary().surface_index;
   n_coord() = boundary().coord_level;
 
-  // Saving previous cell data
+  // Saving previous cell data for tallies etc
   for (int j = 0; j < n_coord(); ++j) {
     cell_last(j) = coord(j).cell;
   }
   n_coord_last() = n_coord();
 
-  if (boundary().lattice_translation[0] != 0 ||
-      boundary().lattice_translation[1] != 0 ||
-      boundary().lattice_translation[2] != 0) {
-    // Particle crosses lattice boundary
+  bool crossed_lattice = (
+    boundary().lattice_translation[0] != 0 ||
+    boundary().lattice_translation[1] != 0 ||
+    boundary().lattice_translation[2] != 0
+  );
+
+  if (crossed_lattice) {
+    // Try to cross the lattice
     cross_lattice(*this, boundary());
     event() = TallyEvent::LATTICE;
+
+    // Check if the particle is still alive and in the geometry
+    if (alive() && coord(n_coord() - 1).cell == C_NONE) {
+      std::cerr << "Particle has no valid cell after lattice cross.Attempting surface crossing.\n";
+      cross_surface();
+      event() = TallyEvent::SURFACE;
+    }
   } else {
     // Particle crosses surface
     cross_surface();
@@ -479,29 +569,33 @@ void Particle::event_cross_surface_dt()
   material()      = C_NONE;
   material_last() = C_NONE;
 
-   // Check if particle is in a 'fill' cell
-   const int current_cell = coord(0).cell;
-   const auto& cell = model::cells[current_cell];
-
-   // Determine current cell location
-   if (!exhaustive_find_cell(*this)) {
+  // Determine current cell location
+  if (!exhaustive_find_cell(*this)) {
+    std::cerr << "Particle lost after surface crossing.\n";
     event_death();
     return;
-   }
+  }
 
-  // Recalculating cross-sections after material update
-  if (material() != MATERIAL_VOID && delta_tracking()) {
-    model::materials[material()]->calculate_xs(*this);
-    update_majorant();
+  // set the material now that we're in a valid cell
+  // added helper to work for both regular cells and distribcells
+  this->update_material_from_coords();
+
+  if (material() == C_NONE || material() == MATERIAL_VOID) {
+  std::cerr << "[DEBUG] Warning: material is void or undefined after surface cross.\n";
+  }
+
+  // Update majorant if material is valid
+  if (material() == C_NONE || material() == MATERIAL_VOID) {
+      std::cerr << "[DEBUG] Skipping majorant update: material = " << material() << "\n";
+    } else {
+      std::cerr << "[DEBUG] Calling update_majorant(); mat=" << material() << " E=" << E() << "\n";
+      update_majorant();
   }
 
   // Score cell to cell partial currents
   if (!model::active_surface_tallies.empty()) {
     score_surface_tally(*this, model::active_surface_tallies);
-    //update_majorant();
-  } else {
-    std::cerr << "[CROSS SURFACE] No valid material after crossing; skipping XS and majorant update.\n";
-  }
+  } 
 }
 
 void Particle::event_collide()
@@ -510,13 +604,11 @@ void Particle::event_collide()
   if (material() == MATERIAL_VOID || material() == C_NONE || !(macro_xs().total > 0.0)) {
     std::ostringstream msg;
     msg << "event_collide called with invalid material. "
-        << "mat=" << material() << " Σ_t=" << macro_xs().total
+        << "mat=" << material() << " xs_t=" << macro_xs().total
         << " cell=" << coord(n_coord() - 1).cell
         << " r=" << r();
     throw std::runtime_error(msg.str());
   }
-
-
 
   // Store pre-collision particle properties
   wgt_last() = wgt();
@@ -556,6 +648,7 @@ void Particle::event_collide()
       score_collision_tally(*this);    // surface tracking only
     }
     // else (delta_tracking()==true):
+    
     // If we want to add ENERGY_OUT for DT then score tally here
   }
 
@@ -637,10 +730,14 @@ void Particle::event_revive_from_secondary()
       add_particle_track(*this);
   }
 
-  // if (settings::delta_tracking) {
-  //   exhaustive_find_cell(*this);
-  //   event_calculate_xs();
-  // }
+  // When delta tracking need to ensure particle is in a valid cell
+  if (settings::delta_tracking) {
+    if (!exhaustive_find_cell(*this)) {
+      mark_as_lost("Could not find cell after reviving from secondary.");
+      return;
+    }
+    event_calculate_xs();
+  }
 }
 
 void Particle::event_death()
@@ -685,11 +782,17 @@ void Particle::event_death()
 void Particle::cross_surface()
 {
   int i_surface = std::abs(surface());
+  if (i_surface <= 0 || i_surface > static_cast<int>(model::surfaces.size())) {
+    std::cerr << "[DEBUG] Invalid surface index: " << surface() << "\n";
+    throw std::runtime_error("Invalid surface index in cross_surface");
+  }
   // TODO: off-by-one
   const auto& surf {model::surfaces[i_surface - 1].get()};
   if (settings::verbosity >= 10 || trace()) {
     write_message(1, "    Crossing surface {}", surf->id_, "\n");
   }
+
+
 
   if (surf->surf_source_ && simulation::current_batch == settings::n_batches) {
     SourceSite site;
@@ -746,6 +849,13 @@ void Particle::cross_surface()
   if (neighbor_list_find_cell(*this))
     return;
 
+  // Delta tracking: if neighbor search failed assume particle left geometry, terminate now
+  if (delta_tracking()) {
+    std::cerr << "[DT] Particle " << id()
+              << " lost after crossing surface " << surf->id_ << "\n";
+    mark_as_lost("Delta-tracked particle lost after surface crossing");
+    return;
+  }
   // ==========================================================================
   // COULDN'T FIND PARTICLE IN NEIGHBORING CELLS, SEARCH ALL CELLS
 
@@ -908,8 +1018,87 @@ void Particle::cross_periodic_bc(
 
 void Particle::update_majorant()
 {
+  if (material() == C_NONE || material() == MATERIAL_VOID) {
+    std::ostringstream msg;
+    msg << "[MAJORANT ERROR] Cannot compute majorant: invalid material "
+        << material() << " at E = " << this->E()
+        << " cell = " << coord(n_coord() - 1).cell << "\n";
+    std::cerr << msg.str();     
+    throw std::runtime_error(msg.str());
+  }
+
   this->majorant() = 1.000001 * data::n_majorant->calculate_xs(this->E());
+
+  std::cerr << "[MAJORANT] Updated majorant for material "
+          << material() << " at E = " << E()
+          << "  XS_M = " << majorant() << "\n";
 }
+
+void Particle::update_material_from_coords()
+{
+  int mat = C_NONE;
+
+  std::cerr << "[MAT] Particle at r = " << r() << ", checking coordinate levels (n_coord = " << n_coord() << ")\n";
+  for (int j = n_coord() - 1; j >= 0; --j) {
+    const int cidx = coord(j).cell;
+    std::cerr << "  [MAT] Level " << j << ": cell = " << cidx;
+    if (cidx >= 0 && cidx < static_cast<int>(model::cells.size())) {
+      const auto& cell = model::cells[cidx];
+      std::cerr << ", material_.size() = " << cell->material_.size();
+    }
+    std::cerr << "\n";
+  }
+
+  // Walk from deepest coordinate level up to find first valid material (in case of distribcells)
+  for (int j = n_coord() - 1; j >= 0; --j) {
+    const int cell_idx = coord(j).cell;
+    const int global_inst     = cell_instance();
+
+    if (cell_idx < 0 || cell_idx >= static_cast<int>(model::cells.size())) continue;
+
+    const auto& cell = model::cells[cell_idx];
+
+    // Check if this cell has a material assigned
+    if (!cell->material_.empty()) {
+      if (cell->material_.size() == 1) {
+        mat = cell->material_[0];
+
+      } else if (global_inst < static_cast<int>(cell->material_.size())) {
+        if (cell->material_[global_inst] == C_NONE) {
+          std::cerr << "[WARNING] Cell " << cell_idx << " has undefined material in instance "
+                    << global_inst << ".\n";
+        }
+
+        mat = cell->material_[global_inst];
+        std::cerr << "  [MAT] Using distributed cell material[" << global_inst
+          << "] = " << mat << "\n";
+
+      } else {
+        std::cerr << "[ERROR] Invalid cell_instance " << global_inst
+                  << " for material_ in cell " << cell_idx
+                  << " (has " << cell->material_.size() << " entries)\n";
+      }
+
+      break; // break after finding a cell with a material
+    }
+  }
+
+  std::cerr << "[MAT] Updating material at r=" << r()
+            << " cell=" << coord(n_coord() - 1).cell
+            << " -> material=" << mat << "\n";
+
+  if (mat == C_NONE) {
+    std::cerr << "[DEBUG] update_material_from_coords: No valid material found.\n";
+  }
+
+  material() = mat;
+  std::cerr << "[MAT] Final material = " << mat
+          << ", assigned from cell = " << coord(n_coord() - 1).cell
+          << ", cell_instance = " << cell_instance()
+          << ", universe = " << coord(n_coord() - 1).universe
+          << "\n";
+}
+
 
 void Particle::mark_as_lost(const char* message)
 {

@@ -2427,7 +2427,8 @@ void score_collision_tally(Particle& p)
     match.bins_present_ = false;
 }
 
-void score_collision_tally_dt_pre(Particle& p)
+// PP new function, intended to score before collision, to be paired with a post collision function in the future.
+void score_collision_tally_dt(Particle& p)
 {
   // Determine the collision estimate of the flux (recall that majorant is used)
 
@@ -2498,12 +2499,11 @@ void score_collision_tally_dt_pre(Particle& p)
       break;
     }
 
+  }  
   // Reset all the filter matches for the next tally event (same as stock)
   for (auto& match : p.filter_matches()){
     match.bins_present_ = false;
-    }
-
-  } 
+    } 
 
 }
 

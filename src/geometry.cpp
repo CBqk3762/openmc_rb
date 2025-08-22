@@ -406,12 +406,39 @@ void cross_lattice(Particle& p, const BoundaryInfo& boundary)
   }
 
   // Set the lattice indices.
+  // why do we not use a loop?  for (int i = 0; i < 3; ++i) {
+  //   coord.lattice_i[i] += boundary.lattice_translation[i];
+  // }
   coord.lattice_i[0] += boundary.lattice_translation[0];
   coord.lattice_i[1] += boundary.lattice_translation[1];
   coord.lattice_i[2] += boundary.lattice_translation[2];
 
+  if (!lat.are_valid_indices(coord.lattice_i)) {
+    if (p.delta_tracking()) {
+      // DT particles must have BC handled by event_cross_surface_dt rather than marked lost
+      // ToDo: Possibly this should be worked into surface tracked particles as well?
+      std::cerr << "[LATTICE] DT particle exited lattice bounds; deferring to cross_surface.\n";
+      return;
+    } else {
+      // For surface-tracked particles we fallback to full geometry search
+      p.n_coord() = 1;
+      bool found = exhaustive_find_cell(p);
+      if (!found && p.alive()) {
+        p.mark_as_lost(fmt::format("Could not locate particle {} after crossing a lattice"
+          "boundary", p.id()));
+      }
+      return;
+    }
+  }
+
   // Set the new coordinate position.
   const auto& upper_coord {p.coord(p.n_coord() - 2)};
+  if (upper_coord.cell < 0 || upper_coord.cell >= static_cast<int>(model::cells.size())) {
+    std::cerr << "[LATTICE] Invalid upper cell index " << upper_coord.cell << "\n";
+    p.mark_as_lost("cross_lattice: invalid parent cell");
+    return;
+  }
+
   const auto& cell {model::cells[upper_coord.cell]};
   Position r = upper_coord.r;
   r -= cell->translation_;
@@ -419,38 +446,22 @@ void cross_lattice(Particle& p, const BoundaryInfo& boundary)
     r = r.rotate(cell->rotation_);
   }
   p.r_local() = lat.get_local_position(r, coord.lattice_i);
+  coord.universe = lat[coord.lattice_i];
 
-  if (!lat.are_valid_indices(coord.lattice_i)) {
-    // The particle is outside the lattice.  Search for it from the base coords.
+
+  // Find cell in next lattice element.
+  p.coord(p.n_coord() - 1).universe = lat[coord.lattice_i];
+  bool found = exhaustive_find_cell(p);
+
+  if (!found) {
+    // A particle crossing the corner of a lattice tile may not be found.  In
+    // this case, search for it from the base coords.
     p.n_coord() = 1;
     bool found = exhaustive_find_cell(p);
     if (!found && p.alive()) {
       p.mark_as_lost(fmt::format("Could not locate particle {} after "
-                                 "crossing a lattice boundary",
+                                  "crossing a lattice boundary",
         p.id()));
-      p.log_coord_stack(fmt::format("Could not locate particle {} after "
-                                 "crossing a lattice boundary",
-        p.id()));
-    }
-
-  } else {
-    // Find cell in next lattice element.
-    p.coord(p.n_coord() - 1).universe = lat[coord.lattice_i];
-    bool found = exhaustive_find_cell(p);
-
-    if (!found) {
-      // A particle crossing the corner of a lattice tile may not be found.  In
-      // this case, search for it from the base coords.
-      p.n_coord() = 1;
-      bool found = exhaustive_find_cell(p);
-      if (!found && p.alive()) {
-        p.mark_as_lost(fmt::format("Could not locate particle {} after "
-                                   "crossing a lattice boundary",
-          p.id()));
-          p.log_coord_stack(fmt::format("Could not locate particle {} after "
-                                   "crossing a lattice boundary",
-          p.id()));
-      }
     }
   }
 }
@@ -503,8 +514,6 @@ BoundaryInfo distance_to_boundary(Particle& p)
 
       if (d_lat < 0) {
         p.mark_as_lost(fmt::format(
-          "Particle {} had a negative distance to a lattice boundary", p.id()));
-        p.log_coord_stack(fmt::format(
           "Particle {} had a negative distance to a lattice boundary", p.id()));
       }
     }

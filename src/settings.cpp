@@ -425,7 +425,7 @@ void read_settings_xml()
   }
 
   // value for max step size for delta-tracking
-  if (auto n = root.child("dt_cfe_lmax")) {
+  if (auto n = root.child("dt_lmax")) {
     dt_lmax = n.text().as_double();
   }
 

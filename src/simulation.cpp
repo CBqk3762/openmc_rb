@@ -6,6 +6,7 @@
 #include "openmc/eigenvalue.h"
 #include "openmc/error.h"
 #include "openmc/event.h"
+#include "openmc/geometry.h"
 #include "openmc/geometry_aux.h"
 #include "openmc/majorant.h"
 #include "openmc/material.h"
@@ -545,8 +546,8 @@ void initialize_history(Particle& p, int64_t index_source)
     write_message("Simulating Particle {}", p.id());
   }
 
-  if (settings::delta_tracking)
-    p.update_majorant();
+  // if (settings::delta_tracking)
+  //   p.update_majorant();
 
 // Add paricle's starting weight to count for normalizing tallies later
 #pragma omp atomic
@@ -711,8 +712,9 @@ void transport_history_based_single_particle(Particle& p)
 {
   while (true) {
     p.event_calculate_xs();
-    if (!p.alive())
+    if (!p.alive()){
       break;
+    }
     p.event_advance();
     if (p.collision_distance() > p.boundary().distance) {
       p.event_cross_surface();
@@ -720,8 +722,9 @@ void transport_history_based_single_particle(Particle& p)
       p.event_collide();
     }
     p.event_revive_from_secondary();
-    if (!p.alive())
+    if (!p.alive()){
       break;
+    }
   }
   p.event_death();
 }
@@ -739,30 +742,65 @@ void transport_history_based()
 void transport_delta_tracking_single_particle(Particle& p)
 {
   p.delta_tracking() = true;
+
+  // Delta-tracked particles need to be initialised manually
+  if (p.coord(p.n_coord() - 1).cell == C_NONE) {
+    if (!exhaustive_find_cell(p)) {
+      p.mark_as_lost("Could not find cell at source for DT particle");
+      return;
+    }
+  }
+
+  std::cerr << "[DEBUG] Starting DT particle " << p.id()
+          << " at r=" << p.r() << ", E=" << p.E() << "\n";
+
   p.event_calculate_xs();
 
+  if (!p.alive()) return;
+
+  // Safety limits to avoid infinite loops-do we want to make these user settable?
+  constexpr int MAX_DT_COLLISIONS = 1000000;
+  constexpr int MAX_DT_STEPS = 10000000;
+
+  int step_count = 0;
+
   while (true) {
+    ++step_count;
+    if (step_count > MAX_DT_STEPS || p.n_collision() > MAX_DT_COLLISIONS) {
+      p.mark_as_lost("Exceeded max steps or collisions in delta tracking.");
+      break;
+    }
+
     p.event_delta_advance();
     if (!p.alive()){
       break;
     }
 
     p.event_calculate_xs();
+    if (!p.alive()) {
+      break;
+    }
 
+    if (p.macro_xs().total <= 0.0 || p.majorant() <= 0.0) {
+      throw std::runtime_error(fmt::format(
+        "[TRANSPORT ERROR] Invalid XS or majorant: xs_tot = {}, xs_M = {}",
+        p.macro_xs().total, p.majorant()));
+    }
     // Def of majorant should be satisfied
     Expects(p.macro_xs().total <= p.majorant());
 
-    // real collisions handled the same for DT with/out l_max
-    if (!p.dt_force_virtual()){
+    // Real collisions should be handled the same for DT with/out l_max
+    // p.dt_force_virtual() is set in particle.cpp
+    if (!p.dt_force_virtual()) {
+      // Real collision
       if (prn(p.current_seed()) < (p.macro_xs().total / p.majorant())) {
-        // Only want to run for real collisions
         p.event_collide();
       }
     } else {
       // Step capped by l_max, site of a forced a virtual collision
       p.dt_force_virtual() = false;
     }
-    
+
     p.event_revive_from_secondary();
     if (!p.alive()) {
       break;

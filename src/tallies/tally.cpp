@@ -164,6 +164,7 @@ Tally::Tally(pugi::xml_node node)
   // =======================================================================
   // READ DATA FOR SCORES
 
+  std::cerr << "[DEBUG] Calling set_scores(node) from Tally::Tally\n";
   this->set_scores(node);
 
   if (!check_for_node(node, "scores")) {
@@ -395,10 +396,19 @@ void Tally::set_strides()
 
 void Tally::set_scores(pugi::xml_node node)
 {
-  if (!check_for_node(node, "scores"))
-    fatal_error(fmt::format("No scores specified on tally {}", id_));
+  std::cerr << "[DEBUG] set_scores: checking for <scores> tag\n";
 
+  if (!check_for_node(node, "scores")) {
+    std::cerr << "[DEBUG] set_scores: <scores> tag not found\n";
+    fatal_error(fmt::format("No scores specified on tally {}", id_));
+  }
+
+  // this is just for debugging purposes
+  auto score_strs = get_node_array<std::string>(node, "scores");
+
+  std::cerr << "[DEBUG] set_scores(node): found " << score_strs.size() << " score string(s):";
   auto scores = get_node_array<std::string>(node, "scores");
+  std::cerr << "\n";
   set_scores(scores);
 }
 
@@ -407,6 +417,10 @@ void Tally::set_scores(const vector<std::string>& scores)
   // Reset state and prepare for the new scores.
   scores_.clear();
   scores_.reserve(scores.size());
+
+  std::cerr << "[DEBUG] set_scores: received " << scores.size() << " score strings:";
+  for (const auto& s : scores) std::cerr << " [" << s << "]";
+  std::cerr << "\n";
 
   // Check for the presence of certain restrictive filters.
   bool energyout_present = energyout_filter_ != C_NONE;
@@ -498,6 +512,7 @@ void Tally::set_scores(const vector<std::string>& scores)
         estimator_ = TallyEstimator::COLLISION;
       break;
     }
+    std::cerr << "[DEBUG] set_scores: Parsed score " << score_str << " -> " << score << "\n";
 
     scores_.push_back(score);
   }
@@ -715,7 +730,6 @@ void read_tallies_xml()
   write_message("Reading tallies XML file...", 5);
   std::cerr << "[tally] reading tallies.xml from"<< filename << "\n";
 
-
   // Parse tallies.xml file
   pugi::xml_document doc;
   doc.load_file(filename.c_str());
@@ -768,8 +782,6 @@ void read_tallies_xml()
               << " n_filters=" << t.filters().size()
               << "\n";
   }
-
-
 }
 
 #ifdef OPENMC_MPI
@@ -906,7 +918,7 @@ void setup_active_tallies()
           model::active_tracklength_tallies.push_back(i);
           break;
         case TallyEstimator::COLLISION:
-            model::active_collision_tallies.push_back(i);
+          model::active_collision_tallies.push_back(i);
         }
         break;
 
@@ -919,9 +931,7 @@ void setup_active_tallies()
       }
     }
   }
-
 }
-
 
 void free_memory_tally()
 {

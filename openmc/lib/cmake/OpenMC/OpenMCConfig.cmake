@@ -22,6 +22,6 @@ if(NOT TARGET OpenMC::libopenmc)
   include("${OpenMC_CMAKE_DIR}/OpenMCTargets.cmake")
 endif()
 
-if(off)
+if(on)
   find_package(MPI REQUIRED)
 endif()
