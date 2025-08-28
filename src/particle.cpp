@@ -151,6 +151,12 @@ void Particle::from_source(const SourceSite* src)
       return;
     }
 
+    int32_t cell_idx = lowest_coord().cell;
+    const auto& cell = model::cells[cell_idx];
+    std::cerr << "[DEBUG] cell = " << cell_idx
+          << ", distribcell_index = " << cell->distribcell_index_
+          << ", instance = " << cell_instance() << "\n";
+
     update_material_from_coords();
 
     if (material() == C_NONE || material() == MATERIAL_VOID) {
@@ -218,7 +224,6 @@ void Particle::event_calculate_xs()
     std::cerr << "[XS] WARNING: Particle has n_coord = 0, cannot assign material.\n";
   }
 
-
   // Set birth cell attribute
   if (cell_born() == C_NONE)
     cell_born() = coord(n_coord() - 1).cell;
@@ -239,8 +244,30 @@ void Particle::event_calculate_xs()
         // If the material is the same as the last material and the
         // temperature hasn't changed, we don't need to lookup cross
         // sections again.
+
+        std::cerr << "[XS] Using sqrtkT = " << sqrtkT()
+          << " for material = " << material()
+          << ", temperature = " << sqrtkT() * sqrtkT() / K_BOLTZMANN
+          << " K\n";
+
         std::cerr << "[XS] Recalculating CE cross sections\n";
         model::materials[material()]->calculate_xs(*this);
+
+        std::cerr << "[XS] Using sqrtkT = " << sqrtkT()
+          << " for material = " << material()
+          << ", temperature = " << sqrtkT() * sqrtkT() / K_BOLTZMANN
+          << " K\n";
+
+        if (delta_tracking()) {
+          std::cerr << "[MAJORANT] Updating majorant (material changed)\n";
+          this->update_majorant();
+          std::cerr << "Checking for temperature change: sqrtkT_last = " << sqrtkT_last()
+          << "[XS] Using sqrtkT = " << sqrtkT()
+          << " for material = " << material()
+          << ", temperature = " << sqrtkT() * sqrtkT() / K_BOLTZMANN
+          << " K\n";
+
+        }
       }
     } else {
       // Get the MG data; unlike the CE case above, we have to re-calculate
@@ -441,7 +468,7 @@ void Particle::event_delta_advance()
     // Small push *after* crossing to ensure particle fully enters new region
     r() += TINY_BIT * u();
 
-    material() = C_NONE;
+    //material() = C_NONE;
     distance -= boundary().distance;
   }
 
@@ -460,6 +487,10 @@ void Particle::event_delta_advance()
   } else{
     //Particle was located successfully, reset surf_last()
     surf_last() = -1;
+    update_material_from_coords();
+    if (material() != MATERIAL_VOID && material() != C_NONE) {
+      update_majorant();
+    }
     return;
     }
 
@@ -579,6 +610,29 @@ void Particle::event_cross_surface_dt()
   // set the material now that we're in a valid cell
   // added helper to work for both regular cells and distribcells
   this->update_material_from_coords();
+
+  // If particle was just reflected, force material and majorant update
+  if (just_reflected()) {
+    set_just_reflected(false);  // Reset the flag
+
+    material_last() = C_NONE;
+    sqrtkT_last() = -1.0;
+
+    // Sanity check: particle should still be locatable
+    if (!exhaustive_find_cell(*this)) {
+      mark_as_lost("Could not find cell after reflection.");
+      return;
+    }
+
+    update_material_from_coords();
+
+    if (material() != MATERIAL_VOID && material() != C_NONE) {
+      std::cerr << "[DEBUG] Updating majorant after reflection\n";
+      update_majorant();
+    } else {
+      std::cerr << "[DEBUG] Skipping majorant update: invalid material after reflection\n";
+    }
+  }
 
   if (material() == C_NONE || material() == MATERIAL_VOID) {
   std::cerr << "[DEBUG] Warning: material is void or undefined after surface cross.\n";
@@ -736,6 +790,16 @@ void Particle::event_revive_from_secondary()
       mark_as_lost("Could not find cell after reviving from secondary.");
       return;
     }
+
+  // Refresh material
+  int32_t old_material = material();
+  update_material_from_coords();
+
+  // Force xs recalculation if update_material_from_coords changed material or temp (failsafe, possibly redundant)
+  if (material() != old_material || sqrtkT() != sqrtkT_last()) {
+    material_last() = C_NONE; 
+  }
+
     event_calculate_xs();
   }
 }
@@ -1029,74 +1093,67 @@ void Particle::update_majorant()
 
   this->majorant() = 1.000001 * data::n_majorant->calculate_xs(this->E());
 
-  std::cerr << "[MAJORANT] Updated majorant for material "
-          << material() << " at E = " << E()
-          << "  XS_M = " << majorant() << "\n";
+  std::cerr << "[MAJORANT DEBUG] At E = " << E()
+            << ", majorant() = " << majorant()
+            << ", material = " << material() << "\n";
+
 }
 
 void Particle::update_material_from_coords()
 {
+  // Save previous material and temperature
+  material_last() = material();
+  sqrtkT_last() = sqrtkT();
+
+  // Clear old material assignment
+  material() = C_NONE;
+
+  int32_t cell_idx = lowest_coord().cell;
+  const auto& cell = model::cells[cell_idx];
+
+  if (!cell) {
+    fatal_error("Null cell pointer in update_material_from_coords.");
+  }
+
+  if (cell->type_ != Fill::MATERIAL) {
+    fatal_error("Cell at lowest coordinate level not filled with material.");
+  }
+
   int mat = C_NONE;
+  double sqrtkT_val = 0.0;
 
-  std::cerr << "[MAT] Particle at r = " << r() << ", checking coordinate levels (n_coord = " << n_coord() << ")\n";
-  for (int j = n_coord() - 1; j >= 0; --j) {
-    const int cidx = coord(j).cell;
-    std::cerr << "  [MAT] Level " << j << ": cell = " << cidx;
-    if (cidx >= 0 && cidx < static_cast<int>(model::cells.size())) {
-      const auto& cell = model::cells[cidx];
-      std::cerr << ", material_.size() = " << cell->material_.size();
+  if (cell->distribcell_index_ == C_NONE) {
+    // Regular cell — use [0], no instance required
+    mat = cell->material_[0];
+    sqrtkT_val = cell->sqrtkT_[0];
+    cell_instance() = C_NONE;  // <-- this is important!
+  } else {
+    // Distribcell — compute instance properly
+    int instance = cell_instance_at_level(*this, n_coord() - 1);
+    if (instance < 0 || instance >= static_cast<int>(cell->material_.size())) {
+      std::cerr << "[DEBUG ERROR] Invalid distribcell instance: " << instance
+                << " for cell " << cell_idx
+                << " (material_.size() = " << cell->material_.size() << ")\n";
+      warning("Invalid cell instance after cell search.");
+      material() = C_NONE;
+      return;
     }
-    std::cerr << "\n";
-  }
 
-  // Walk from deepest coordinate level up to find first valid material (in case of distribcells)
-  for (int j = n_coord() - 1; j >= 0; --j) {
-    const int cell_idx = coord(j).cell;
-    const int global_inst     = cell_instance();
+    // Save instance for later use
+    cell_instance() = instance;
 
-    if (cell_idx < 0 || cell_idx >= static_cast<int>(model::cells.size())) continue;
-
-    const auto& cell = model::cells[cell_idx];
-
-    // Check if this cell has a material assigned
-    if (!cell->material_.empty()) {
-      if (cell->material_.size() == 1) {
-        mat = cell->material_[0];
-
-      } else if (global_inst < static_cast<int>(cell->material_.size())) {
-        if (cell->material_[global_inst] == C_NONE) {
-          std::cerr << "[WARNING] Cell " << cell_idx << " has undefined material in instance "
-                    << global_inst << ".\n";
-        }
-
-        mat = cell->material_[global_inst];
-        std::cerr << "  [MAT] Using distributed cell material[" << global_inst
-          << "] = " << mat << "\n";
-
-      } else {
-        std::cerr << "[ERROR] Invalid cell_instance " << global_inst
-                  << " for material_ in cell " << cell_idx
-                  << " (has " << cell->material_.size() << " entries)\n";
-      }
-
-      break; // break after finding a cell with a material
-    }
-  }
-
-  std::cerr << "[MAT] Updating material at r=" << r()
-            << " cell=" << coord(n_coord() - 1).cell
-            << " -> material=" << mat << "\n";
-
-  if (mat == C_NONE) {
-    std::cerr << "[DEBUG] update_material_from_coords: No valid material found.\n";
+    mat = cell->material_[instance];
+    sqrtkT_val = cell->sqrtkT_[instance];
   }
 
   material() = mat;
-  std::cerr << "[MAT] Final material = " << mat
-          << ", assigned from cell = " << coord(n_coord() - 1).cell
-          << ", cell_instance = " << cell_instance()
-          << ", universe = " << coord(n_coord() - 1).universe
-          << "\n";
+  sqrtkT() = sqrtkT_val;
+
+  std::cerr << "[MAT] Final material = " << material()
+            << ", assigned from cell = " << coord(n_coord() - 1).cell
+            << ", instance = " << cell_instance()
+            << ", universe = " << coord(n_coord() - 1).universe
+            << "\n";
 }
 
 

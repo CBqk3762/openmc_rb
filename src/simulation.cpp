@@ -2,6 +2,7 @@
 
 #include "openmc/bank.h"
 #include "openmc/capi.h"
+#include "openmc/cell.h"
 #include "openmc/container_util.h"
 #include "openmc/eigenvalue.h"
 #include "openmc/error.h"
@@ -744,13 +745,51 @@ void transport_delta_tracking_single_particle(Particle& p)
   p.delta_tracking() = true;
 
   // Delta-tracked particles need to be initialised manually
-  if (p.coord(p.n_coord() - 1).cell == C_NONE) {
-    if (!exhaustive_find_cell(p)) {
-      p.mark_as_lost("Could not find cell at source for DT particle");
+  if (!exhaustive_find_cell(p)) {
+    p.mark_as_lost("Could not find cell at source for DT particle");
+    return;
+  }
+
+  // Get cell and material information
+  int32_t cell_idx = p.coord(p.n_coord() - 1).cell;
+  const auto& cell = openmc::model::cells[cell_idx];
+
+  if (cell == nullptr) {
+    std::cerr << "[DEBUG ERROR] Null cell pointer for cell index: " << cell_idx << "\n";
+    p.mark_as_lost("Null cell pointer after cell search.");
+    return;
+  }
+
+  // Need to treat distribucells and normal cells differently
+  if (cell->distribcell_index_ == C_NONE) {
+    p.cell_instance() = C_NONE;
+  } else {
+    p.cell_instance() = cell_instance_at_level(p, p.n_coord() - 1);
+    int32_t instance = p.cell_instance();
+    // Check that instance is valid
+    if (instance < 0 || instance >= static_cast<int>(cell->material_.size())) {
+      std::cerr << "[DEBUG ERROR] Invalid cell instance: " << instance
+                << " for cell " << cell_idx
+                << " (material_.size() = " << cell->material_.size() << ")\n";
+      p.mark_as_lost("Invalid cell instance after cell search.");
       return;
     }
   }
 
+
+
+  // Debug info
+  std::cerr << "[DEBUG] Cell found:\n";
+  std::cerr << "  - cell = " << cell_idx << "\n";
+  std::cerr << "  - universe = " << p.coord(p.n_coord() - 1).universe << "\n";
+  if (p.cell_instance() != C_NONE) {
+    std::cerr << "  - instance = " << p.cell_instance() << "\n";
+    std::cerr << "  - material = " << cell->material_[p.cell_instance()] << "\n";
+    std::cerr << "  - sqrtkT = " << cell->sqrtkT_[p.cell_instance()] << "\n";
+  } else {
+    std::cerr << "  - material = " << cell->material_[0] << "\n";
+    std::cerr << "  - sqrtkT = " << cell->sqrtkT_[0] << "\n";
+  }
   std::cerr << "[DEBUG] Starting DT particle " << p.id()
           << " at r=" << p.r() << ", E=" << p.E() << "\n";
 
@@ -758,7 +797,7 @@ void transport_delta_tracking_single_particle(Particle& p)
 
   if (!p.alive()) return;
 
-  // Safety limits to avoid infinite loops-do we want to make these user settable?
+  // ToDo replace with builtin max particle no. somehow Safety limits to avoid infinite loops-do we want to make these user settable?
   constexpr int MAX_DT_COLLISIONS = 1000000;
   constexpr int MAX_DT_STEPS = 10000000;
 

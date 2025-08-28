@@ -32,6 +32,9 @@ void ReflectiveBC::handle_particle(Particle& p, const Surface& surf) const
   u /= u.norm();
 
   p.cross_reflective_bc(surf, u);
+
+  // Set flag indicating particle has just reflected
+  p.set_just_reflected(true);
 }
 
 //==============================================================================

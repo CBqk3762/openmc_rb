@@ -95,6 +95,13 @@ public:
   //! \param new_u The direction of the particle after reflection.
   void cross_reflective_bc(const Surface& surf, Direction new_u);
 
+  //! flag to indicate if the particle has just reflected off a surface
+  bool just_reflected_ = false;
+
+  bool just_reflected() const { return just_reflected_; }
+  void set_just_reflected(bool value) { just_reflected_ = value; }
+
+
   //! Cross a periodic boundary condition.
   //
   //! \param surf The surface (with the periodic boundary condition) that the

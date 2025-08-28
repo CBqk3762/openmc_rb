@@ -78,6 +78,7 @@ scripts/G4EMLOW*/
 
 # IPython notebook checkpoints
 .ipynb_checkpoints
+*.ipynb
 
 # Cython files
 *.c
@@ -110,5 +111,6 @@ CMakeSettings.json
 *.pkl
 
 # Other from dev
-delta-tracking-tests/
-
+delta-tracking-tests/*
+Lost_particle_plot.ipynb
+extract_*
