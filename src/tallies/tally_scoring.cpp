@@ -2446,7 +2446,7 @@ void score_collision_tally_dt(Particle& p)
   }
 
   // Collision flux estimator for DT
-  const double flux = p.wgt_last() / sigma_M;
+  const double flux = p.wgt() / sigma_M;
 
   // Loop over all the collision tallies and score to them
   for (auto i_tally : model::active_collision_tallies) {

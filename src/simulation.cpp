@@ -23,6 +23,7 @@
 #include "openmc/tallies/derivative.h"
 #include "openmc/tallies/filter.h"
 #include "openmc/tallies/tally.h"
+#include "openmc/tallies/tally_scoring.h"
 #include "openmc/tallies/trigger.h"
 #include "openmc/timer.h"
 #include "openmc/track_output.h"
@@ -750,57 +751,28 @@ void transport_delta_tracking_single_particle(Particle& p)
     return;
   }
 
-  // Get cell and material information
-  int32_t cell_idx = p.coord(p.n_coord() - 1).cell;
-  const auto& cell = openmc::model::cells[cell_idx];
+  p.update_material_from_coords();
 
-  if (cell == nullptr) {
-    std::cerr << "[DEBUG ERROR] Null cell pointer for cell index: " << cell_idx << "\n";
+  // Debug (safe per-instance mapping already handled in update_material_from_coords)
+  const int32_t cell_idx0 = p.coord(p.n_coord() - 1).cell;
+  const auto& cell0 = openmc::model::cells[cell_idx0];
+  if (!cell0) {
+    std::cerr << "[DEBUG ERROR] Null cell pointer for cell index: " << cell_idx0 << "\n";
     p.mark_as_lost("Null cell pointer after cell search.");
     return;
   }
-
-  // Need to treat distribucells and normal cells differently
-  if (cell->distribcell_index_ == C_NONE) {
-    p.cell_instance() = C_NONE;
-  } else {
-    p.cell_instance() = cell_instance_at_level(p, p.n_coord() - 1);
-    int32_t instance = p.cell_instance();
-    // Check that instance is valid
-    if (instance < 0 || instance >= static_cast<int>(cell->material_.size())) {
-      std::cerr << "[DEBUG ERROR] Invalid cell instance: " << instance
-                << " for cell " << cell_idx
-                << " (material_.size() = " << cell->material_.size() << ")\n";
-      p.mark_as_lost("Invalid cell instance after cell search.");
-      return;
-    }
-  }
-
-
-
-  // Debug info
-  std::cerr << "[DEBUG] Cell found:\n";
-  std::cerr << "  - cell = " << cell_idx << "\n";
-  std::cerr << "  - universe = " << p.coord(p.n_coord() - 1).universe << "\n";
-  if (p.cell_instance() != C_NONE) {
-    std::cerr << "  - instance = " << p.cell_instance() << "\n";
-    std::cerr << "  - material = " << cell->material_[p.cell_instance()] << "\n";
-    std::cerr << "  - sqrtkT = " << cell->sqrtkT_[p.cell_instance()] << "\n";
-  } else {
-    std::cerr << "  - material = " << cell->material_[0] << "\n";
-    std::cerr << "  - sqrtkT = " << cell->sqrtkT_[0] << "\n";
-  }
   std::cerr << "[DEBUG] Starting DT particle " << p.id()
-          << " at r=" << p.r() << ", E=" << p.E() << "\n";
+            << " at r=" << p.r() << ", E=" << p.E()
+            << " in cell " << cell_idx0 << "\n";
 
   p.event_calculate_xs();
-
-  if (!p.alive()) return;
+  if (!p.alive()) {
+    return;
+  }
 
   // ToDo replace with builtin max particle no. somehow Safety limits to avoid infinite loops-do we want to make these user settable?
   constexpr int MAX_DT_COLLISIONS = 1000000;
   constexpr int MAX_DT_STEPS = 10000000;
-
   int step_count = 0;
 
   while (true) {
@@ -820,6 +792,19 @@ void transport_delta_tracking_single_particle(Particle& p)
       break;
     }
 
+    // need to efresh geometry/material as delta tracking may cross multiple surfaces
+    if (!exhaustive_find_cell(p)) {
+      p.ParticleData::keff_tally_leakage() += p.wgt();
+      p.mark_as_lost("Could not locate 'Woodcock' site after advance.");
+      break;
+    }
+    p.update_material_from_coords();
+
+    p.event_calculate_xs();
+    if (!p.alive()) {
+      break;
+    }
+
     if (p.macro_xs().total <= 0.0 || p.majorant() <= 0.0) {
       throw std::runtime_error(fmt::format(
         "[TRANSPORT ERROR] Invalid XS or majorant: xs_tot = {}, xs_M = {}",
@@ -828,20 +813,43 @@ void transport_delta_tracking_single_particle(Particle& p)
     // Def of majorant should be satisfied
     Expects(p.macro_xs().total <= p.majorant());
 
+    // CFE (Collision-Flux Estimator) ALWAYS scored for real and virtual
+    if (!model::active_collision_tallies.empty()) {
+      score_collision_tally_dt(p);   // uses w / XS_M
+    }
+
     // Real collisions should be handled the same for DT with/out l_max
     // p.dt_force_virtual() is set in particle.cpp
+    bool real = false;
     if (!p.dt_force_virtual()) {
       // Real collision
-      if (prn(p.current_seed()) < (p.macro_xs().total / p.majorant())) {
-        p.event_collide();
-      }
+      real = (prn(p.current_seed()) < (p.macro_xs().total / p.majorant()));
     } else {
       // Step capped by l_max, site of a forced a virtual collision
       p.dt_force_virtual() = false;
     }
 
+    // for real collisions, do collision physics + tallies for outgoing state
+    if (real) {
+      p.event_collide();
+      if (!p.alive()) {
+        p.event_revive_from_secondary();
+        if (!p.alive()) {
+          break;
+        }
+      }
+
+      // Score reaction/energy-in–out tallies (analog path)
+      if (!model::active_collision_tallies.empty()) {
+        score_collision_tally(p);    // pre-existing OpenMC analog collision scorer
+      }
+      // Refresh majorant after potential E change
+      p.update_majorant();
+    }
+
+    // Handle secondary particles (if any)
     p.event_revive_from_secondary();
-    if (!p.alive()) {
+    if (!p.alive()){
       break;
     }
   }

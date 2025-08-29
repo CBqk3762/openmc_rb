@@ -153,10 +153,20 @@ compute_majorant_energy_grid() {
     // append new points to the current group of points
     common_e_grid.insert(common_e_grid.end(), e_grid.begin(), e_grid.end());
 
-    // remove duplicates
+    // remove duplicates PP is this useful before sorting? Only removes duplicates
+    // next to each other I think? Won't some duplicates remain and get sorted later?
+    // could cause zero width intervals?
     std::unique(common_e_grid.begin(), common_e_grid.end());
   }
+  
+  if (common_e_grid.empty()) {
+    return common_e_grid;
+  }
+
+  // now sort first, then remove duplicates, then remove at end
   std::sort(common_e_grid.begin(), common_e_grid.end());
+  auto new_end = std::unique(common_e_grid.begin(), common_e_grid.end());
+  common_e_grid.erase(new_end, common_e_grid.end());
 
   // remove all values below the minimum neutron energy
   int neutron = static_cast<int>(ParticleType::neutron);
