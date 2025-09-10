@@ -2,6 +2,8 @@
 
 #include <fmt/core.h>
 
+#include <iomanip>
+
 #include "openmc/constants.h"
 #include "openmc/majorant.h"
 #include "openmc/material.h"
@@ -26,7 +28,9 @@ void create_majorant() {
     data::nuclide_majorants.push_back(std::make_unique<Majorant>());
     auto& majorant = data::nuclide_majorants.back();
 
+    // kTs are temperature points available for this nuclide
     for (int t = 0; t < nuclide->kTs_.size(); t++) {
+      // copy total Xs curve at this temperature, pass to update in order to merge into majorant-so-far
       auto total = xt::view(nuclide->xs_[t], xt::all(), 0);
       std::vector<double> xs(total.begin(), total.end());
       auto energies = nuclide->grid_[t].energy;
@@ -50,6 +54,7 @@ void create_majorant() {
           std::cout << fmt::format("Nuclide {} uses log-log interpolation", nuclide->name_) << std::endl;
         }
 
+        // if multiply_smooth, scale by max URR (widen peaks)
         if (urr_data.multiply_smooth_) {
           std::cout << "Multiplied URR: " << nuclide->name_ << std::endl;
           majorant->grid_.init();
@@ -59,6 +64,8 @@ void create_majorant() {
           }
           majorant->update(energies, xs_vals);
         } else {
+          // otherwise, just use the max URR total xs value as flat across the URR energy range
+          //and merge via update
           std::vector<double> xs_vals(energies.size(), max_urr_total);
           majorant->update(energies, xs_vals);
         }
@@ -70,8 +77,9 @@ void create_majorant() {
     // majorant->write_ascii(nuclide->name_ + "_majorant.txt");
   }
 
+  // get union energy grid for majorant grid
+  std::cerr << "[MAJ GRID] building union grid...\n";
   auto majorant_e_grid = compute_majorant_energy_grid();
-
 
   std::vector<double> xs_vals;
 
@@ -129,6 +137,13 @@ void create_majorant() {
 
       material_xs.push_back(xs_val);
     }
+    double mn = *std::min_element(material_xs.begin(), material_xs.end());
+    double mx = *std::max_element(material_xs.begin(), material_xs.end());
+       std::cerr << "[MAJ MAT] mat_id=" << material->id_
+             << " N=" << material_xs.size()
+             << " min=" << mn << " max=" << mx << "\n";
+           
+    //macro_majorants are sum of density * nuclide majorants
     macro_majorants.emplace_back(Majorant());
     macro_majorants.back().update(majorant_e_grid, material_xs);
     macro_majorants.back().write_ascii(fmt::format("mat_{}_majorant.txt", material->id_));
@@ -140,13 +155,14 @@ void create_majorant() {
     data::n_majorant->update(macro_majorant.grid_.energy, macro_majorant.xs_);
   }
 
+  // this is the global majorant used at runtime
   data::n_majorant->grid_.init();
   data::n_majorant->write_ascii("macro_majorant.txt");
 }
 
 std::vector<double>
 compute_majorant_energy_grid() {
-
+  std::cerr << "[MAJ GRID DBG] Computing union energy grid...collecting knots\n";
   std::vector<double> common_e_grid;
   for (const auto& nuc_maj : data::nuclide_majorants) {
     auto& e_grid = nuc_maj->grid_.energy;
@@ -158,15 +174,7 @@ compute_majorant_energy_grid() {
     // could cause zero width intervals?
     std::unique(common_e_grid.begin(), common_e_grid.end());
   }
-  
-  if (common_e_grid.empty()) {
-    return common_e_grid;
-  }
-
-  // now sort first, then remove duplicates, then remove at end
   std::sort(common_e_grid.begin(), common_e_grid.end());
-  auto new_end = std::unique(common_e_grid.begin(), common_e_grid.end());
-  common_e_grid.erase(new_end, common_e_grid.end());
 
   // remove all values below the minimum neutron energy
   int neutron = static_cast<int>(ParticleType::neutron);
@@ -284,6 +292,9 @@ void Majorant::write_ascii(const std::string& filename) const {
 
 void Majorant::update(std::vector<double> energy_other,
                       std::vector<double> xs_other) {
+
+  std::cout << "Energy size = " << energy_other.size()
+          << ", XS size = " << xs_other.size() << std::endl;
 
   XS xs_a(grid_.energy, xs_);
   XS xs_b(energy_other, xs_other);

@@ -406,9 +406,8 @@ void Tally::set_scores(pugi::xml_node node)
   // this is just for debugging purposes
   auto score_strs = get_node_array<std::string>(node, "scores");
 
-  std::cerr << "[DEBUG] set_scores(node): found " << score_strs.size() << " score string(s):";
+  std::cerr << "[DEBUG] set_scores(node): found " << score_strs.size() << " score string(s) \n";
   auto scores = get_node_array<std::string>(node, "scores");
-  std::cerr << "\n";
   set_scores(scores);
 }
 
@@ -417,10 +416,6 @@ void Tally::set_scores(const vector<std::string>& scores)
   // Reset state and prepare for the new scores.
   scores_.clear();
   scores_.reserve(scores.size());
-
-  std::cerr << "[DEBUG] set_scores: received " << scores.size() << " score strings:";
-  for (const auto& s : scores) std::cerr << " [" << s << "]";
-  std::cerr << "\n";
 
   // Check for the presence of certain restrictive filters.
   bool energyout_present = energyout_filter_ != C_NONE;
@@ -728,7 +723,6 @@ void read_tallies_xml()
     return;
 
   write_message("Reading tallies XML file...", 5);
-  std::cerr << "[tally] reading tallies.xml from"<< filename << "\n";
 
   // Parse tallies.xml file
   pugi::xml_document doc;

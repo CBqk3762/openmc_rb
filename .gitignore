@@ -12,7 +12,8 @@
 .settings/
 dist/
 openmc.egg-info/
-mc_PYenv/
+mc_Pyenv/
+mc_Pyenv/lib/python3.9/
 
 # Inputs generated from Python API
 examples/**/*.xml

@@ -1,5 +1,5 @@
 #include "openmc/simulation.h"
-
+#include <cassert>
 #include "openmc/bank.h"
 #include "openmc/capi.h"
 #include "openmc/cell.h"
@@ -80,8 +80,16 @@ int openmc_simulation_init()
     initialize_data();
   }
 
-  if (settings::delta_tracking) create_majorant();
+  if (settings::delta_tracking) {
+    create_majorant();
 
+    // --- DEBUG: probe majorant table at a few energies
+    auto probe = [&](double E){
+      double sM = data::n_majorant->calculate_xs(E);
+      std::cerr << fmt::format("[MAJ PROBE] E={:.3e} Sigma_M={:.6e}\n", E, sM);
+    };
+    for (double E : {1e-5, 1e-3, 1.0, 1e3, 1e6}) probe(E);
+  }
   // Determine how much work each process should do
   calculate_work();
 
@@ -204,6 +212,8 @@ int openmc_simulation_finalize()
 
 int openmc_next_batch(int* status)
 {
+  std::cerr << "[INIT OK] Finished majorant build; starting batches...\n";
+
   using namespace openmc;
   using openmc::simulation::current_gen;
 
@@ -218,6 +228,7 @@ int openmc_next_batch(int* status)
   // =======================================================================
   // LOOP OVER GENERATIONS
   for (current_gen = 1; current_gen <= settings::gen_per_batch; ++current_gen) {
+    std::cerr << "[GENERATION] Starting generation " << current_gen << "\n";
 
     initialize_generation();
 
@@ -226,28 +237,36 @@ int openmc_next_batch(int* status)
 
     // Transport loop
     if (settings::event_based) {
+      std::cerr << "[TRANSPORT] Using event-based transport\n";
       transport_event_based();
     } else if (settings::delta_tracking) {
+      std::cerr << "[TRANSPORT] Using delta-tracking transport\n";
       transport_delta_tracking();
     } else {
+      std::cerr << "[TRANSPORT] Using history-based transport\n";
       transport_history_based();
     }
 
     // Accumulate time for transport
     simulation::time_transport.stop();
+    std::cerr << "[GENERATION] Finished generation " << current_gen << "\n";
 
     finalize_generation();
   }
 
   finalize_batch();
+  std::cerr << "[BATCH] Finished batch " << simulation::current_batch << "\n";
 
   // Check simulation ending criteria
   if (status) {
     if (simulation::current_batch == settings::n_max_batches) {
+      std::cerr << "[EXIT] Reached max batch count\n";
       *status = STATUS_EXIT_MAX_BATCH;
     } else if (simulation::satisfy_triggers) {
+      std::cerr << "[EXIT] Satisfy triggers\n";
       *status = STATUS_EXIT_ON_TRIGGER;
     } else {
+      std::cerr << "[EXIT] Normal completion\n";
       *status = STATUS_EXIT_NORMAL;
     }
   }
@@ -514,6 +533,8 @@ void initialize_history(Particle& p, int64_t index_source)
 
   // set identifier for particle
   p.id() = simulation::work_index[mpi::rank] + index_source;
+  std::cerr << "[INIT] Assigned ID = " << p.id() << "\n";
+
 
   // set progeny count to zero
   p.n_progeny() = 0;
@@ -548,21 +569,25 @@ void initialize_history(Particle& p, int64_t index_source)
     write_message("Simulating Particle {}", p.id());
   }
 
-  // if (settings::delta_tracking)
-  //   p.update_majorant();
+  if (settings::delta_tracking)
+    p.update_majorant();
 
 // Add paricle's starting weight to count for normalizing tallies later
 #pragma omp atomic
   simulation::total_weight += p.wgt();
+  std::cerr << "[INIT] Particle " << p.id() << " initial weight = " << p.wgt() << "\n";
+
 
   // Force calculation of cross-sections by setting last energy to zero
   if (settings::run_CE) {
     p.invalidate_neutron_xs();
+    std::cerr << "[INIT] Invalidated neutron cross sections for CE mode.\n";
   }
 
   // Prepare to write out particle track.
   if (p.write_track())
     add_particle_track(p);
+    std::cerr << "[INIT] Particle " << p.id() << " will be tracked.\n";
 }
 
 int overall_generation()
@@ -745,61 +770,34 @@ void transport_delta_tracking_single_particle(Particle& p)
 {
   p.delta_tracking() = true;
 
-  // Delta-tracked particles need to be initialised manually
-  if (!exhaustive_find_cell(p)) {
-    p.mark_as_lost("Could not find cell at source for DT particle");
-    return;
+    // Delta-tracked particles need to be initialised manually
+  if (p.coord(p.n_coord() - 1).cell == C_NONE) {
+    if (!exhaustive_find_cell(p)) {
+      p.mark_as_lost("Could not find cell at source for DT particle");
+      return;
+    }
   }
-
   p.update_material_from_coords();
-
-  // Debug (safe per-instance mapping already handled in update_material_from_coords)
-  const int32_t cell_idx0 = p.coord(p.n_coord() - 1).cell;
-  const auto& cell0 = openmc::model::cells[cell_idx0];
-  if (!cell0) {
-    std::cerr << "[DEBUG ERROR] Null cell pointer for cell index: " << cell_idx0 << "\n";
-    p.mark_as_lost("Null cell pointer after cell search.");
-    return;
-  }
-  std::cerr << "[DEBUG] Starting DT particle " << p.id()
-            << " at r=" << p.r() << ", E=" << p.E()
-            << " in cell " << cell_idx0 << "\n";
-
   p.event_calculate_xs();
   if (!p.alive()) {
     return;
   }
 
-  // ToDo replace with builtin max particle no. somehow Safety limits to avoid infinite loops-do we want to make these user settable?
-  constexpr int MAX_DT_COLLISIONS = 1000000;
-  constexpr int MAX_DT_STEPS = 10000000;
-  int step_count = 0;
-
   while (true) {
-    ++step_count;
-    if (step_count > MAX_DT_STEPS || p.n_collision() > MAX_DT_COLLISIONS) {
-      p.mark_as_lost("Exceeded max steps or collisions in delta tracking.");
-      break;
-    }
-
+    // Advance particle by delta tracking (domain boundaries only here)
     p.event_delta_advance();
     if (!p.alive()){
       break;
     }
 
-    p.event_calculate_xs();
-    if (!p.alive()) {
-      break;
-    }
-
-    // need to efresh geometry/material as delta tracking may cross multiple surfaces
+    // need to refresh geometry/material as delta tracking may cross multiple surfaces
     if (!exhaustive_find_cell(p)) {
       p.ParticleData::keff_tally_leakage() += p.wgt();
       p.mark_as_lost("Could not locate 'Woodcock' site after advance.");
       break;
     }
-    p.update_material_from_coords();
 
+    p.update_material_from_coords();
     p.event_calculate_xs();
     if (!p.alive()) {
       break;
@@ -812,6 +810,13 @@ void transport_delta_tracking_single_particle(Particle& p)
     }
     // Def of majorant should be satisfied
     Expects(p.macro_xs().total <= p.majorant());
+    if (p.macro_xs().total <= 0.0 || p.majorant() <= 0.0) {
+      throw std::runtime_error("Invalid XS/majorant at site.");
+    }
+
+    //DEBUG check acceptance
+    const double Pacc = p.macro_xs().total / p.majorant();
+    std::cerr << "[DT DBG] XS_M="<<p.majorant()<<" XS_t="<<p.macro_xs().total<<" Pacc="<<Pacc<<"\n";
 
     // CFE (Collision-Flux Estimator) ALWAYS scored for real and virtual
     if (!model::active_collision_tallies.empty()) {
@@ -825,33 +830,29 @@ void transport_delta_tracking_single_particle(Particle& p)
       // Real collision
       real = (prn(p.current_seed()) < (p.macro_xs().total / p.majorant()));
     } else {
-      // Step capped by l_max, site of a forced a virtual collision
+      // Step capped by l_max, site of a forced a virtual collision, no need to sample
+      // reset flag
       p.dt_force_virtual() = false;
     }
 
-    // for real collisions, do collision physics + tallies for outgoing state
+    // for real collisions, do the collision physics + tallies for outgoing state
     if (real) {
+      std::cerr << "[DT DBG] Real collision \n";
       p.event_collide();
-      if (!p.alive()) {
-        p.event_revive_from_secondary();
-        if (!p.alive()) {
-          break;
-        }
-      }
-
       // Score reaction/energy-in–out tallies (analog path)
       if (!model::active_collision_tallies.empty()) {
         score_collision_tally(p);    // pre-existing OpenMC analog collision scorer
       }
-      // Refresh majorant after potential E change
-      p.update_majorant();
     }
 
-    // Handle secondary particles (if any)
+    // Always revive secondaries even for virtuals
     p.event_revive_from_secondary();
-    if (!p.alive()){
+    if (!p.alive()) {
       break;
     }
+    
+    // Refresh majorant after possible E change
+    p.update_majorant();
   }
   p.event_death();
 }
@@ -860,8 +861,15 @@ void transport_delta_tracking() {
   #pragma omp parallel for schedule(runtime)
   for (int64_t i_work = 1; i_work <= simulation::work_per_rank; ++i_work) {
     Particle p;
+    std::cerr << "[DT] Initialising particle " << i_work << "\n";
     initialize_history(p, i_work);
+
+    std::cerr << "[DT] Starting transport for particle " << p.id() 
+              << " at r = (" << p.r().x << ", " << p.r().y << ", " << p.r().z << ")"
+              << ", E = " << p.E() << ", mat = " << p.material() << "\n";
+
     transport_delta_tracking_single_particle(p);
+    std::cerr << "[DT] Finished transport for particle " << p.id() << "\n";
   }
 }
 

@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <settings>
   <run_mode>eigenvalue</run_mode>
-  <particles>500</particles>
-  <batches>70</batches>
-  <inactive>20</inactive>
+  <particles>50</particles>
+  <batches>7</batches>
+  <inactive>2</inactive>
   <source strength="1.0">
     <space type="fission">
       <parameters>-10.71 -10.71 0.0 10.71 10.71 0.0</parameters>
     </space>
   </source>
   <seed>101907988</seed>
-  <delta_tracking>false</delta_tracking>
+  <delta_tracking>true</delta_tracking>
   <output>
   <summary>true</summary>
   <tallies>true</tallies>

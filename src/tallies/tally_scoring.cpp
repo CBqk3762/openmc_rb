@@ -520,9 +520,6 @@ double get_nuclide_xs(const Particle& p, int i_nuclide, int score_bin)
   return 0.0;
 }
 
-//! Helper function to check if tally has an outgoing-energy filter
-
-
 //! Update tally results for continuous-energy tallies with a tracklength or
 //! collision estimator.
 

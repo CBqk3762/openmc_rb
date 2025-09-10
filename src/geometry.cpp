@@ -156,12 +156,6 @@ bool find_cell_inner(Particle& p, const NeighborList* neighbor_list)
     }
     i_cell = p.coord(p.n_coord() - 1).cell;
 
-    // Announce the cell that the particle is entering.
-    if (found && (settings::verbosity >= 10 || p.trace())) {
-      auto msg = fmt::format("    Entering cell {}", model::cells[i_cell]->id_, "\n");
-      write_message(msg, 1);
-    }
-
     Cell& c {*model::cells[i_cell]};
     if (c.type_ == Fill::MATERIAL) {
       // Found a material cell which means this is the lowest coord level.
@@ -413,11 +407,14 @@ void cross_lattice(Particle& p, const BoundaryInfo& boundary)
   coord.lattice_i[1] += boundary.lattice_translation[1];
   coord.lattice_i[2] += boundary.lattice_translation[2];
 
+  // If we left the lattice and are delta-tracking...
   if (!lat.are_valid_indices(coord.lattice_i)) {
     if (p.delta_tracking()) {
       // DT particles must have BC handled by event_cross_surface_dt rather than marked lost
+      // set the cell to C_NONE so cross_surface() can handle BC
       // ToDo: Possibly this should be worked into surface tracked particles as well?
-      std::cerr << "[LATTICE] DT particle exited lattice bounds; deferring to cross_surface.\n";
+      p.coord(p.n_coord() - 1).cell = C_NONE;
+      std::cerr << "[LATTICE][DT] Exited lattice bounds; defer to cross_surface().\n";
       return;
     } else {
       // For surface-tracked particles we fallback to full geometry search
@@ -440,19 +437,25 @@ void cross_lattice(Particle& p, const BoundaryInfo& boundary)
   }
 
   const auto& cell {model::cells[upper_coord.cell]};
-  Position r = upper_coord.r;
-  r -= cell->translation_;
+  Position r_parent = upper_coord.r;
+  r_parent -= cell->translation_;
   if (!cell->rotation_.empty()) {
-    r = r.rotate(cell->rotation_);
+    r_parent = r_parent.rotate(cell->rotation_);
   }
-  p.r_local() = lat.get_local_position(r, coord.lattice_i);
+  p.r_local() = lat.get_local_position(r_parent, coord.lattice_i);
   coord.universe = lat[coord.lattice_i];
-
 
   // Find cell in next lattice element.
   p.coord(p.n_coord() - 1).universe = lat[coord.lattice_i];
-  bool found = exhaustive_find_cell(p);
 
+  if (p.delta_tracking()) {
+    // DT will rebuild geometry at the next 'Woodcock' site.
+    p.coord(p.n_coord() - 1).cell = C_NONE;
+    return;
+  }
+
+  // For surface-tracked particles we need to find the new cell now.
+  bool found = exhaustive_find_cell(p);
   if (!found) {
     // A particle crossing the corner of a lattice tile may not be found.  In
     // this case, search for it from the base coords.

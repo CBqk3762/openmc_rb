@@ -766,6 +766,9 @@ void Material::init_nuclide_index()
 
 void Material::calculate_xs(Particle& p) const
 {
+  std::cerr << "[XS] Material " << id_ << " has " << nuclide_.size() << " nuclides.\n";
+
+  std::cerr << "[XS] Entered Material::calculate_xs, mat=" << this->id_ << "\n";
   // Set all material macroscopic cross sections to zero
   p.macro_xs().total = 0.0;
   p.macro_xs().absorption = 0.0;
@@ -777,10 +780,14 @@ void Material::calculate_xs(Particle& p) const
   } else if (p.type() == ParticleType::photon) {
     this->calculate_photon_xs(p);
   }
+
+  // debug
+  std::cout << "At the end of calculate_xs, mat xs: " << p.macro_xs().total << "/n"; 
 }
 
 void Material::calculate_neutron_xs(Particle& p) const
 {
+    std::cout << "Entering calculate_neutron_xs /n"; 
   // Find energy index on energy grid
   int neutron = static_cast<int>(ParticleType::neutron);
   int i_grid =
@@ -788,6 +795,7 @@ void Material::calculate_neutron_xs(Particle& p) const
 
   // Determine if this material has S(a,b) tables
   bool check_sab = (thermal_tables_.size() > 0);
+    std::cout << "check_sab= " << check_sab << "/n"; 
 
   // Initialize position in i_sab_nuclides
   int j = 0;
