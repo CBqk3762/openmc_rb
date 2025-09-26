@@ -1,0 +1,105 @@
+Undefined command: "definbe".  Try "help".
+Type commands for definition of "state".
+End with a line saying just "end".
+Type documentation for "state".
+End with a line saying just "end".
+Starting program: /home/cbyers/Projects/openmc/build-clang/bin/openmc 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+warning: could not find '.gnu_debugaltlink' file for /lib/x86_64-linux-gnu/liblber.so.2
+warning: could not find '.gnu_debugaltlink' file for /lib/x86_64-linux-gnu/libbrotlidec.so.1
+warning: could not find '.gnu_debugaltlink' file for /lib/x86_64-linux-gnu/libbrotlicommon.so.1
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;
+338	  bool forced_virtual = false;
+340	  if (this->E() != this->E_last()) {
+344	  if (type() == ParticleType::electron || type() == ParticleType::positron) {
+347	      double maj = majorant();
+E=6.953344e-310  E_last=6.953344e-310  maj=6.953e-310
+Continuing.
+
+Breakpoint 1, openmc::Particle::event_delta_advance (this=0x7ffff18ac820) at /home/cbyers/Projects/openmc/src/particle.cpp:337
+337	  const double lmax = settings::dt_lmax;

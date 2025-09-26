@@ -1,3 +1,4 @@
+<!-- PWR pin-cell lattice -->
 <?xml version='1.0' encoding='utf-8'?>
 <geometry>
   <cell id="1" material="1" name="Fuel" region="-1" universe="1" />

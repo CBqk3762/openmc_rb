@@ -57,6 +57,19 @@ public:
 
     //! \brief Return the previous cross section value
     double prev_xs() const;
+    
+    //! \brief Seek to the bin bracketing E.
+    //! Moves the internal cursor (idx_) so that energies_[idx_-1] ≤ E ≤ energies_[idx_].
+    //! Uses upper_bound (often starting from the current idx_); clamps to [1, N-1] so prev() is always safe.
+    //! \param E Energy at which to position the cursor [eV].
+    void seek(double E);
+
+    //! \brief Interpolated majorant at energy E.
+    //! Calls seek(E) to bracket E, then returns the linear interpolation between the neighbouring knots.
+    //! Leaves the cursor at the upper bracket; safe for degenerate intervals.
+    //! \param E Energy at which to evaluate Σ_M [eV].
+    //! \return Interpolated majorant cross section Σ_M(E) [1/cm].
+    double value(double E);
 
     //! \brief Increment the cross section index by i
     inline
@@ -86,7 +99,8 @@ public:
  public:
   void write_ascii(const std::string& filename) const;
 
-  //! \brief Update the majorant using values from another cross section
+  //! \brief  Union the current energy grid with E_other and replace xs_ with the
+  // pointwise maximum (“envelope”) of both curves on the union grid.
   void update(std::vector<double> energies_other,
               std::vector<double> xs_other);
 

@@ -1,8 +1,16 @@
 #include <fstream>
+#include <fmt/ostream.h>
 
 #include <fmt/core.h>
+#include <fmt/format.h> 
 
 #include <iomanip>
+
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <iostream>
 
 #include "openmc/constants.h"
 #include "openmc/majorant.h"
@@ -42,8 +50,6 @@ void create_majorant() {
         const auto& urr_data = nuclide->urr_data_[t];
         std::vector<double> energies(urr_data.energy_.begin(), urr_data.energy_.end());
 
-        //auto band_totals = xt::view(urr_data.prob_, xt::all(), URRTableParam::TOTAL, xt::all());
-
         double max_urr_total {0.0};
 
         for (auto xs_vals : xt::view(urr_data.xs_values_, xt::all() )) {
@@ -54,11 +60,11 @@ void create_majorant() {
           std::cout << fmt::format("Nuclide {} uses log-log interpolation", nuclide->name_) << std::endl;
         }
 
-        // if multiply_smooth, scale by max URR (widen peaks)
         if (urr_data.multiply_smooth_) {
           std::cout << "Multiplied URR: " << nuclide->name_ << std::endl;
           majorant->grid_.init();
           std::vector<double> xs_vals;
+          //xs_vals.reserve(urr_data.energy_.size());
           for (int i = 0; i < energies.size(); i++) {
             xs_vals.push_back(majorant->calculate_xs(energies[i]) * max_urr_total);
           }
@@ -69,7 +75,6 @@ void create_majorant() {
           std::vector<double> xs_vals(energies.size(), max_urr_total);
           majorant->update(energies, xs_vals);
         }
-        // majorant->update_urr(energies, xs, urr_data.interp_);
       }
     }
     // initialize the energy grid for this nuclide
@@ -78,11 +83,10 @@ void create_majorant() {
   }
 
   // get union energy grid for majorant grid
-  std::cerr << "[MAJ GRID] building union grid...\n";
+  // std::cerr << "[MAJ GRID] building union grid...\n";
   auto majorant_e_grid = compute_majorant_energy_grid();
 
   std::vector<double> xs_vals;
-
   std::vector<Majorant> macro_majorants;
 
   // compute a majorant for every material
@@ -94,7 +98,6 @@ void create_majorant() {
       // See if thermal data is present for any of the material nuclides
       bool check_sab = material->thermal_tables_.size() > 0;
       int thermal_table_idx = 0;
-
       int j = 0;
 
       for (int i = 0; i < material->nuclide_.size(); i++) {
@@ -132,16 +135,10 @@ void create_majorant() {
           // adjust the current xs_val for the thermal component
           xs_val += sab_frac * thermal_xs;
         }
-
       }
 
       material_xs.push_back(xs_val);
     }
-    double mn = *std::min_element(material_xs.begin(), material_xs.end());
-    double mx = *std::max_element(material_xs.begin(), material_xs.end());
-       std::cerr << "[MAJ MAT] mat_id=" << material->id_
-             << " N=" << material_xs.size()
-             << " min=" << mn << " max=" << mx << "\n";
            
     //macro_majorants are sum of density * nuclide majorants
     macro_majorants.emplace_back(Majorant());
@@ -155,23 +152,50 @@ void create_majorant() {
     data::n_majorant->update(macro_majorant.grid_.energy, macro_majorant.xs_);
   }
 
+  // apply safety factor to majorant
+ const double f = 1.02;
+ if (f > 0.0 && std::isfinite(f) && f != 1.0) {
+   std::transform(data::n_majorant->xs_.begin(), data::n_majorant->xs_.end(),
+                  data::n_majorant->xs_.begin(), [f](double x){ return x * f; });
+ }
+
   // this is the global majorant used at runtime
   data::n_majorant->grid_.init();
   data::n_majorant->write_ascii("macro_majorant.txt");
 }
 
+static inline bool nearly_equal(double a, double b,
+                                double rel = 1e-12, double abs = 0.0)
+{
+  double diff  = std::abs(a - b);
+  double scale = std::max(std::abs(a), std::abs(b));
+  return diff <= std::max(abs, rel * scale);
+}
+
+// v must be sorted (non-decreasing). Collapses near-duplicates in-place.
+static inline void tolerant_unique_inplace(std::vector<double>& v)
+{
+  if (v.empty()) return;
+  std::size_t write = 1;
+  for (std::size_t read = 1; read < v.size(); ++read) {
+    if (!nearly_equal(v[read], v[write - 1])) {
+      v[write++] = v[read];
+    }
+  }
+  v.resize(write);
+}
+
 std::vector<double>
 compute_majorant_energy_grid() {
-  std::cerr << "[MAJ GRID DBG] Computing union energy grid...collecting knots\n";
+
   std::vector<double> common_e_grid;
   for (const auto& nuc_maj : data::nuclide_majorants) {
     auto& e_grid = nuc_maj->grid_.energy;
     // append new points to the current group of points
     common_e_grid.insert(common_e_grid.end(), e_grid.begin(), e_grid.end());
 
-    // remove duplicates PP is this useful before sorting? Only removes duplicates
-    // next to each other I think? Won't some duplicates remain and get sorted later?
-    // could cause zero width intervals?
+    // remove duplicates
+    std::sort(common_e_grid.begin(), common_e_grid.end());
     std::unique(common_e_grid.begin(), common_e_grid.end());
   }
   std::sort(common_e_grid.begin(), common_e_grid.end());
@@ -193,7 +217,6 @@ compute_majorant_energy_grid() {
 
   return common_e_grid;
 }
-
 
 Majorant::Majorant(const std::vector<double>& energy,
                    const std::vector<double>& xs) : xs_(xs)
@@ -224,6 +247,7 @@ Majorant::calculate_xs(double energy) const
     i_grid = i_low + lower_bound_index(&grid_.energy[i_low], &grid_.energy[i_high], energy);
   }
 
+  //ToDO: should maybe alter to handle N equal energy points in a row?
   // check for rare case where two energy points are the same
   if (grid_.energy[i_grid] == grid_.energy[i_grid + 1]) ++i_grid;
 
@@ -254,12 +278,13 @@ bool Majorant::intersect_2D(std::pair<double, double> p1,
 
   double t = numerator / denominator;
 
-  if (t < 0.0 || t > 1.0) { return false; }
+  if (t < 0.0 || t > 1.0) { 
+    return false; 
+  }
 
   // compute intersection location
-  double x = p1.first + (p2.first - p1.first) * t;
-  double slope = (p2.second - p1.second) / (p2.first - p1.first);
-  double y = p1.second + (x - p1.first) * slope;
+  double x = p1.first  + (p2.first  - p1.first)  * t;
+  double y = p1.second + (p2.second - p1.second) * t;
   intersection = {x, y};
   return true;
 }
@@ -269,14 +294,11 @@ bool Majorant::is_above(std::pair<double, double> p1,
                         std::pair<double, double> p3) {
   // if the line is vertical, use
   // comparison of x values
-  if (fabs(p2.first - p1.first) < FP_PRECISION) {
-    return p3.first < p2.first;
-  } else {
-    double slope = (p2.second - p1.second) / (p2.first - p1.first);
-    double val = p1.second + slope * (p3.first - p1.first);
-    return val < p3.second;
-  }
+  const double dx = p2.first  - p1.first;
+  const double dy = p2.second - p1.second;
+  const double cross = dx * (p3.second - p1.second) - dy * (p3.first - p1.first);
 
+  return cross > 1e-14 * (std::abs(dx) + std::abs(dy) + std::abs(p3.first - p1.first) + std::abs(p3.second - p1.second));
 }
 
 void Majorant::write_ascii(const std::string& filename) const {
@@ -290,13 +312,20 @@ void Majorant::write_ascii(const std::string& filename) const {
   of.close();
 }
 
+static inline bool strictly_increasing(const std::vector<double>& v) {
+  if (v.empty()) return true;
+  for (size_t i = 1; i < v.size(); ++i) {
+    if (!(v[i] > v[i-1])) return false; // strict
+  }
+  return true;
+}
+
 void Majorant::update(std::vector<double> energy_other,
                       std::vector<double> xs_other) {
 
-  std::cout << "Energy size = " << energy_other.size()
-          << ", XS size = " << xs_other.size() << std::endl;
-
+  // helper struct to access cross section at *this* energy
   XS xs_a(grid_.energy, xs_);
+  // helper struct to access cross sections already added to grid at other energies
   XS xs_b(energy_other, xs_other);
 
   // early exit checks
@@ -495,9 +524,54 @@ double Majorant::XS::prev_e() const { return energies_.at(idx_ - 1); }
 double Majorant::XS::prev_xs() const { return total_xs_.at(idx_ - 1); }
 
 void Majorant::XS::advance(double energy) {
-  double e = energies_[idx_];
-  while (e <= energy && !this->complete()) { e = energies_[++idx_]; }
+  if (idx_ >= energies_.size()) return;
+  auto it = std::upper_bound(energies_.begin() + idx_, energies_.end(), energy);
+  idx_ = static_cast<size_t>(it - energies_.begin());
 }
+
+void Majorant::XS::seek(double E) {
+  const auto N = energies_.size();
+  if (N < 2) { idx_ = 0; return; }
+
+  // Optimisation for cases where successive energy queries are non-decreasing
+  if (idx_ < N && energies_[idx_] <= E) {
+    auto it = std::upper_bound(energies_.begin() + idx_, energies_.end(), E);
+    idx_ = static_cast<size_t>(it - energies_.begin());
+  } else {
+    auto it = std::upper_bound(energies_.begin(), energies_.end(), E);
+    idx_ = static_cast<size_t>(it - energies_.begin());
+  }
+
+#ifndef NDEBUG
+// Debugging: warn if energy is out of bounds - should not happen normally
+const double Emin_tab = energies_.front();
+const double Emax_tab = energies_.back();
+if (E < Emin_tab) {
+  std::fprintf(stderr, "[XS][WARN] E=%.17g below grid min=%.17g; clamping to [0,1].\n", E, Emin_tab);
+}
+if (E > Emax_tab) {
+  std::fprintf(stderr, "[XS][WARN] E=%.17g above grid max=%.17g; clamping to [N-2,N-1].\n", E, Emax_tab);
+}
+#endif
+
+  // clamp to make sure prev() is legal and we always have a bracketing pair
+  if (idx_ == 0) idx_ = 1;      // i.e if E is below old first knot: use [0,1]
+  if (idx_ >= N) idx_ = N - 1;
+}
+
+double Majorant::XS::value(double E) {
+  seek(E);
+  const size_t i1 = idx_;
+  const size_t i0 = i1 - 1;
+  const double e0 = energies_[i0], e1 = energies_[i1];
+  const double x0 = total_xs_[i0], x1 = total_xs_[i1];
+  if (!(e1 > e0)) {
+    return x1; // degenerate interval fallback
+  }
+  const double t = (E - e0) / (e1 - e0);
+  return std::fma(t, (x1 - x0), x0); // linear interp
+}
+
 
 bool Majorant::XS::complete() const { return idx_ >= energies_.size(); }
 

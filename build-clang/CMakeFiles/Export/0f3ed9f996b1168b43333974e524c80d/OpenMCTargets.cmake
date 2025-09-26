@@ -66,10 +66,9 @@ set_target_properties(OpenMC::openmc PROPERTIES
 add_library(OpenMC::libopenmc SHARED IMPORTED)
 
 set_target_properties(OpenMC::libopenmc PROPERTIES
-  INTERFACE_COMPILE_DEFINITIONS "OPENMC_MPI"
   INTERFACE_COMPILE_FEATURES "cxx_std_14"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;/usr/include/hdf5/serial"
-  INTERFACE_LINK_LIBRARIES "-fopenmp;/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so;/usr/lib/x86_64-linux-gnu/libcrypto.so;/usr/lib/x86_64-linux-gnu/libcurl.so;/usr/lib/x86_64-linux-gnu/libpthread.a;/usr/lib/x86_64-linux-gnu/libsz.so;/usr/lib/x86_64-linux-gnu/libz.so;/usr/lib/x86_64-linux-gnu/libdl.a;/usr/lib/x86_64-linux-gnu/libm.so;/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.so;xtensor;gsl::gsl-lite-v1;fmt::fmt;pugixml::pugixml;dagmc-shared;uwuw-shared;PNG::PNG;MPI::MPI_CXX"
+  INTERFACE_LINK_LIBRARIES "/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so;/usr/lib/x86_64-linux-gnu/libcrypto.so;/usr/lib/x86_64-linux-gnu/libcurl.so;/usr/lib/x86_64-linux-gnu/libpthread.a;/usr/lib/x86_64-linux-gnu/libsz.so;/usr/lib/x86_64-linux-gnu/libz.so;/usr/lib/x86_64-linux-gnu/libdl.a;/usr/lib/x86_64-linux-gnu/libm.so;/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_hl.so;xtensor;gsl::gsl-lite-v1;fmt::fmt;pugixml::pugixml;PNG::PNG"
 )
 
 # Load information for each installed configuration.

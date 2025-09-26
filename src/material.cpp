@@ -766,9 +766,6 @@ void Material::init_nuclide_index()
 
 void Material::calculate_xs(Particle& p) const
 {
-  std::cerr << "[XS] Material " << id_ << " has " << nuclide_.size() << " nuclides.\n";
-
-  std::cerr << "[XS] Entered Material::calculate_xs, mat=" << this->id_ << "\n";
   // Set all material macroscopic cross sections to zero
   p.macro_xs().total = 0.0;
   p.macro_xs().absorption = 0.0;
@@ -781,13 +778,10 @@ void Material::calculate_xs(Particle& p) const
     this->calculate_photon_xs(p);
   }
 
-  // debug
-  std::cout << "At the end of calculate_xs, mat xs: " << p.macro_xs().total << "/n"; 
 }
 
 void Material::calculate_neutron_xs(Particle& p) const
 {
-    std::cout << "Entering calculate_neutron_xs /n"; 
   // Find energy index on energy grid
   int neutron = static_cast<int>(ParticleType::neutron);
   int i_grid =
@@ -795,7 +789,6 @@ void Material::calculate_neutron_xs(Particle& p) const
 
   // Determine if this material has S(a,b) tables
   bool check_sab = (thermal_tables_.size() > 0);
-    std::cout << "check_sab= " << check_sab << "/n"; 
 
   // Initialize position in i_sab_nuclides
   int j = 0;
@@ -1468,7 +1461,8 @@ extern "C" int openmc_material_set_id(int32_t index, int32_t id)
 
 extern "C" int openmc_material_get_name(int32_t index, const char** name)
 {
-  if (index < 0 || index >= model::materials.size()) {
+  const auto n = model::materials.size();
+  if (index < 0 || static_cast<size_t>(index) >= n) {
     set_errmsg("Index in materials array is out of bounds.");
     return OPENMC_E_OUT_OF_BOUNDS;
   }
@@ -1480,7 +1474,8 @@ extern "C" int openmc_material_get_name(int32_t index, const char** name)
 
 extern "C" int openmc_material_set_name(int32_t index, const char* name)
 {
-  if (index < 0 || index >= model::materials.size()) {
+  const auto n = model::materials.size();
+  if (index < 0 || static_cast<size_t>(index) >= n) {
     set_errmsg("Index in materials array is out of bounds.");
     return OPENMC_E_OUT_OF_BOUNDS;
   }
@@ -1492,7 +1487,8 @@ extern "C" int openmc_material_set_name(int32_t index, const char* name)
 
 extern "C" int openmc_material_set_volume(int32_t index, double volume)
 {
-  if (index >= 0 && index < model::materials.size()) {
+  const auto n = model::materials.size();
+  if (index >= 0 && static_cast<size_t>(index) < n) {
     auto& m {model::materials[index]};
     if (volume >= 0.0) {
       m->volume_ = volume;

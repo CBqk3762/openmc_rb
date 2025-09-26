@@ -123,6 +123,12 @@ extern double weight_cutoff;       //!< Weight cutoff for Russian roulette
 extern double weight_survive;      //!< Survival weight after Russian roulette
 
 extern double dt_lmax; //!< Maximum distance for delta-tracking step
+
+enum class MajorantMode { Global, PerMaterial, Auto };
+extern MajorantMode majorant_mode;              
+extern double majorant_auto_ratio_thresh;
+extern double majorant_safety;           
+
 } // namespace settings
 
 //==============================================================================

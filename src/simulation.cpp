@@ -80,8 +80,7 @@ int openmc_simulation_init()
     initialize_data();
   }
 
-  if (settings::delta_tracking) {
-    create_majorant();
+  if (settings::delta_tracking) create_majorant();
 
     // --- DEBUG: probe majorant table at a few energies
     auto probe = [&](double E){
@@ -89,7 +88,7 @@ int openmc_simulation_init()
       std::cerr << fmt::format("[MAJ PROBE] E={:.3e} Sigma_M={:.6e}\n", E, sM);
     };
     for (double E : {1e-5, 1e-3, 1.0, 1e3, 1e6}) probe(E);
-  }
+  
   // Determine how much work each process should do
   calculate_work();
 
@@ -237,36 +236,28 @@ int openmc_next_batch(int* status)
 
     // Transport loop
     if (settings::event_based) {
-      std::cerr << "[TRANSPORT] Using event-based transport\n";
       transport_event_based();
     } else if (settings::delta_tracking) {
-      std::cerr << "[TRANSPORT] Using delta-tracking transport\n";
       transport_delta_tracking();
     } else {
-      std::cerr << "[TRANSPORT] Using history-based transport\n";
       transport_history_based();
     }
 
     // Accumulate time for transport
     simulation::time_transport.stop();
-    std::cerr << "[GENERATION] Finished generation " << current_gen << "\n";
 
     finalize_generation();
   }
 
   finalize_batch();
-  std::cerr << "[BATCH] Finished batch " << simulation::current_batch << "\n";
 
   // Check simulation ending criteria
   if (status) {
     if (simulation::current_batch == settings::n_max_batches) {
-      std::cerr << "[EXIT] Reached max batch count\n";
       *status = STATUS_EXIT_MAX_BATCH;
     } else if (simulation::satisfy_triggers) {
-      std::cerr << "[EXIT] Satisfy triggers\n";
       *status = STATUS_EXIT_ON_TRIGGER;
     } else {
-      std::cerr << "[EXIT] Normal completion\n";
       *status = STATUS_EXIT_NORMAL;
     }
   }
@@ -377,11 +368,11 @@ void initialize_batch()
   // check this worked
   for (int i : model::active_collision_tallies) {
     const auto& T = *model::tallies[i];
-    std::cerr << "[tally] id=" << T.id_ 
-              << " estimator=" << static_cast<int>(T.estimator_)
-              << " scores=" << T.scores_.size()
-              << " n_filters=" << T.filters().size()
-              << "\n";
+    // std::cerr << "[tally] id=" << T.id_ 
+    //           << " estimator=" << static_cast<int>(T.estimator_)
+    //           << " scores=" << T.scores_.size()
+    //           << " n_filters=" << T.filters().size()
+    //           << "\n";
   }
 }
 
@@ -533,8 +524,6 @@ void initialize_history(Particle& p, int64_t index_source)
 
   // set identifier for particle
   p.id() = simulation::work_index[mpi::rank] + index_source;
-  std::cerr << "[INIT] Assigned ID = " << p.id() << "\n";
-
 
   // set progeny count to zero
   p.n_progeny() = 0;
@@ -581,13 +570,12 @@ void initialize_history(Particle& p, int64_t index_source)
   // Force calculation of cross-sections by setting last energy to zero
   if (settings::run_CE) {
     p.invalidate_neutron_xs();
-    std::cerr << "[INIT] Invalidated neutron cross sections for CE mode.\n";
   }
 
   // Prepare to write out particle track.
-  if (p.write_track())
+  if (p.write_track()) {
     add_particle_track(p);
-    std::cerr << "[INIT] Particle " << p.id() << " will be tracked.\n";
+  }
 }
 
 int overall_generation()
@@ -769,8 +757,12 @@ void transport_history_based()
 void transport_delta_tracking_single_particle(Particle& p)
 {
   p.delta_tracking() = true;
+  auto& M = p.macro_xs();
+  std::fprintf(stderr,
+  "[XS] At the very start of transport E=%.6e mat=%d Σ_t=%.6e Σ_c=%.6e Σ_a=%.6e Σ_f=%.6e νΣ_f=%.6e\n",
+  p.E(), p.material(), M.total, M.coherent, M.absorption, M.fission, M.nu_fission);
 
-    // Delta-tracked particles need to be initialised manually
+  // Delta-tracked particles need to be initialised manually
   if (p.coord(p.n_coord() - 1).cell == C_NONE) {
     if (!exhaustive_find_cell(p)) {
       p.mark_as_lost("Could not find cell at source for DT particle");
@@ -778,12 +770,21 @@ void transport_delta_tracking_single_particle(Particle& p)
     }
   }
   p.update_material_from_coords();
-  p.event_calculate_xs();
-  if (!p.alive()) {
-    return;
-  }
 
+  // initial majorant for first segment
+  p.update_majorant();
+  p.E_last() = p.E();
+  M = p.macro_xs();
+    std::fprintf(stderr,
+  "[XS] After updating majorant for first segment E=%.6e mat=%d Σ_t=%.6e Σ_c=%.6e Σ_a=%.6e Σ_f=%.6e νΣ_f=%.6e\n",
+  p.E(), p.material(), M.total, M.coherent, M.absorption, M.fission, M.nu_fission);
   while (true) {
+    // If the energy has changed, we need to recalc majorant
+    if (p.E() != p.E_last()) {
+      p.update_majorant();
+      p.E_last() = p.E();
+    } 
+
     // Advance particle by delta tracking (domain boundaries only here)
     p.event_delta_advance();
     if (!p.alive()){
@@ -798,11 +799,27 @@ void transport_delta_tracking_single_particle(Particle& p)
     }
 
     p.update_material_from_coords();
+    std::fprintf(stderr,
+      "[MAT] cell=%d mat=%d\n",
+      p.coord(p.n_coord()-1).cell, p.material());
+
+    auto& M = p.macro_xs();
+    
+    std::fprintf(stderr,
+      "[XS] before p.event_calculate_xs E=%.6e mat=%d Σ_t=%.6e Σ_c=%.6e Σ_a=%.6e Σ_f=%.6e νΣ_f=%.6e\n",
+      p.E(), p.material(), M.total, M.coherent, M.absorption, M.fission, M.nu_fission);
+     // Compute *true* macroscopic XS at the site (for acceptance & physics)
     p.event_calculate_xs();
+    M = p.macro_xs();
+    std::fprintf(stderr,
+      "[XS] After p.event_calculate_xs E=%.6e mat=%d Σ_t=%.6e Σ_c=%.6e Σ_a=%.6e Σ_f=%.6e νΣ_f=%.6e\n",
+      p.E(), p.material(), M.total, M.coherent, M.absorption, M.fission, M.nu_fission);
+
     if (!p.alive()) {
       break;
     }
 
+    // Validate and enforce majorant definition
     if (p.macro_xs().total <= 0.0 || p.majorant() <= 0.0) {
       throw std::runtime_error(fmt::format(
         "[TRANSPORT ERROR] Invalid XS or majorant: xs_tot = {}, xs_M = {}",
@@ -816,19 +833,18 @@ void transport_delta_tracking_single_particle(Particle& p)
 
     //DEBUG check acceptance
     const double Pacc = p.macro_xs().total / p.majorant();
-    std::cerr << "[DT DBG] XS_M="<<p.majorant()<<" XS_t="<<p.macro_xs().total<<" Pacc="<<Pacc<<"\n";
-
-    // CFE (Collision-Flux Estimator) ALWAYS scored for real and virtual
-    if (!model::active_collision_tallies.empty()) {
-      score_collision_tally_dt(p);   // uses w / XS_M
-    }
-
+    const double xi_acc = prn(p.current_seed());
+    std::fprintf(stderr,
+      "[ACC] E=%.6e Σ_t=%.6e Σ_M=%.6e Pacc=%.6e xi=%.17g -> %s\n",
+      p.E(), p.macro_xs().total, p.majorant(), Pacc, xi_acc,
+      (xi_acc < Pacc ? "REAL" : "VIRTUAL"));
     // Real collisions should be handled the same for DT with/out l_max
     // p.dt_force_virtual() is set in particle.cpp
     bool real = false;
     if (!p.dt_force_virtual()) {
       // Real collision
       real = (prn(p.current_seed()) < (p.macro_xs().total / p.majorant()));
+      // std::cerr << "[DT DBG] Did real collision pass rejection sampling? " << (real ? "YES" : "NO") << "\n";
     } else {
       // Step capped by l_max, site of a forced a virtual collision, no need to sample
       // reset flag
@@ -837,12 +853,20 @@ void transport_delta_tracking_single_particle(Particle& p)
 
     // for real collisions, do the collision physics + tallies for outgoing state
     if (real) {
-      std::cerr << "[DT DBG] Real collision \n";
-      p.event_collide();
-      // Score reaction/energy-in–out tallies (analog path)
+      p.wgt_last() = p.wgt();
+
+      // Collision/absorption/fission tallies (analog collision estimator)
       if (!model::active_collision_tallies.empty()) {
-        score_collision_tally(p);    // pre-existing OpenMC analog collision scorer
-      }
+        std::fprintf(stderr,
+        "[TALLY COLL] pre-physics flux=w_last/Σ_t = %.6e/%.6e = %.6e\n",
+        p.wgt_last(), p.macro_xs().total, p.wgt_last()/p.macro_xs().total);
+
+          score_collision_tally(p);   // uses wgt_last / Σ_t
+        }
+
+      // Now do the collision physics (may change E, material, weight…)
+      p.event_collide();
+
     }
 
     // Always revive secondaries even for virtuals
@@ -850,9 +874,6 @@ void transport_delta_tracking_single_particle(Particle& p)
     if (!p.alive()) {
       break;
     }
-    
-    // Refresh majorant after possible E change
-    p.update_majorant();
   }
   p.event_death();
 }
@@ -861,15 +882,11 @@ void transport_delta_tracking() {
   #pragma omp parallel for schedule(runtime)
   for (int64_t i_work = 1; i_work <= simulation::work_per_rank; ++i_work) {
     Particle p;
-    std::cerr << "[DT] Initialising particle " << i_work << "\n";
     initialize_history(p, i_work);
 
-    std::cerr << "[DT] Starting transport for particle " << p.id() 
-              << " at r = (" << p.r().x << ", " << p.r().y << ", " << p.r().z << ")"
-              << ", E = " << p.E() << ", mat = " << p.material() << "\n";
+    // std::cerr << "[DT] Starting transport for particle " << p.id() << "\n";
 
     transport_delta_tracking_single_particle(p);
-    std::cerr << "[DT] Finished transport for particle " << p.id() << "\n";
   }
 }
 

@@ -484,13 +484,11 @@ void Nuclide::EnergyGrid::init()
   double E_min = data::energy_min[neutron];
   double E_max = data::energy_max[neutron];
   int M = settings::n_log_bins;
-
   // Determine equal-logarithmic energy spacing
   double spacing = std::log(E_max / E_min) / M;
 
   // Create equally log-spaced energy grid
   auto umesh = xt::linspace(0.0, M * spacing, M + 1);
-
   grid_index.resize(M + 1);
 
   // Determine corresponding indices in nuclide grid to energies on
@@ -510,7 +508,7 @@ void Nuclide::EnergyGrid::init()
 void Nuclide::init_grid()
 {
   for (auto& grid : grid_) { grid.init(); }
-  for (auto& grid : grid_) { std::cout << "Nuclide grid size: " << grid.energy.size() << std::endl; }
+  //for (auto& grid : grid_) { std::cout << "Nuclide grid size: " << grid.energy.size() << std::endl; }
 }
 
 double Nuclide::nu(double E, EmissionMode mode, int group) const

@@ -78,7 +78,6 @@ void Particle::log_coord_stack(const std::string& context) const {
     }
     std::cout << ")\n";
   }
-
 }
 
 void Particle::create_secondary(
@@ -109,23 +108,25 @@ void Particle::from_source(const SourceSite* src)
 
   // Reset some attributes
   clear();
-  surface() = 0;
-  cell_born() = C_NONE;
-  material() = C_NONE;
-  n_collision() = 0;
-  fission() = false;
-  majorant() = 0.0;
+  surface()      = 0;
+  cell_born()    = C_NONE;
+  material()     = C_NONE;
+  n_collision()  = 0;
+  fission()      = false;
+  majorant()     = 0.0;
   zero_flux_derivs();
 
   // Copy attributes from source bank site
   type() = src->particle;
   wgt() = src->wgt;
   wgt_last() = src->wgt;
+
   r() = src->r;
   u() = src->u;
   r_last_current() = src->r;
   r_last() = src->r;
   u_last() = src->u;
+
   if (settings::run_CE) {
     E() = src->E;
     g() = 0;
@@ -145,45 +146,49 @@ void Particle::from_source(const SourceSite* src)
   E_last() = E(); // maybe should be 0.0?
   time() = src->time;
   time_last() = src->time;
+
   if (delta_tracking()) {
-    std::cerr << "[DT] from_source: DT=" << (delta_tracking()?"T":"F")
-          << " Sigma_M=" << majorant() << "\n";
 
-    // Initialise delta tracking state including geometry coordinate stack
-    n_coord() = 1;
-    coord(0).r = r();
-    coord(0).cell = C_NONE;
-    coord(0).universe = model::root_universe;
-    // clear lattice context too, just in case
-    coord(0).lattice  = C_NONE;   
-    coord(0).lattice_i = {0,0,0};
-
-    // Must locate the cell and assign material before updating majorant
-    if (!exhaustive_find_cell(*this)) {
-      mark_as_lost("Could not locate source particle during from_source()");
-      log_coord_stack("lost in from_source()");
-      return;
+    // Ensure we have at least one coord frame before we delegate
+    if (n_coord() == 0) {
+      coord().resize(1);
+      // mark as unset; update_material_from_coords() will fully init and search
+      coord(0).cell      = C_NONE;
+      coord(0).universe  = C_NONE;
+      coord(0).lattice   = C_NONE;
+      coord(0).lattice_i = {{-1, -1, -1}};
+      coord(0).rotated   = false;
     }
 
-    // Assign material and temperature with local-index mapping
+    // Build geometry stack and assign material/temperature (handles ID→index root)
     update_material_from_coords();
-
-    update_majorant();
-    if (!(majorant() > 0.0) || !std::isfinite(majorant())) {
-      mark_as_lost("Invalid majorant at source.");
-      return;
+    if (material() != C_NONE) {
+      const openmc::Material* m = model::materials[this->material()].get();
+      std::cerr << "[SRC MAT] fissionable=" << (m->fissionable() ? "T" : "F")
+                << " nuclides=" << m->nuclide_.size() << "\n";
+    } else {
+      std::cerr << "[SRC MAT] void\n";
     }
-    
-    // Reset DT related book keeping flags
+
+    // Set macro majorant for current energy (tiny safety factor)
+    majorant() = 1.000001 * data::n_majorant->calculate_xs(E());
+
+    // Reset DT book-keeping
     surf_last() = -1;
     first_step() = true;
   }
-
 }
 
 void Particle::event_calculate_xs()
 {
-  std::cerr << "[XS DEBUG] run_CE = " << settings::run_CE << "\n";
+  // Set the random number stream
+  stream() = STREAM_TRACKING;
+
+  // Store pre-collision particle properties
+  wgt_last() = wgt();
+  E_last() = E();
+  u_last() = u();
+  r_last() = r();
 
   // Set the random number stream
   stream() = STREAM_TRACKING;
@@ -215,14 +220,12 @@ void Particle::event_calculate_xs()
       }
       return;
     }
-    std::cerr << "[XS] Cell successfully found: " << coord(n_coord() - 1).cell << "\n";
   
     // Set birth cell attribute
     if (cell_born() == C_NONE)
       cell_born() = coord(n_coord() - 1).cell;
   }
   if (settings::delta_tracking) { 
-    std::cerr << "[XS] After exhaustive_find_cell: cell = " << coord(n_coord() - 1).cell << "\n";
     this->update_material_from_coords();
   }
 
@@ -235,16 +238,14 @@ void Particle::event_calculate_xs()
 
   // Calculate microscopic and macroscopic cross sections
   if (material() != MATERIAL_VOID) {
-    std::cerr << "[XS] material is not void, is "<< material() << "\n";
     if (settings::run_CE) {
-      std::cerr << "[XS DEBUG] Forcing CE XS calculation\n";
       if (material() != material_last() || sqrtkT() != sqrtkT_last()) {
         // If the material is the same as the last material and the
         // temperature hasn't changed, we don't need to lookup cross
         // sections again.
         model::materials[material()]->calculate_xs(*this);
-        std::cerr << "[XS DEBUG] After XS calc: macro_xs.total = "
-          << macro_xs().total << "\n";
+        // std::cerr << "[XS DEBUG] After XS calc: macro_xs.total = "
+        //   << macro_xs().total << "\n";
         }
       } else {
       // Get the MG data; unlike the CE case above, we have to re-calculate
@@ -263,12 +264,15 @@ void Particle::event_calculate_xs()
 
       // Update majorant where material is always valid
      if (delta_tracking()) {
-       std::cerr << "[MAJORANT] Updating for mat = " << material() << ", E = " << E() << "\n";
-       this->update_majorant();
-     }
+      std::cerr << "[MAJORANT] Updating for mat = " << material() << ", E = " << E() << "\n";
+      this->update_majorant();
+      auto& M = macro_xs();
+      std::fprintf(stderr,
+        "[XS] In p.event_calculate_xs E=%.6e mat=%d Σ_t=%.6e Σ_c=%.6e Σ_a=%.6e Σ_f=%.6e νΣ_f=%.6e\n",
+        E(), material(), M.total, M.coherent, M.absorption, M.fission, M.nu_fission);
+      }
     }
   } else {
-    std::cerr << "[XS] Void material: skipping cross section calculation\n";
     macro_xs().total = 0.0;
     macro_xs().absorption = 0.0;
     macro_xs().fission = 0.0;
@@ -318,27 +322,47 @@ void Particle::event_advance()
 
 void Particle::event_delta_advance()
 {
-  double distance;
+  auto& M = macro_xs();
+  std::fprintf(stderr,
+    "[XS] At the start of event_delta_advance E=%.6e mat=%d Σ_t=%.6e Σ_c=%.6e Σ_a=%.6e Σ_f=%.6e νΣ_f=%.6e\n",
+    E(), material(), M.total, M.coherent, M.absorption, M.fission, M.nu_fission);
+  double distance = 0.0;
   // CFE-min toggle: cap step size at l_max if enabled
   const double lmax = settings::dt_lmax;
   bool forced_virtual = false;
 
-  if (this->E() != this->E_last()) {
-    this->update_majorant();
+  // Cache energy & material for this segment - energy should be constant during flight
+  const double E0 = E();
+  const int    mat0 = material();
+
+  // sync XS 'cursor' (idx_) when E/material changes.
+  // NOTE: value(E) already calls seek(E). Do EITHER of these, not both.
+  if (E0 != E_last()) {
+    update_majorant();
   }
+
   // sample distance to next position
   if (type() == ParticleType::electron || type() == ParticleType::positron) {
     distance = 0.0;
   } else {
-      double maj = majorant();
-    if (!(maj > 0.0 || std::isfinite(maj))) {
+    // only get the majorant once for this flight segment and reuse it
+    const double maj = majorant();
+    M = macro_xs();
+    std::fprintf(stderr,
+      "[XS] After setting maj=majorant() in event_delta_advance E=%.6e mat=%d Σ_t=%.6e Σ_c=%.6e Σ_a=%.6e Σ_f=%.6e νΣ_f=%.6e\n",
+      E(), material(), M.total, M.coherent, M.absorption, M.fission, M.nu_fission);
+    if (maj <= 0.0 || !std::isfinite(maj)) {
       mark_as_lost("Invalid majorant encountered during delta advance.");
       return;
     }
-    // calculate majorant value for this energy
-    distance = -std::log(prn(this->current_seed())) / majorant();
 
-    std::cerr << "[DT STEP] E="<<E()<<" Sigma_M="<<majorant()<<" dist="<<distance<<"\n";
+    // sample one exponential step with specific maj cached earlier
+    const double xi = prn(this->current_seed());
+    distance = -std::log(xi) / maj;
+
+    std::cerr << "[DT STEP] E=" << E0 << " Sigma_M=" << maj
+              << " dist=" << distance << "\n";
+
     // Should disable CFE-min if l_max is not set (default is 0.0)
     if (lmax > 0.0 && std::isfinite(lmax) && distance > lmax) {
       distance = lmax;
@@ -347,7 +371,7 @@ void Particle::event_delta_advance()
     }
   }
 
-  // loop will walk through multiple (internal) surfaces if needed
+  // Geometry Walk: will walk through multiple (internal) surfaces if needed
   while (distance >= 0.0) {
     // Reset boundary info
     boundary().distance = INFTY;
@@ -382,7 +406,7 @@ void Particle::event_delta_advance()
     // If the boundary is further than distance, travel full distance
     if (distance < boundary().distance) {
       r() += distance * u();  // Move to the 'Woodcock' site
-      break;                   // Go to xs refresh & optional CFE tally
+      break;                   // Go to xs refresh
     }
 
     // Otherwise cross the (internal) boundary and continue with the remaining distance
@@ -406,15 +430,29 @@ void Particle::event_delta_advance()
     // If particle leaked, it will be dead here
     if (!alive()) return;
   }
+
+    if (material() == C_NONE) {
+    if (!exhaustive_find_cell(*this)) {
+      keff_tally_leakage() += wgt();
+      mark_as_lost("Lost after cross-surface DT.");
+      wgt() = 0.0;
+      return;
+    }
+    // Do NOT compute XS here—only after we reach the Woodcock site.
+  }
       
-  // Check if particle has fully left geom
+  // We’re now at the Woodcock (virtual/real) site. Resolve the exact cell.
   if (!exhaustive_find_cell(*this)) {
     keff_tally_leakage() += wgt();
     mark_as_lost("Could not be found after boundary advancement.\n");
     wgt() = 0.0;
     return;
   } 
-    
+
+  update_majorant();  
+  material_last() = C_NONE;
+  event_calculate_xs();   // to get true Σ_t for accept/reject  
+  
 }
 
 void Particle::event_cross_surface()
@@ -451,8 +489,8 @@ void Particle::event_cross_surface_dt()
 {
   // Validate surface index
   if (boundary().surface_index == 0) {
-    std::cerr << "[ERROR] Invalid surface index 0 in event_cross_surface_dt().\n";
-    log_coord_stack("Invalid surface index");
+    // std::cerr << "[ERROR] Invalid surface index 0 in event_cross_surface_dt().\n";
+    // log_coord_stack("Invalid surface index");
     mark_as_lost("Delta-tracked particle encountered surface index 0");
     return;
   }
@@ -480,7 +518,7 @@ void Particle::event_cross_surface_dt()
 
     // Check if the particle is still alive and in the geometry
     if (alive() && coord(n_coord() - 1).cell == C_NONE) {
-      std::cerr << "Particle has no valid cell after lattice cross.Attempting surface crossing.\n";
+      // std::cerr << "Particle has no valid cell after lattice cross.Attempting surface crossing.\n";
       cross_surface();
       event() = TallyEvent::SURFACE;
     }
@@ -495,7 +533,7 @@ void Particle::event_cross_surface_dt()
 
   // Determine current cell location
   if (!exhaustive_find_cell(*this)) {
-    std::cerr << "Particle lost after surface crossing.\n";
+    // std::cerr << "Particle lost after surface crossing.\n";
     event_death();
     return;
   }
@@ -512,15 +550,13 @@ void Particle::event_cross_surface_dt()
 
 void Particle::event_collide()
 {
-  std::cerr << "[COLL] Particle " << id() << " collided at E = " << E() << "\n";
-
   // Debug check if in valid material 
   if (material() == MATERIAL_VOID || material() == C_NONE || !(macro_xs().total > 0.0)) {
     std::ostringstream msg;
-    msg << "event_collide called with invalid material. "
-        << "mat=" << material() << " xs_t=" << macro_xs().total
-        << " cell=" << coord(n_coord() - 1).cell
-        << " r=" << r();
+    // msg << "event_collide called with invalid material. "
+    //     << "mat=" << material() << " xs_t=" << macro_xs().total
+    //     << " cell=" << coord(n_coord() - 1).cell
+    //     << " r=" << r();
     throw std::runtime_error(msg.str());
   }
 
@@ -658,7 +694,6 @@ void Particle::event_revive_from_secondary()
 
 }
 
-
 void Particle::event_death()
 {
 #ifdef DAGMC
@@ -702,7 +737,7 @@ void Particle::cross_surface()
 {
   int i_surface = std::abs(surface());
   if (i_surface <= 0 || i_surface > static_cast<int>(model::surfaces.size())) {
-    std::cerr << "[DEBUG] Invalid surface index: " << surface() << "\n";
+    // std::cerr << "[DEBUG] Invalid surface index: " << surface() << "\n";
     throw std::runtime_error("Invalid surface index in cross_surface");
   }
   // TODO: off-by-one
@@ -769,8 +804,8 @@ void Particle::cross_surface()
 
   // Delta tracking: if neighbor search failed assume particle left geometry, terminate now
   if (delta_tracking()) {
-    std::cerr << "[X-SURF] Particle " << id()
-              << " lost after crossing surface " << surf->id_ << "\n";
+    // std::cerr << "[X-SURF] Particle " << id()
+    //           << " lost after crossing surface " << surf->id_ << "\n";
     mark_as_lost("Delta-tracked particle lost after surface crossing");
     return;
   }
@@ -953,96 +988,140 @@ void Particle::update_majorant()
   }
 
   this->majorant() = 1.000001 * data::n_majorant->calculate_xs(this->E());
-
-  std::cerr << "[MAJORANT DEBUG] At E = " << E()
-            << ", majorant() = " << majorant()
-            << ", material = " << material() << "\n";
-
 }
 
 void Particle::update_material_from_coords()
 {
-  if (settings::delta_tracking) {
-    std::cerr << "[UpdateMaterial DEBUG] Started update, currently material = " 
-        << material() << "\n";
-  }
-
-  // Save previous material and temperature
+  // bookkeeping
   material_last() = material();
-  sqrtkT_last() = sqrtkT();
-
-  // Clear old assigned values
+  sqrtkT_last()   = sqrtkT();
   material() = C_NONE;
   sqrtkT()   = 0.0;
 
-  // Fetch cell at lowest coord
-  if (n_coord() <= 0) {
-    fatal_error("No coordinates on particle when updating material.");
+  if (n_coord() == 0) fatal_error("No coordinates on particle.");
+
+  // collapse to root BEFORE searching
+  if (n_coord() > 1) {
+    coord().resize(1);
+  }
+  auto& lc0 = coord(0);
+
+  // Reset index fields on the frame (keep r/u after this)
+  lc0.cell      = C_NONE;
+  lc0.universe  = C_NONE;
+  lc0.lattice   = C_NONE;
+  lc0.lattice_i = {{-1, -1, -1}};
+  lc0.rotated   = false;
+
+  // Map model::root_universe (ID or index) -> INDEX before setting anything
+  int ru = model::root_universe;
+  auto it_ru = model::universe_map.find(ru);            // if ru is an ID, this exists
+  if (it_ru != model::universe_map.end()) ru = it_ru->second; // ID -> index
+  Expects(ru >= 0 && ru < static_cast<int>(model::universes.size()));
+  lc0.universe  = ru;                                    // Now this should always be an INDEX here
+  lc0.r         = r();
+  lc0.u         = u();
+
+  // debug pre-search dump
+  for (int i = 0; i < n_coord(); ++i) {
+    int ci = coord(i).cell;
+    int t  = (ci>=0 && ci<(int)model::cells.size())
+             ? (int)model::cells[ci]->type_ : -1;
+    int ms = (ci>=0 && ci<(int)model::cells.size())
+             ? (int)model::cells[ci]->material_.size() : -1;
+    //std::cerr << "[coord["<<i<<"]] cell="<<ci
+    //          << " type="<<t<<" material_.size="<<ms<<"\n";
   }
 
-  int32_t cell_idx = lowest_coord().cell;
-  if (cell_idx < 0 || cell_idx >= static_cast<int32_t>(model::cells.size())) {
-    fatal_error("Invalid cell index at lowest coordinate when updating material.");
+  // geometry search to populate coord stack
+  exhaustive_find_cell(*this);
+
+  // debug post-search dump
+  for (int i = 0; i < n_coord(); ++i) {
+    int ci = coord(i).cell;
+    int t  = (ci>=0 && ci<(int)model::cells.size())
+             ? (int)model::cells[ci]->type_ : -1;
+    int ms = (ci>=0 && ci<(int)model::cells.size())
+             ? (int)model::cells[ci]->material_.size() : -1;
+    // std::cerr << "[coord["<<i<<"]] cell="<<ci
+    //           << " type="<<t<<" material_.size="<<ms<<"\n";
   }
 
-  const auto& cell_ptr = model::cells[cell_idx];
-  if (!cell_ptr) {
-    fatal_error("Null cell pointer in update_material_from_coords.");
+  if (coord().empty() || lowest_coord().cell == C_NONE) {
+    cell_instance() = C_NONE;
+    return;
   }
 
-  const Cell& cell = *cell_ptr;
-  if (cell.type_ != Fill::MATERIAL) {
-    fatal_error("Cell at lowest coordinate level not filled with material.");
+  // find the deepest MATERIAL-filled level
+  int level_mat = -1;
+  for (int lvl = n_coord() - 1; lvl >= 0; --lvl) {
+    int32_t ci = coord(lvl).cell;
+    if (ci == C_NONE) continue;
+    
+    Expects(ci >= 0 && ci < static_cast<int32_t>(model::cells.size()));
+    if (model::cells[ci]->type_ == Fill::MATERIAL) {
+      level_mat = lvl;
+      break;
+    }
   }
 
-  // Compute the *local* distribcell instance for this coord level if applicable
-  const bool is_distrib = (cell.distribcell_index_ != C_NONE);
+  if (level_mat < 0) {
+    // no material cell: treat as void
+    cell_instance() = C_NONE;
+    material() = C_NONE;
+    sqrtkT()   = 0.0;
+    return;
+  }
+
+  const int32_t cell_idx = coord(level_mat).cell;
+  Expects(cell_idx >= 0 && cell_idx < static_cast<int32_t>(model::cells.size()));
+  const Cell& cell = *model::cells[cell_idx];
+
+  // resolve distribcell instance (only if parent exists)
   int inst_local = 0;
-  if (is_distrib) {
-    inst_local = cell_instance_at_level(*this, n_coord() - 1);
-    // Defensive: if the per-instance vectors have multiple entries,
-    // the local index must be in range.
-    if (cell.material_.size() > 1) {
-      Expects(inst_local >= 0 && inst_local < static_cast<int>(cell.material_.size()));
+  const bool has_distrib =
+      (cell.distribcell_index_ != C_NONE) &&
+      ((cell.material_.size() > 1) || (cell.sqrtkT_.size() > 1));
+
+  if (has_distrib) {
+    if (level_mat > 0 && coord(level_mat - 1).cell != C_NONE) {
+      inst_local = cell_instance_at_level(*this, level_mat);
+      if (cell.material_.size() > 1)
+        Expects(inst_local >= 0 && inst_local < static_cast<int>(cell.material_.size()));
+      if (cell.sqrtkT_.size() > 1)
+        Expects(inst_local >= 0 && inst_local < static_cast<int>(cell.sqrtkT_.size()));
+    } else {
+      // Parent not set-fall back safely
+      inst_local = 0;
     }
-    if (cell.sqrtkT_.size() > 1) {
-      Expects(inst_local >= 0 && inst_local < static_cast<int>(cell.sqrtkT_.size()));
-    }
   }
 
-  // Choose indices for material and temperature vectors
-  const int idx_mat = (cell.material_.size() > 1 ? inst_local : 0);
-  const int idx_T   = (cell.sqrtkT_.size()   > 1 ? inst_local : 0);
+  // set material and temperature indices
+  const int i_mat = (cell.material_.size() > 1 ? inst_local : 0);
+  const int i_T   = (cell.sqrtkT_.size()   > 1 ? inst_local : 0);
 
-  // Assign material and temperature
-  int mat_id = C_NONE;
-  double kT  = 0.0;
-
-  if (!cell.material_.empty()) {
-    mat_id = cell.material_[idx_mat];
-  }
-  if (!cell.sqrtkT_.empty()) {
-    kT = cell.sqrtkT_[idx_T];
+  if (cell.material_.empty()) {
+    material() = C_NONE;
+    sqrtkT()   = cell.sqrtkT_.empty() ? 0.0 : cell.sqrtkT_[i_T];
+    cell_instance() = C_NONE;
+    return;
   }
 
-  material() = mat_id;
+  int32_t tok = cell.material_[i_mat];       // INDEX, not ID
+  double  kT  = cell.sqrtkT_.empty() ? 0.0 : cell.sqrtkT_[i_T];
+
+  if (tok == MATERIAL_VOID || tok == C_NONE) {
+    material() = C_NONE;   
+  } else {
+    Expects(tok >= 0 && tok < static_cast<int32_t>(model::materials.size()));
+    Expects(model::materials[tok] != nullptr);
+    material() = tok;        // store INDEX
+  }
   sqrtkT() = kT;
 
-std::cerr << "[UpdateMaterial DEBUG] Assigned mat_id = " << mat_id
-          << ", sqrtkT = " << kT
-          << ", inst_local = " << inst_local
-          << ", material_.size = " << cell.material_.size()
-          << ", cell_idx = " << cell_idx
-          << "\n";
-
-
-  // Store the *local* instance index only if vectors are per-instance;
-  // otherwise use C_NONE to indicate "no per-instance selection needed".
-  if (cell.material_.size() > 1 || cell.sqrtkT_.size() > 1) {
-    cell_instance() = inst_local;
-  } else {
-    cell_instance() = C_NONE;
-  }
+  // record per-instance selection if vectors are per-instance
+  cell_instance() =
+      (cell.material_.size() > 1 || cell.sqrtkT_.size() > 1) ? inst_local : C_NONE;
 }
 
 

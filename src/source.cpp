@@ -179,59 +179,85 @@ SourceSite IndependentSource::sample(uint64_t* seed) const
   SourceSite site;
   site.particle = particle_;
 
-  // Repeat sampling source location until a good site has been found
   bool found = false;
   int n_reject = 0;
   static int n_accept = 0;
 
+  // helper: derive material index from coord stack (deepest MATERIAL cell)
+  auto mat_index_from_coord = [](const Particle& pp) -> int {
+    int level_mat = -1;
+    for (int lvl = pp.n_coord() - 1; lvl >= 0; --lvl) {
+      int ci = pp.coord(lvl).cell;
+      if (ci != C_NONE && model::cells[ci]->type_ == Fill::MATERIAL) { level_mat = lvl; break; }
+    }
+    if (level_mat < 0) return MATERIAL_VOID;
+
+    const Cell& cell = *model::cells[pp.coord(level_mat).cell];
+    int inst = 0;
+    if (cell.distribcell_index_ != C_NONE &&
+        (cell.material_.size() > 1 || cell.sqrtkT_.size() > 1) &&
+        level_mat > 0 && pp.coord(level_mat - 1).cell != C_NONE) {
+      inst = cell_instance_at_level(const_cast<Particle&>(pp), level_mat);
+    }
+    if (cell.material_.empty()) return MATERIAL_VOID;
+    return cell.material_[cell.material_.size() > 1 ? inst : 0];
+  };
+
   while (!found) {
-    // Set particle type
+    // probe particle for geometry
     Particle p;
+    p.clear();                      // ensure clean state
     p.type() = particle_;
-    p.u() = {0.0, 0.0, 1.0};
+    p.u() = {0.0, 0.0, 1.0};        // dir unused, but set anyway
 
-    // Sample spatial distribution
+    // seed root coord frame explicitly
+    if (p.n_coord() == 0) p.coord().resize(1);
+    auto& lc0 = p.coord(0);
+    lc0.cell      = C_NONE;
+    lc0.universe  = (model::universe_map.count(model::root_universe)
+                      ? model::universe_map.at(model::root_universe)
+                      : model::root_universe); // root as INDEX
+    lc0.lattice   = C_NONE;
+    lc0.lattice_i = {{-1, -1, -1}};
+
+    // sample position and locate geometry
     p.r() = space_->sample(seed);
-
-    // Now search to see if location exists in geometry
     found = exhaustive_find_cell(p);
 
-    // Check if spatial site is in fissionable material
     if (found) {
-      auto space_box = dynamic_cast<SpatialBox*>(space_.get());
-      if (space_box) {
-        if (space_box->only_fissionable()) {
-          // Determine material
-          auto mat_index = p.material();
-          if (mat_index == MATERIAL_VOID) {
-            found = false;
-          } else {
-            found = model::materials[mat_index]->fissionable_;
-          }
-        }
+      // fission-only gate for <space type="fission">
+      if (auto* sb = dynamic_cast<SpatialBox*>(space_.get());
+          sb && sb->only_fissionable()) {
+        int mi = mat_index_from_coord(p);
+        bool is_fiss = (mi != MATERIAL_VOID) &&
+                       (mi >= 0 && mi < (int)model::materials.size()) &&
+                       model::materials[mi] && model::materials[mi]->fissionable_;
+        found = found && is_fiss;
       }
 
-      // Rejection based on cells/materials/universes
-      if (!domain_ids_.empty()) {
-        found = false;
+      // domain filters (materials / cells / universes)
+      if (found && !domain_ids_.empty()) {
+        bool in_domain = false;
         if (domain_type_ == DomainType::MATERIAL) {
-          auto mat_index = p.material();
-          if (mat_index != MATERIAL_VOID) {
-            found = contains(domain_ids_, model::materials[mat_index]->id());
+          int mi = mat_index_from_coord(p); // robust against unset p.material()
+          if (mi != MATERIAL_VOID &&
+              mi >= 0 && mi < (int)model::materials.size() &&
+              model::materials[mi]) {
+            in_domain = contains(domain_ids_, model::materials[mi]->id());
           }
         } else {
-          for (const auto& coord : p.coord()) {
-            auto id = (domain_type_ == DomainType::CELL)
-                        ? model::cells[coord.cell]->id_
-                        : model::universes[coord.universe]->id_;
-            if ((found = contains(domain_ids_, id)))
-              break;
+          for (const auto& c : p.coord()) {
+            if (c.cell == C_NONE || c.universe == C_NONE) continue;
+            int id = (domain_type_ == DomainType::CELL)
+                       ? model::cells[c.cell]->id_
+                       : model::universes[c.universe]->id_;
+            if (contains(domain_ids_, id)) { in_domain = true; break; }
           }
         }
+        found = found && in_domain;
       }
     }
 
-    // Check for rejection
     if (!found) {
       ++n_reject;
       if (n_reject >= EXTSRC_REJECT_THRESHOLD &&
@@ -240,34 +266,34 @@ SourceSite IndependentSource::sample(uint64_t* seed) const
                     "rejected. Please check your external source's spatial "
                     "definition.");
       }
+      continue; // resample
     }
 
+    // accept: commit position and leave loop
     site.r = p.r();
+    ++n_accept;
+    break;
   }
 
   // Sample angle
   site.u = angle_->sample(seed);
 
-  // Check for monoenergetic source above maximum particle energy
-  auto p = static_cast<int>(particle_);
-  auto energy_ptr = dynamic_cast<Discrete*>(energy_.get());
-  if (energy_ptr) {
-    auto energies = xt::adapt(energy_ptr->x());
-    if (xt::any(energies > data::energy_max[p])) {
+  // Check monoenergetic energies against max
+  auto ptype_idx = static_cast<int>(particle_);
+  if (auto* energy_disc = dynamic_cast<Discrete*>(energy_.get())) {
+    auto energies = xt::adapt(energy_disc->x());
+    if (xt::any(energies > data::energy_max[ptype_idx])) {
       fatal_error("Source energy above range of energies of at least "
                   "one cross section table");
     }
   }
 
+  // Sample energy (with max-energy guard)
   while (true) {
-    // Sample energy spectrum
     site.E = energy_->sample(seed);
+    if (site.E < data::energy_max[ptype_idx]) break;
 
-    // Resample if energy falls above maximum particle energy
-    if (site.E < data::energy_max[p])
-      break;
-
-    n_reject++;
+    ++n_reject;
     if (n_reject >= EXTSRC_REJECT_THRESHOLD &&
         static_cast<double>(n_accept) / n_reject <= EXTSRC_REJECT_FRACTION) {
       fatal_error("More than 95% of external source sites sampled were "
@@ -279,8 +305,33 @@ SourceSite IndependentSource::sample(uint64_t* seed) const
   // Sample particle creation time
   site.time = time_->sample(seed);
 
-  // Increment number of accepted samples
-  ++n_accept;
+  #ifdef OPENMC_DEBUG_FISSION_SOURCE
+  if (auto* sb = dynamic_cast<SpatialBox*>(space_.get()); sb && sb->only_fissionable()) {
+    // Re-check that the RETURNED site is in fissionable material
+    Particle q;
+    q.clear();
+    if (q.n_coord() == 0) q.coord().resize(1);
+    auto& lq = q.coord(0);
+    lq.cell = C_NONE;
+    lq.universe = (model::universe_map.count(model::root_universe)
+                    ? model::universe_map.at(model::root_universe)
+                    : model::root_universe); // index
+    lq.lattice = C_NONE; lq.lattice_i = {{-1,-1,-1}};
+    q.r() = site.r;
+
+    bool found2 = exhaustive_find_cell(q);
+    bool fiss_ok = false;
+    if (found2) {
+      int mi2 = mat_index_from_coord(q);
+      fiss_ok = (mi2 != MATERIAL_VOID) &&
+                mi2 >= 0 && mi2 < (int)model::materials.size() &&
+                model::materials[mi2] && model::materials[mi2]->fissionable_;
+    }
+    if (!fiss_ok) {
+      fatal_error("Invariant violated: fission spatial source returned a non-fissionable site.");
+    }
+  }
+  #endif
 
   return site;
 }

@@ -1,0 +1,1890 @@
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:1: error: 'BoundaryInfo' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  177 | struct BoundaryInfo {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/geometry_aux.cpp:10:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/geometry.cpp:7:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/geometry.cpp:10:
+In file included from /home/cbyers/Projects/openmc/src/reaction_product.cpp:9:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/secondary_nbody.cpp:6:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+      |                     ~ ^ ~~~~~~~~~
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:64:26: warning: declaration shadows a local variable [-Wshadow]
+   64 |   } else if (const auto* ptr = dynamic_cast<const SurfaceYPlane*>(&surf1)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:63:19: note: previous declaration is here
+   63 |   if (const auto* ptr = dynamic_cast<const SurfaceXPlane*>(&surf1)) {
+      |                   ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:65:26: warning: declaration shadows a local variable [-Wshadow]
+   65 |   } else if (const auto* ptr = dynamic_cast<const SurfaceZPlane*>(&surf1)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:64:26: note: previous declaration is here
+   64 |   } else if (const auto* ptr = dynamic_cast<const SurfaceYPlane*>(&surf1)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:66:26: warning: declaration shadows a local variable [-Wshadow]
+   66 |   } else if (const auto* ptr = dynamic_cast<const SurfacePlane*>(&surf1)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:65:26: note: previous declaration is here
+   65 |   } else if (const auto* ptr In file included from = dynamic_cast<const SurfaceZPlane*>(&surf1)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:76:26: warning: declaration shadows a local variable [-Wshadow]
+   76 |   } else if (const auto* pt/home/cbyers/Projects/openmc/src/lattice.cpp:8:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | strucrt C = dellInynamic_stcast<const SurfaceYPlane*>(&surf2)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:75:19: ance note: previous declaration is here
+   75{ |   
+if (const au      | ^to* pt
+r = dynami/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?c_cast<const S
+urfaceXPlane*>(&surf2)) {
+      |                   ^
+   44 | /home/cbyers/Projects/openmc/src/boundary_condition.cpp:77class CellInstance;
+      | ^~~~~
+      | struct
+:26: warning: declaration shadows a local variable [-Wshadow]
+   77 |   } else if (const auto* ptr = dynamic_cast<const SurfaceZPlane*>(&surf2)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:76:26: note: previous declaration is here
+   76 |   } else if (const auto* ptr = dynamic_cast<const SurfaceYPlane*>(&surf2)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:78:26: warning: declaration shadows a local variable [-Wshadow]
+   78 |   } else if (const auto* ptr = dynamic_cast<const SurfacePlane*>(&surf2)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:77:26: note: previous declaration is here
+   77 |   } else if (const auto* ptr = dynamic_cast<const SurfaceZPlane*>(&surf2)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:157:26: warning: declaration shadows a local variable [-Wshadow]
+  157 |   } else if (const auto* ptr = dynamic_cast<const SurfaceYPlane*>(&surf1)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:155:19: note: previous declaration is here
+  155 |   if (const auto* ptr = dynamic_cast<const SurfaceXPlane*>(&surf1)) {
+      |                   ^
+In file included from /home/cbyers/Projects/openmc/src/lattice.cpp:10:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:/home/cbyers/Projects/openmc/src/boundary_condition.cpp:159:26: warning: declaration shadows a local variable [-Wshadow]
+  159 |   } else if (const auto* ptr = dynamic_cast<const SurfacePlane*>(&surf1)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:157:26: note: previous declaration is here
+  157 |   } else if (const auto* ptr = dynamic_cast<const SurfaceYPlane*>(&14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class surf1)) {BoundaryI
+      | nfo                         ^
+;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here/home/cbyers/Projects/openmc/src/boundary_condition.cpp:173:26: warning: declaration shadows a local variable [-Wshadow]
+  173 |   } els
+  177 | struct BoundaryInfo {
+      |        ^
+e if (const auto* ptr = dynam/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+ic_cast<const SurfaceYPlane*>(&surf2)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:171:19: note: previous declaration is here
+  171 |   if (const auto* ptr = dynamic_cast<const SurfaceXPlane*>(&surf2)) {
+      |                   ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:175:26: warning: declaration shadows a local variable [-Wshadow]
+  175 |   } else if (const auto* ptr = dynamic_cast<const SurfacePlane*>(&surf2)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:173:26: note: previous declaration is here
+  173 |   } else if (const auto* ptr = dynamic_cast<const SurfaceYPlane*>(&surf2)) {
+      |                          ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:154:8: warning: variable 'surf1_is_xyplane' set but not used [-Wunused-but-set-variable]
+  154 |   bool surf1_is_xyplane;
+      |        ^
+/home/cbyers/Projects/openmc/src/boundary_condition.cpp:170:8: warning: variable 'surf2_is_xyplane' set but not used [-Wunused-but-set-variable]
+  170 |   bool surf2_is_xyplane;
+      |        ^
+In file included from /home/cbyers/Projects/openmc/src/secondary_thermal.cpp:3:
+/home/cbyers/Projects/openmc/src/secondary_thermal.cpp:87:3: note: in instantiation of function template specialization 'openmc::read_dataset<double, 2UL>' requested here
+   87 |   read_dataset(group, "mu_out", mu_out_);
+      |   ^
+In file included from /home/cbyers/Projects/openmc/src/cell.cpp:2:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+      |                   ~ ^ ~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/secondary_thermal.cpp:142:3: note: in instantiation of function template specialization 'openmc::read_dataset<double, 3UL>' requested here
+  142 |   read_dataset(group, "mu_out", mu_out_);
+      |   ^
+In file included from /home/cbyers/Projects/openmc/src/universe.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/universe.h:4:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/scattdata.cpp:515:61: warning: declaration shadows a field of 'openmc::ScattDataHistogram' [-Wshadow]
+  515 | double ScattDataHistogram::calc_f(int gin, int gout, double mu)
+      |                                                             ^
+/home/cbyers/Projects/openmc/include/openmc/scattdata.h:166:26: note: previous declaration is here
+  166 |   xt::xtensor<double, 1> mu; // Angle distribution mu bin boundaries
+      |                          ^
+/home/cbyers/Projects/openmc/src/scattdata.cpp:539:31: warning: declaration shadows a field of 'openmc::ScattDataHistogram' [-Wshadow]
+  539 |   int gin, int& gout, double& mu, double& wgt, uint64_t* seed)
+      |                               ^
+/home/cbyers/Projects/openmc/include/openmc/scattdata.h:166:26: note: previous declaration is here
+  166 |   xt::xtensor<double, 1> mu; // Angle distribution mu bin boundaries
+      |                          ^
+/home/cbyers/Projects/openmc/src/scattdata.cpp:572:62: warning: unused parameter 'max_order' [-Wunused-parameter]
+  572 | xt::xtensor<double, 3> ScattDataHistogram::get_matrix(size_t max_order)
+      |                                                              ^
+/home/cbyers/Projects/openmc/src/scattdata.cpp:715:59: warning: declaration shadows a field of 'openmc::ScattDataTabular' [-Wshadow]
+  715 | double ScattDataTabular::calc_f(int gin, int gout, double mu)
+      |                                                           ^
+/home/cbyers/Projects/openmc/include/openmc/scattdata.h:195:26: note: previous declaration is here
+  195 |   xt::xtensor<double, 1> mu; // Angle distribution mu grid points
+      |                          ^
+/home/cbyers/Projects/openmc/src/scattdata.cpp:740:31: warning: declaration shadows a field of 'openmc::ScattDataTabular' [-Wshadow]
+  740 |   int gin, int& gout, double& mu, double& wgt, uint64_t* seed)
+      |                               ^
+/home/cbyers/Projects/openmc/include/openmc/scattdata.h:195:26: note: previous declaration is here
+  195 |   xt::xtensor<double, 1> mu; // Angle distribution mu grid points
+      |                          ^
+/home/cbyers/Projects/openmc/src/scattdata.cpp:789:60: warning: unused parameter 'max_order' [-Wunused-parameter]
+  789 | xt::xtensor<double, 3> ScattDataTabular::get_matrix(size_t max_order)
+      |                                                            ^
+/home/cbyers/Projects/openmc/src/distribution_spatial.cpp:222:41: warning: unused parameter 'seed' [-Wunused-parameter]
+  222 | Position SpatialPoint::sample(uint64_t* seed) const
+      |                                         ^
+8 warnings generated.
+In file included from /home/cbyers/Projects/openmc/src/cross_sections.cpp:9:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_mu.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_mu.h:6:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+3 warnings generated.
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/universe.cpp:5:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/initialize.cpp:18:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/src/tallies/filter_mu.cpp:52:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   52 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_cell_instance.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_cell_instance.h:9:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/particle_data.cpp:3:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/particle_data.cpp:4:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/universe.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/universe.h:4:
+In file included from /home/cbyers/Projects/openmc/include/openmc/cell.h:13:
+In file included from /home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:25:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/memory:78:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:99:2: error: delete called on non-final 'openmc::Universe' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+   99 |         delete __ptr;
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:404:4: note: in instantiation of member function 'std::default_delete<openmc::Universe>::operator()' requested here
+  404 |           get_deleter()(std::move(__ptr));
+      |           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:19: note: in instantiation of member function 'std::unique_ptr<openmc::Universe>::~unique_ptr' requested here
+  151 |       __pointer->~_Tp();
+      |                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:196:2: note: in instantiation of function template specialization 'std::_Destroy_aux<false>::__destroy<std::unique_ptr<openmc::Universe> *>' requested here
+  196 |         __destroy(__first, __last);
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/alloc_traits.h:948:12: note: in instantiation of function template specialization 'std::_Destroy<std::unique_ptr<openmc::Universe> *>' requested here
+  948 |       std::_Destroy(__first, __last);
+      |            ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:735:7: note: in instantiation of function template specialization 'std::_Destroy<std::unique_ptr<openmc::Universe> *, std::unique_ptr<openmc::Universe>>' requested here
+  735 |         std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+      |              ^
+/home/cbyers/Projects/openmc/src/universe.cpp:12:30: note: in instantiation of member function 'std::vector<std::unique_ptr<openmc::Universe>>::~vector' requested here
+   12 | vector<unique_ptr<Universe>> universes;
+      |                              ^
+12 warnings generated.
+5 warnings and 2 errors generated.
+In file included from /home/cbyers/Projects/openmc/src/finalize.cpp:11:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:1325: CMakeFiles/libopenmc.dir/src/universe.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+In file included from /home/cbyers/Projects/openmc/src/distribution_angle.cpp:9:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/particle.cpp:10:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/geometry.cpp:381:12: warning: declaration shadows a local variable [-Wshadow]
+  381 |       bool found = exhaustive_find_cell(p);
+      |            ^
+/home/cbyers/Projects/openmc/src/geometry.cpp:375:10: note: previous declaration is here
+  375 |     bool found = exhaustive_find_cell(p);
+      |          ^
+In file included from /home/cbyers/Projects/openmc/src/cell.cpp:19:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/summary.cpp:6:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/cell.cpp:20:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xt/home/cbyers/Projects/openmc/include/openmc/lattice.h:170:18: ensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/distribution_multi.cpp:91:45: warning: unused parameter 'seed' [-Wunused-parameter]
+   91 | Direction Monodirectional::sample(uint64_t* seed) const
+      |                                             ^
+In file included from /home/cbyers/Projects/openmc/src/dagmc.cpp:9:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/dagmc.cpp:10:
+In file included from /home/cbyers/Projects/openmc/include/openmc/material.h:12:
+In file included from /home/cbyers/Projects/openmc/include/openmc/bremsstrahlung.h:4:
+In file included from /home/cbyers/Projects/openmc/include/openmc/particle.h:13:
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:1: error: 'BoundaryInfo' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  177 | struct BoundaryInfo {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/mesh.cpp:27:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+In file included from /home/cbyers/Projects/openmc/src/geometry_aux.cpp:16:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct /home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, booBoundaryInfo {
+      |        ^
+l ind/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+ep = false)
+In file included from /home/cbyers/Projects/openmc/src/geometry_aux.cpp:17:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/tallies/filter_delayedgroup.cpp:40:19: warning: unused parameter 'p' [-Wunused-parameter]
+   40 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                   ^
+/home/cbyers/Projects/openmc/src/tallies/filter_delayedgroup.cpp:40:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   40 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:206:12: warning: unused parameter 'r0' [-Wunused-parameter]
+5 warnings  206 |   Position r0, Position r1, const Direction& u, vector<int>& bins) const
+      |            ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:206:25: warning: unused parameter 'r1' [-Wunused-parameter]
+  206 |   Position r0, Position r1, const Direction& u, vector<int>& bins) const
+      |                         ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:206:46: warning: unused parameter 'u' [-Wunused-parameter]
+  206 |   Position r0, Position r1, const Direction& u, vector<int>& bins) const
+      |                                              ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:206:62: warning: unused parameter 'bins' [-Wunused-parameter]
+  206 |   Position r0, Position r1, const Direction& u, vector<int>& bins) const
+      |                                                              ^
+ generated.
+In file included from /home/cbyers/Projects/openmc/src/geometry_aux.cpp:21:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/cell.cpp:142:17: warning: declaration shadows a local variable [-Wshadow]
+  142 |       for (auto instance : instances) {
+      |                 ^
+/home/cbyers/Projects/openmc/src/cell.cpp:99:46: note: previous declaration is here
+   99 | void Cell::set_temperature(double T, int32_t instance, bool set_contained)
+      |                                              ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/cell.cpp:522:21: warning: declaration shadows a local variable [-Wshadow]
+  522 |         const auto& it {model::surface_map.find(abs(r))};
+      |                     ^
+/home/cbyers/Projects/openmc/src/cell.cpp:490:10: note: previous declaration is here
+  490 |     auto it = std::find(expression_.begin(), expression_.end(), OP_COMPLEMENT);
+      |          ^
+/home/cbyers/Projects/openmc/src/cell.cpp:545:17: warning: declaration shadows a local variable [-Wshadow]
+  545 |       for (auto it = expression_.begin(); it != expression_.end(); it++) {
+      |                 ^
+/home/cbyers/Projects/openmc/src/cell.cpp:490:10: note: previous declaration is here
+  490 |     auto it = std::find(expression_.begin(), expression_.end(), OP_COMPLEMENT);
+      |          ^
+/home/cbyers/Projects/openmc/src/initialize.cpp/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/include/openmc/plot.h:11:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/initialize.cpp:25:
+In file included from /home/cbyers/Projects/openmc/include/openmc/plot.h:14:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1:  warning generatederror: .
+class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/material.cpp:243:18: warning: declaration shadows a local variable [-Wshadow]
+  243 |       LibraryKey key {Library::Type::photon, element};
+      |                  ^
+/home/cbyers/Projects/openmc/src/material.cpp:220:16: note: previous declaration is here
+  220 |     LibraryKey key {Library::Type::neutron, name};
+      |                ^
+/home/cbyers/Projects/openmc/src/cell.cpp:787:58: warning: unused parameter 'p' [-Wunused-parameter]
+  787 |   Position r, Direction u, int32_t on_surface, Particle* p) const
+      |                                                          ^
+warning: unused variable 'cell_node' [-Wunused-variable]
+  985 |   for (pugi::xml_node cell_node : node.children("cell")) {
+      |                       ^~~~~~~~~
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_mesh.h:7/home/cbyers/Projects/openmc/src/initialize.cpp:40:53: warning: unused parameter 'intracomm' [-Wunused-parameter]
+   40 | int openmc_init(int argc, char* argv[], const void* intracomm)
+      |                                                     ^
+/home/cbyers/Projects/openmc/src/cell.cpp:1186:1: error: 'ParentCell' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+ 1186 | struct ParentCell {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:43:1: note: did you mean struct here?
+   43 | class ParentCell;
+      | ^~~~~
+      | struct
+325/home/cbyers/Projects/openmc/src/mesh.cpp:533::6435::  warning: warning: unused parameter 'indep' [-Wunused-parameter]unused parameter 'ijk' [-Wunused-parameter]
+
+    325533 |  |     h i dv_oti do bsju_rifda,c ec(ocnosnts tc hMaers*h Innadmeex,&  xitj:k:,x tiennts okr,< Tb,o oNl> &m aaxr,r ,b oboolo li niwnadredp)  =c ofnaslts e{)}
+
+            | |                                                                ^                                  ^
+
+/home/cbyers/Projects/openmc/src/mesh.cpp:533:44: warning: /home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:unused parameter 'k' [-Wunused-parameter]336:
+/home/cbyers/Projects/openmc/src/mesh.cpp:533:52: warning: unused parameter 'max' [-Wunused-parameter]
+  533 |     void surface(const MeshIndex& ijk, int k, bool max, bool inward) const {}
+      |                                                    ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:533:62: warning: unused parameter 'inward' [-Wunused-parameter]
+  533 |     void surface(const MeshIndex& ijk, int k, bool max, bool inward) const {}
+      |                                                              ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:570:33: warning: unused parameter 'idx' [-Wunused-parameter]
+  570 |     void track(const MeshIndex& idx, double l) const {}
+      |                                 ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:570:45: warning: unused parameter 'l' [-Wunused-parameter]
+  570 |     void track(const MeshIndex& idx, double l) const {}
+      |                                             ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_particle.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_particle.h:5:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+= 0; i < data::ttb_e_grid.size(); ++i) {
+      |                   ~ ^ ~~~~~~~~~~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/tallies/filter_particle.cpp:35:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   35 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+In file included from /home/cbyers/Projects/openmc/src/majorant.cpp:10:
+/home/cbyers/Projects/openmc/include/openmc/majorant.h:67:25: warning: unused parameter 'i' [-Wunused-parameter]
+   67 |     XS& operator ++(int i) { this->idx_ += 1; return *this; }
+      |                         ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:627:10: warning: declaration shadows a local variable [-Wshadow]
+  627 |     auto n = width_.size();
+      |          ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:592:7: note: previous declaration is here
+  592 |   int n = n_dimension_ = shape.size();
+      |       ^
+/home/cbyers/Projects/openmc/src/cell.cpp:1339:17: warning: unused variable 'univ' [-Wunused-variable]
+ 1339 |     const auto& univ = model::universes[univ_idx];
+      |                 ^~~~
+/home/cbyers/Projects/openmc/src/material.cpp:701:11: warning: declaration shadows a local variable [-Wshadow]
+  701 |       int n = n_e - i;
+      |           ^
+/home/cbyers/Projects/openmc/src/material.cpp:589:7: note: previous declaration is here
+  589 |   int n = element_.size();
+      |       ^
+In file included from /home/cbyers/Projects/openmc/src/source.cpp:18:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/distribution_energy.cpp:10:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/src/secondary_kalbach.cpp:236:12: warning: declaration shadows a local variable [-Wshadow]
+  236 |     double r1 = prn(seed);
+      |            ^
+/home/cbyers/Projects/openmc/src/secondary_kalbach.cpp:156:10: note: previous declaration is here
+  156 |   double r1 = prn(seed);
+      |          ^
+/home/cbyers/Projects/openmc/src/distribution_energy.cpp:29:51: warning: unused parameter 'seed' [-Wunused-parameter]
+   29 | double DiscretePhoton::sample(double E, uint64_t* seed) const
+      |                                                   ^
+/home/cbyers/Projects/openmc/src/distribution_energy.cpp:48:51: warning: unused parameter 'seed' [-Wunused-parameter]
+   48 | double LevelInelastic::sample(double E, uint64_t* seed) const
+      |                                                   ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/hdf5_interface.cpp:1:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+/home/cbyers/Projects/openmc/src/hdf5_interface.cpp:160:55: warning: unused parameter 'parallel' [-Wunused-parameter]
+  160 | hid_t file_open(const char* filename, char mode, bool parallel)
+      |                                                       ^
+In file included from /home/cbyers/Projects/openmc/src/particle_restart.cpp:5:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+In file included from /home/cbyers/Projects/openmc/src/nuclide.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/nuclide.h:20:
+In file included from /home/cbyers/Projects/openmc/include/openmc/urr.h:9:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/src/hdf5_interface.cpp:/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/urr.cpp:29:3: note: in instantiation of function template specialization 'openmc::read_dataset<double, 3UL>' requested here
+   29 |   read_dataset(group_id, "table", tmp_prob);
+      |   ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: In file included from /home/cbyers/Projects/openmc/src/source.cpp:22:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:unused parameter 'indep' [-Wunused-parameter]14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+
+  325 |   h/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+id_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+   39 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+/home/cbyers/Projects/openmc/src/material.cpp:762:21: warning: In file included from /home/cbyers/Projects/openmc/src/tallies/filter_cell_instance.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_cell_instance.h:10:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/source.cpp:23:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt/home/cbyers/Projects/openmc/src/tallies/filter_meshsurface.cpp:22:13: warning: unused variable 'b' [-Wunused-variable]
+   22 |   for (auto b : match.bins_)
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/filter_meshsurface.cpp:11:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   11 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:645:10: warning: declaration shadows a local variable [-Wshadow]
+  645 |     auto n = upper_right_.size();
+      |          ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:592:7: note: previous declaration is here
+  592 |   int n = n_dimension_ = shape.size();
+      |       ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_cell_instance.cpp:10:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/hdf5_interface.cpp:609:65: warning: unused parameter 'indep' [-Wunused-parameter]
+  609 |   const char* name, hid_t mem_type_id, hid_t mem_space_id, bool indep,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1204:47: note: expanded from macro 'Expects'
+ 1204 | #define   Expects( x )           gsl_Expects( x )
+      |                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1202:79: note: expanded from macro 'gsl_Expects'
+ 1202 | # define  gsl_Expects( x )       gsl_CONTRACT_CHECK_( "Precondition failure", x )
+      |                                                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1190:47: note: expanded from macro 'gsl_CONTRACT_CHECK_'
+ 1190 | #  define  gsl_CONTRACT_CHECK_( str, x )  ( ( x ) ? stat1ic_cast<void>(0) : ::gsl::detail::fail_fast_throw(  warning generated.
+"GSL: " str " at " __FILE__ ":" gsl_STRINGIFY(__LINE__) ) )
+      |                                               ^
+/home/cbyers/Projects/openmc/src/tallies/filter_cell_instance.cpp:91:16: warning: declaration shadows a local variable [-Wshadow]
+   91 |     gsl::index index_cell = p.coord(i).cell;
+      |                ^
+/home/cbyers/Projects/openmc/src/tallies/filter_cell_instance.cpp:75:14: note: previous declaration is here
+   75 |   gsl::index index_cell = p.coord(p.n_coord() - 1).cell;
+      |              ^
+/home/cbyers/Projects/openmc/src/tallies/filter_cell_instance.cpp:97:16: warning: declaration shadows a local variable [-Wshadow]
+   97 |     gsl::index instance = cell_instance_at_level(p, i);
+      |                ^
+/home/cbyers/Projects/openmc/src/tallies/filter_cell_instance.cpp:76:14: note: previous declaration is here
+   76 |   gsl::index instance = p.cell_instance();
+      |              ^
+/home/cbyers/Projects/openmc/src/tallies/filter_cell_instance.cpp:73:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   73 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+or (gsl::index i = 0; i < n; ++i) {
+      |                          ~ ^ ~
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:303: CMakeFiles/libopenmc.dir/src/initialize.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/geometry_aux.cpp:10:
+In file included from /home/cbyers/Projects/openmc/include/openmc/cell.h:13:
+In file included from /home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:25:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/memory:78:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:99:2: error: delete called on non-final 'openmc::Universe' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+   99 |         delete __ptr;
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:404:4: note: in instantiation of member function 'std::default_delete<openmc::Universe>::operator()' requested here
+  404 |           get_deleter()(std::move(__ptr));
+      |           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:19: note: in instantiation of member function 'std::unique_ptr<openmc::Universe>::~unique_ptr' requested here
+  151 |       __pointer->~_Tp();
+      |                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:196:2: note: in instantiation of function template specialization 'std::_Destroy_aux<false>::__destroy<std::unique_ptr<openmc::Universe> *>' requested here
+  196 |         __destroy(__first, __last);
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/alloc_traits.h:948:12: note: in instantiation of function template specialization 'std::_Destroy<std::unique_ptr<openmc::Universe> *>' requested here
+  948 |       std::_Destroy(__first, __last);
+      |            ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:1937:11: note: in instantiation of function template specialization 'std::_Destroy<std::unique_ptr<openmc::Universe> *, std::unique_ptr<openmc::Universe>>' requested here
+ 1937 |             std::_Destroy(__pos, this->_M_impl._M_finish,
+      |                  ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_vector.h:1606:9: note: in instantiation of member function 'std::vector<std::unique_ptr<openmc::Universe>>::_M_erase_at_end' requested here
+ 1606 |       { _M_erase_at_end(this->_M_impl._M_start); }
+      |         ^
+/home/cbyers/Projects/openmc/src/geometry_aux.cpp:646:20: note: in instantiation of member function 'std::vector<std::unique_ptr<openmc::Universe>>::clear' requested here
+  646 |   model::universes.clear();
+      |                    ^
+In file included from /home/cbyers/Projects/openmc/src/cmfd_solver.cpp:16:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_energy.h:6:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |  13 warnings and 3 errors generated.
+ std::size_t size = 1;
+      |               ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:345: CMakeFiles/libopenmc.dir/src/geometry_aux.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_energyfunc.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_energyfunc.h:5:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/plot.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/plot.h:11:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/mesh.cpp:691:10: warning: unused parameter 'l' [-Wunused-parameter]
+  691 |   double l) const
+      |          ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: aerror: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+ls   .size14 | c()) lass B{
+o      |                     ~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~
+undaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+      |                     ~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~
+1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/majorant.cpp:45:29: warning: declaration shadows a local variable [-Wshadow]
+   45 |         std::vector<double> energies(urr_data.energy_.begin(), urr_data.energy_.end());
+      |                             ^
+/home/cbyers/Projects/openmc/src/majorant.cpp:38:12: note: previous declaration is here
+   38 |       auto energies = nuclide->grid_[t].energy;
+      |            ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:856:10: warning: unused parameter 'l' [-Wunused-parameter]
+  856 |   double l) const
+      |          ^
+6 warnings generated.
+/home/cbyers/Projects/openmc/src/tallies/filter_energyfunc.cpp:94:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   94 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+/home/cbyers/Projects/openmc/src/tallies/filter_energyfunc.cpp:117:50: /home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+warning: unused parameter 'bin' [-Wunused-parameter]
+  117 | std::string EnergyFunctionFilter::text_label(int bin) const
+      |                                                  ^
+5 warnings generated.
+/home/cbyers/Projects/openmc/src/mesh.cpp:1065:49: warning: unused parameter 'l' [-Wunused-parameter]
+ 1065 |   const Position& r, const Direction& u, double l, int shell) const
+      |                                                 ^
+9 warnings and 2 errors generated.
+/home/cbyers/Projects/openmc/src/mesh.cpp:1158:12: warning: gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:975: CMakeFiles/libopenmc.dir/src/tallies/filter_cell_instance.cpp.o] Error 1
+unused parameter 'plot_ll' [-Wunused-parameter]
+ 1158 |   Position plot_ll, Position plot_ur) const
+      |            ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:1158:30: warning: unused parameter 'plot_ur' [-Wunused-parameter]
+ 1158 |   Position plot_ll, Position plot_ur) const
+      |                              ^
+In file included from /home/cbyers/Projects/openmc/src/simulation.cpp:5:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/mesh.cpp:1421:12: warning: unused parameter 'plot_ll' [-Wunused-parameter]
+ 1421 |   Position plot_ll, Position plot_ur) const
+      |            ^
+/home/cbyers/Projects/openmc/src/mesh.cpp:1421:30: warning: unused parameter 'plot_ur' [-Wunused-parameter]
+ 1421 |   Position plot_ll, Position plot_ur) const
+      |                              ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/weight_windows.cpp:5:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/particle.cpp:14:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/simulation.cpp:10:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+3 warnings generated.
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hi:
+d_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:336:21:    39 |     Expects(index < model::surfaces.size());
+      |             ~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1204:47: note: expanded from macro 'Expects'
+ 1204 | #define   Expects( x )           gsl_Expects( x )
+      |                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1202:79: note: expanded from macro 'gsl_Expects'
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1190:47: note: expanded from macro 'gsl_CONTRACT_CHECK_'
+ 1190 | #  define  gsl_CONTRACT_CHECK_( str, x )  ( ( x ) ? static_cast<vo/home/cbyers/Projects/openmc/src/plot.cpp:id>(0) : ::gsl::detail::fail_fast_throw( "GSL: " str " at " __FILE__ ":" gsl_STRINGIFY(__LINE__) ) )
+      |                                               ^
+/home/cbyers/Projects/openmc/src/tallies/filter_surface.cpp:48:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   48 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+1:
+/home/cbyers/Projects/openmc/src/majorant.cpp:92:11: warning: unused variable 'thermal_table_idx' [-Wunused-variable]
+   92 |       int thermal_table_idx = 0;
+      |           ^~~~~~~~~~~~~~~~~
+In file included from /home/cbyers/Projects/openmc/src/simulation.cpp:12:
+In file included from /home/cbyers/Projects/openmc/include/openmc/majorant.h:11:
+In file included from /home/cbyers/Projects/openmc/include/openmc/nuclide.h:20:
+In file included from /home/cbyers/Projects/openmc/include/openmc/urr.h:9:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+5 warnings generated.
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/weight_windows.cpp:38:8: warning: unused variable 'in_domain' [-Wunused-variable]
+   38 |   bool in_domain = false;
+      |        ^~~~~~~~~
+/home/cbyers/Projects/openmc/src/state_point.cpp:590:7: error: variable 'file_id' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+  590 |   if (mpi::master || parallel) {
+      |       ^~~~~~~~~~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/state_point.cpp:596:21: note: uninitialized use occurs here
+  596 |   write_source_bank(file_id, surf_source_bank);
+      |                     ^~~~~~~
+/home/cbyers/Projects/openmc/src/state_point.cpp:590:3: note: remove the 'if' if its condition is always true
+  590 |   if (mpi::master || parallel) {
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/state_point.cpp:589:16: note: initialize the variable 'file_id' to silence this warning
+  589 |   hid_t file_id;
+      |                ^
+      |                 = 0
+In file included from /home/cbyers/Projects/openmc/src/summary.cpp:8:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:471: CMakeFiles/libopenmc.dir/src/mgxs_interface.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/simulation.cpp:12:
+/home/cbyers/Projects/openmc/include/openmc/majorant.h:67:25: warning: unused parameter 'i' [-Wunused-parameter]
+   67 |     XS& operator ++(int i) { this->idx_ += 1; return *this; }
+      |                         ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/src/majorant.cpp:348:12: warning: unused variable 'xs_val' [-Wunused-variable]
+  348 |     double xs_val = xs_out.back() + slope * (other_xs.get_e() - e_out.back());
+      |            ^~~~~~
+In file included from /home/cbyers/Projects/openmc/src/plot.cpp:20:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:99:2: error: delete called on non-final 'openmc::Universe' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+   99 |         delete __ptr;
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/unique_ptr.h:404:4: note: in instantiation of member function 'std::default_delete<openmc::Universe>::operator()' requested here
+  404 |           get_deleter()(std::move(__ptr));
+      |           ^
+/home/cbyers/Projects/openmc/src/cell.cpp:1028:34: note: in instantiation of member function 'std::unique_ptr<openmc::Universe>::~unique_ptr' requested here
+ 1028 |       model::universes.push_back(make_unique<Universe>());
+      |                                  ^
+In file included from /home/cbyers/Projects/openmc/src/secondary_uncorrelated.cpp:8:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/reaction.cpp:11:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_zernike.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_zernike.h:6:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_sph_harm.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_sph_harm.h:8:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_universe.cpp:5:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1129:20: warning: declaration shadows a local variable [-Wshadow]
+ 1129 |         LibraryKey key {Library::Type::photon, element};
+      |                    ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1093:16: note: previous declaration is here
+ 1093 |     LibraryKey key {Library::Type::neutron, name};
+      |                ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1204:47: note: expanded from macro 'Expects'
+ 1204 | #define   Expects( x )           gsl_Expects( x )
+      |                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1202:79: note: expanded from macro 'gsl_Expects'
+ 1202 | # define  gsl_Expects( x )       gsl_CONTRACT_CHECK_( "Precondition failure", x )
+      |                                                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1190:47: note: expanded from macro 'gsl_CONTRACT_CHECK_'
+ 1190 | #  define  gsl_CONTRACT_CHECK_( str, x )  ( ( x ) ? static_cast<void>(0) : ::gsl::detail::fail_fast_throw( "GSL/home/cbyers/Projects/openmc/src/nuclide.cpp:1130:21: warning: declaration shadows a local variable [-Wshadow]
+ 1130 |         const auto& it = data::library_map.find(key);
+      |                     ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1094:17: note: previous declaration is here
+ 1094 |     const auto& it = data::library_map.find(key);
+      |                 ^
+9 warnings and 1 error generated.
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1137:13: warning: declaration shadows a local variable [-Wshadow]
+ 1137 |         int idx = it->seIn file included from /home/cbyers/Projects/openmc/src/secondary_correlated.cpp:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+cond;
+      |             ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1102:9: note: previous declaration is here
+ 1102 |     int idx = it->second;
+      |         ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1138:21: warning: declaration shadows a local variable [-Wshadow]
+ : " str " at " __FILE__ ":" gsl_STRINGIFY(__LINE__) ) )
+      |                                               ^
+/home/cbyers/Projects/openmc/src/tallies/filter_universe.cpp:46:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   46 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      1138|  |                                      ^ 
+      const auto& filename = data::libraries[idx].path_;
+      |                     ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1103:17: note: previous declaration is here
+ 1103 |     const auto& filename = data::libraries[idx].path_;
+      |                 ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1142:15: warning: declaration shadows a local variable [-Wshadow]
+ 1142 |         hid_t file_id = file_open(filename, 'r');
+      |               ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1107:11: note: previous declaration is here
+ 1107 |     hid_t file_id = file_open(filename, 'r');
+      |           ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1146:15: warning: declaration shadows a local variable [-Wshadow]
+ 1146 |         hid_t group = open_group(file_id, element.c_str());
+      |               ^
+/home/cbyers/Projects/openmc/src/nuclide.cpp:1111:11: note: previous declaration is here
+ 1111 |     hid_t group = open_group(file_id, name);
+      |           ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/simulation.cpp:671:gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:835: CMakeFiles/libopenmc.dir/src/state_point.cpp.o] Error 1
+11: warning: declaration shadows a local variable [-Wshadow]
+  671 |       int neutron = static_cast<int>(ParticleType::neutron);
+      |           ^
+/home/cbyers/Projects/openmc/src/simulation.cpp:622:7: note: previous declaration is here
+  622 |   int neutron = static_cast<int>(ParticleType::neutron);
+      |       ^
+/home/cbyers/Projects/openmc/src/endf.cpp:140:31: warning: unused parameter 'min_E' [-Wunused-parameter]
+  140 | double Polynomial::max(double min_E, double max_E) const {
+      |                               ^
+/home/cbyers/Projects/openmc/src/endf.cpp:140:45: warning: unused parameter 'max_E' [-Wunused-parameter]
+  140 | double Polynomial::max(double min_E, double max_E) const {
+      |                                             ^
+/home/cbyers/Projects/openmc/src/tallies/filter_sph_harm.cpp:47:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   47 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+In file included from In file included from /home/cbyers/Projects/openmc/src/finalize.cpp:18:
+In file included from /home/cbyers/Projects/openmc/include/openmc/plot.h:11:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/tally_scoring.h:5:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   stIn file included from /home/cbyers/Projects/openmc/src/surface.cpp:15:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15/home/cbyers/Projects/openmc/src/plot.cpp:78:73: warning: unused parameter 'level' [-Wunused-parameter]
+d   :78 | void :PsriopertyzDea_tta :s:set_value(siizzee_ t=  y1,; s
+i      z| e_              ^t
+ x, const Particle& p, int level)
+      |                                                                         ^
+:/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1:  warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/secondary_correlated.cpp:134:12: warning: declaration shadows a local variable [-Wshadow]
+  134 |       auto interp = int2interp(interp_mu);
+      |            ^
+/home/cbyers/Projects/openmc/src/secondary_correlated.cpp:47:15: note: previous declaration is here
+   47 |   vector<int> interp;
+      |               ^
+/home/cbyers/Projects/openmc/src/tallies/filter_zernike.cpp:86:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   86 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+33 warnings and 4 errors generated.
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]/home/cbyers/Projects/openmc/src/particle.cpp:338:8: warning: variable 'forced_virtual' set but not used [-Wunused-but-set-variable]
+  338 |   bool forced_virtual = false;
+      |        ^
+
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/surface.cpp:194:63: warning: unused parameter 'p' [-Wunused-parameter]
+  194 | Direction Surface::reflect(Position r, Direction u, Particle* p) const
+      |                                                               ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:135: CMakeFiles/libopenmc.dir/src/cell.cpp.o] Error 1
+/home/cbyers/Projects/openmc/src/endf.cpp:316:54: warning: unused parameter 'max_E' [-Wunused-parameter]
+  316 | double IncoherentElasticXS::max(double min_E, double max_E) const {
+      |                                                      ^
+/home/cbyers/Projects/openmc/src/surface.cpp:296:42: warning: unused parameter 'r' [-Wunused-parameter]
+  296 | Direction SurfaceXPlane::normal(Position r) const
+      |                                          ^
+/home/cbyers/Projects/openmc/src/particle.cpp:662:15: warning: unused variable 'old_mat' [-Wunused-variable]
+  662 |       int32_t old_mat = material();
+      |               ^~~~~~~
+/home/cbyers/Projects/openmc/src/surface.cpp:336:42: warning: unused parameter 'r' [-Wunused-parameter]
+  336 | Direction SurfaceYPlane::normal(Position r) const
+      |                                          ^
+/home/cbyers/Projects/openmc/src/surface.cpp:376:42: warning: unused parameter 'r' [-Wunused-parameter]
+  376 | Direction SurfaceZPlane::normal(Position r) const
+      |                                          ^
+/home/cbyers/Projects/openmc/src/surface.cpp:425:41: warning: unused parameter 'r' [-Wunused-parameter]
+  425 | Direction SurfacePlane::normal(Position r) const
+      |                                         ^
+5 warnings and 1 error generated.
+/home/cbyers/Projects/openmc/src/particle.cpp:740:13: warning: unused variable 'idx' [-Wunused-variable]
+  740 |     int64_t idx = simulation::surf_source_bank.thread_safe_append(site);
+      |             ^~~
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:1213: CMakeFiles/libopenmc.dir/src/tallies/filter_universe.cpp.o] Error 1
+4 warnings generated.
+/home/cbyers/Projects/openmc/src/surface.cpp:1225:23: warning: unused variable 'surf_node' [-Wunused-variable]
+ 1225 |   for (pugi::xml_node surf_node : node.children("surface")) {
+      |                       ^~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/filter_energy.cpp:99:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   99 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+  In file included from /home/cbyers/Projects/openmc/src/tallies/filter_cell.cpp:6:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/output.cpp:23:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+848 |         if (ax2_ind - plus >= 0 && ax2_ind - plus < pl.pixels_[1])
+      |                                    ~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/output.cpp:27:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+3 warnings generated.
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1204:47: note: expanded from macro 'Expects'
+ 1204 | #define   Expects( x )           gsl_Expects( x )
+      |                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1202:79: note: expanded from macro 'gsl_Expects'
+ 1202 | # define  gsl_Expects( x )       gsl_CONTRACT_CHECK_( "Precondition failure", x )
+      |                                                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1190:47: note: expanded from macro 'gsl_CONTRACT_CHECK_'
+ 1190 | #  define  gsl_CONTRACT_CHECK_( str, x )  ( ( x ) ? static_cast<void>(0) : ::gsl::detail::fail_fast_throw( "GSL: " str " at " __FILE__ ":" gsl_STRINGIFY(__LINE__) ) )
+      |                                               ^
+/home/cbyers/Projects/openmc/src/tallies/filter_cell.cpp:47:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   47 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+5 warnings and 2 errors generated.
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:807: CMakeFiles/libopenmc.dir/src/simulation.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/thermal.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/thermal.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+In file included from /home/cbyers/Projects/openmc/src/output.cpp:31:
+In file included from /home/cbyers/Projects/openmc/include/openmc/mgxs_interface.h:7:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/finalize.cpp:18:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+8 warnings and 1 error generated.
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:863: CMakeFiles/libopenmc.dir/src/summary.cpp.o] Error 1
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1204:47: note: expanded from macro 'Expects'
+ 1204 | #define   Expects( x )           gsl_Expects( x )
+      |                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1202:79: note: expanded from macro 'gsl_Expects'
+ 1202 | # define  gsl_Expects( x )       gsl_CONTRACT_CHECK_( "Precondition failure", x )
+      |                                                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1190:47: note: expanded from macro 'gsl_CONTRACT_CHECK_'
+ 1190 | #  define  gsl_CONTRACT_CHECK_( str, x )  ( ( x ) ? static_cast<void>(0) : ::gsl::detail::fail_fast_throw( "GSL: " str " at " __FILE__ ":" gsl_STRINGIFY(__LINE__) ) )
+      |                                               ^
+/home/cbyers/Projects/openmc/src/tallies/filter_material.cpp:46:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   46 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+/home/cbyers/Projects/openmc/src/tallies/filter_sptl_legendre.cpp:64:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   64 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+5 warnings and 1 error generated.
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:961: CMakeFiles/libopenmc.dir/src/tallies/filter_cell.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_mesh.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_mesh.h:7:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:160:10: warning: declaration shadows a local variable [-Wshadow]
+  160 |     auto i_filt = tally.filters(i);
+      |          ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:150:8: note: previous declaration is here
+  150 |   auto i_filt = tally.filters(tally.delayedgroup_filter_);
+      |        ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:162:10: warning: declaration shadows a local variable [-Wshadow]
+  162 |     auto i_bin = match.i_bin_;
+      |          ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:152:8: note: previous declaration is here
+  152 |   auto i_bin = dg_match.i_bin_;
+      |        ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:234:14: warning: declaration shadows a local variable [-Wshadow]
+  234 |         auto atom_density = material.atom_density_(i);
+      |              ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:198:38: note: previous declaration is here
+  198 |   double flux, int i_nuclide, double atom_density)
+      |                                      ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:306:16: warning: declaration shadows a local variable [-Wshadow]
+  306 |         double atom_density {material.atom_density_(i)};
+      |                ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:288:38: note: previous declaration is here
+  288 |   int rxn_bin, int i_nuclide, double atom_density)
+      |                                      ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:301:9: error: variable 'heating_xs' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+  301 |     if (p.material() != MATERIAL_VOID) {
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:316:18: note: uninitialized use occurs here
+  316 |   double score = heating_xs * flux;
+      |                  ^~~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:301:5: note: remove the 'if' if its condition is always true
+  301 |     if (p.material() != MATERIAL_VOID) {
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:291:20: note: initialize the variable 'heating_xs' to silence this warning
+  291 |   double heating_xs;
+      |                    ^
+      |                     = 0.0
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:335:8: note: previous declaration is here
+  335 |   auto i_bin = p.filter_matches(i_eout_filt).i_bin_;
+      |        ^
+ < model::cells.size(); i++) {
+      |                     ~ ^ ~~~~~~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:433:20: warning: declaration shadows a local variable [-Wshadow]
+  433 |               auto i_bin = match.i_bin_;
+      |                    ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:335:8: note: previous declaration is here
+  335 |   auto i_bin = p.filter_matches(i_eout_filt).i_bin_;
+      |        ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:451:16: warning: declaration shadows a local variable [-Wshadow]
+  451 |           auto i_bin = match.i_bin_;
+      |                ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:335:8: note: previous declaration is here
+  335 |   auto i_bin = p.filter_matches(i_eout_filt).i_bin_;
+      |        ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:489:10: warning: unused variable 'i_grid' [-Wunused-variable]
+  489 |     auto i_grid = micro.index_grid;
+      |          ^~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:490:10: warning: unused variable 'f' [-Wunused-variable]
+  490 |     auto f = micro.interp_factor;
+      |          ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:645:21: warning: declaration shadows a local variable [-Wshadow]
+  645 |           for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                     ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:647:18: warning: declaration shadows a local variable [-Wshadow]
+  647 |             auto atom_density = material.atom_density_(i);
+      |                  ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/wmp.cpp:35:3: note: in instantiation of function template specialization 'openmc::read_dataset<std::complex<double>, 2UL>' requested here
+   35 |   read_dataset(group, "data", data_);
+      |   ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:692:23: warning: declaration shadows a local variable [-Wshadow]
+  692 |             for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                       ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:694:20: warning: declaration shadows a local variable [-Wshadow]
+  694 |               auto atom_density = material.atom_density_(i);
+      |                    ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:712:23: warning: declaration shadows a local variable [-Wshadow]
+  gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:513: CMakeFiles/libopenmc.dir/src/particle.cpp.o] Error 1
+712 |             for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                       ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:714:20: warning: declaration shadows a local variable [-Wshadow]
+  714 |               auto atom_density = material.atom_density_(i);
+      |                    ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:773:23: warning: declaration shadows a local variable [-Wshadow]
+  773 |             for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                       ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:775:20: warning: declaration shadows a local variable [-Wshadow]
+  775 |               auto atom_density = material.atom_density_(i);
+      |                    ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:798:23: warning: declaration shadows a local variable [-Wshadow]
+  798 |             for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                       ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:800:20: warning: declaration shadows a local variable [-Wshadow]
+  800 |               auto atom_density = material.atom_density_(i);
+      |                    ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:842:19: warning: declaration shadows a local variable [-Wshadow]
+  842 |         for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                   ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:844:16: warning: declaration shadows a local variable [-Wshadow]
+  844 |           auto atom_density = material.atom_density_(i);
+      |                ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:873:21: warning: declaration shadows a local variable [-Wshadow]
+  873 |           for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                     ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:875:18: warning: declaration shadows a local variable [-Wshadow]
+  875 |             auto atom_density = material.atom_density_(i);
+      |                  ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:924:21: warning: declaration shadows a local variable [-Wshadow]
+  924 |           for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                     ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:926:18: warning: declaration shadows a local variable [-Wshadow]
+  926 |             auto atom_density = material.atom_density_(i);
+      |                  ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1002:19: warning: declaration shadows a local variable [-Wshadow]
+ 1002 |         for (auto i = 0; i < material.nuclide_.size(); ++i) {
+      |                   ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:537:13: note: previous declaration is here
+  537 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1004:16: warning: declaration shadows a local variable [-Wshadow]
+ 1004 |           auto atom_density = material.atom_density_(i);
+      |                ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:527:65: note: previous declaration is here
+  527 |   int filter_index, double filter_weight, int i_nuclide, double atom_density,
+      |                                                                 ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1370:19: warning: declaration shadows a local variable [-Wshadow]
+ 1370 |         for (auto i = 0; i < p.n_bank(); ++i) {
+      |                   ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1047:13: note: previous declaration is here
+ 1047 |   f/home/cbyers/Projects/openmc/src/thermal.cpp:177:40or (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/output.cpp:559:23: warning: variable 't_n3' set but not used [-Wunused-but-set-variable]
+  559 |   double alpha, t_n1, t_n3;
+      |                       ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:2075:21: warning: declaration shadows a local variable [-Wshadow]
+ 2075 |           for (auto i = 0; i < p.n_bank(); ++i) {
+      |                     ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1607:13: note: previous declaration is here
+ 1607 |   for (auto i = 0; i < tally.scores_.size(); ++i) {
+      |             ^
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:2011:15: error: variable 'score' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+ 2011 |           if (abs_xs > 0) {
+      |               ^~~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:2201:7: note: uninitialized use occurs here
+ 2201 |       score * filter_weight;
+      |       ^~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:2011:11: note: remove the 'if' if its condition is always true
+ 2011 |           if (abs_xs > 0) {
+      |           ^~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1896:15: error: variable 'score' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+ 1896 |           if (abs_xs > 0.) {
+      |               ^~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:2201:7: note: uninitialized use occurs here
+ 2201 |       score * filter_weight;
+      |       ^~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1896:11: note: remove the 'if' if its condition is always true
+ 1896 |           if (abs_xs > 0.) {
+      |           ^~~~~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/tallies/tally_scoring.cpp:1611:17: note: initialize the variable 'score' to silence this warning
+ 1611 |     double score;
+      |                 ^
+      |                  = 0.0
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:1255: CMakeFiles/libopenmc.dir/src/tallies/tally_scoring.cpp.o] Error 1
+5 warnings generated.
+In file included from /home/cbyers/Projects/openmc/src/wmp.cpp:6:
+/home/cbyers/Projects/openmc/src/wmp.cpp:50:3: note: in instantiation of function template specialization 'openmc::read_dataset<bool, 1UL>' requested here
+   50 |   read_dataset(group, "broaden_poly", broaden_poly);
+      |   ^
+      |                   ~ ^ ~~~~~~~~~~~~
+/home/cbyers/Projects/openmc/src/wmp.cpp:58:3: note: in instantiation of function template specialization 'openmc::read_dataset<double, 3UL>' requested here
+   58 |   read_dataset(group, "curvefit", curvefit_);
+      |   ^
+4 warnings generated.
+6 warnings generated.
+7 warnings generated.
+14 warnings generated.
+5 warnings and 2 errors generated.
+/home/cbyers/Projects/openmc/src/xsdata.cpp:457:12: warning: declaration shadows a local variable [-Wshadow]
+  457 |     size_t temp_idx = 0;
+      |            ^
+/home/cbyers/Projects/openmc/src/xsdata.cpp:435:10: note: previous declaration is here
+  435 |   size_t temp_idx = 0;
+      |          ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:317: CMakeFiles/libopenmc.dir/src/finalize.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/surface.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/surface.h:5:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/string:54:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/basic_string.h:39:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/ext/alloc_traits.h:34:
+In file included from /usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/alloc_traits.h:33:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:7: error: destructor called on non-final 'openmc::VacuumBC' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+  151 |       __pointer->~_Tp();
+      |       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/alloc_traits.h:675:9: note: in instantiation of function template specialization 'std::_Destroy<openmc::VacuumBC>' requested here
+  675 |         { std::_Destroy(__p); }
+      |                ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:613:28: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<void>>::destroy<openmc::VacuumBC>' requested here
+  613 |         allocator_traits<_Alloc>::destroy(_M_impl._M_alloc(), _M_ptr());
+      |                                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:599:2: note: in instantiation of member function 'std::_Sp_counted_ptr_inplace<openmc::VacuumBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_M_dispose' requested here
+  599 |         _Sp_counted_ptr_inplace(_Alloc __a, _Args&&... __args)
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:972:6: note: in instantiation of function template specialization 'std::_Sp_counted_ptr_inplace<openmc::VacuumBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_Sp_counted_ptr_inplace<>' requested here
+  972 |             _Sp_cp_type(__a._M_a, std::forward<_Args>(__args)...);
+      |             ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:1712:14: note: in instantiation of function template specialization 'std::__shared_count<>::__shared_count<openmc::VacuumBC, std::allocator<void>>' requested here
+ 1712 |         : _M_ptr(), _M_refcount(_M_ptr, __tag, std::forward<_Args>(__args)...)
+      |                     ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:464:4: note: in instantiation of function template specialization 'std::__shared_ptr<openmc::VacuumBC>::__shared_ptr<std::allocator<void>>' requested here
+  464 |         : __shared_ptr<_Tp>(__tag, std::forward<_Args>(__args)...)
+      |           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:1009:14: note: in instantiation of function template specialization 'std::shared_ptr<openmc::VacuumBC>::shared_ptr<std::allocator<void>>' requested here
+ 1009 |       return shared_ptr<_Tp>(_Sp_alloc_shared_tag<_Alloc>{__a},
+      |              ^
+/home/cbyers/Projects/openmc/src/surface.cpp:162:18: note: in instantiation of function template specialization 'std::make_shared<openmc::VacuumBC>' requested here
+  162 |       bc_ = std::make_shared<VacuumBC>();
+      |                  ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:19: note: qualify call to silence this warning
+  151 |       __pointer->~_Tp();
+      |                   ^
+/home/cbyers/Projects/openmc/src/plot.cpp:170:17: note: in instantiation of function template specialization 'openmc::PlotBase::get_map<openmc::IdData>' requested here
+  170 |   auto ids = pl.get_map<IdData>();
+      |                 ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:7: error: destructor called on non-final 'openmc::ReflectiveBC' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+  151 |       __pointer->~_Tp();
+      |       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/alloc_traits.h:675:9: note: in instantiation of function template specialization 'std::_Destroy<openmc::ReflectiveBC>' requested here
+  675 |         { std::_Destroy(__p); }
+      |                ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:613:28: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<void>>::destroy<openmc::ReflectiveBC>' requested here
+  613 |         allocator_traits<_Alloc>::destroy(_M_impl._M_alloc(), _M_ptr());
+      |                                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:599:2: note: in instantiation of member function 'std::_Sp_counted_ptr_inplace<openmc::ReflectiveBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_M_dispose' requested here
+  599 |         _Sp_counted_ptr_inplace(_Alloc __a, _Args&&... __args)
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:972:6: note: in instantiation of function template specialization 'std::_Sp_counted_ptr_inplace<openmc::ReflectiveBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_Sp_counted_ptr_inplace<>' requested here
+  972 |             _Sp_cp_type(__a._M_a, std::forward<_Args>(__args)...);
+      |             ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:1712:14: note: in instantiation of function template specialization 'std::__shared_count<>::__shared_count<openmc::ReflectiveBC, std::allocator<void>>' requested here
+ 1712 |         : _M_ptr(), _M_refcount(_M_ptr, __tag, std::forward<_Args>(__args)...)
+      |                     ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:464:4: note: in instantiation of function template specialization 'std::__shared_ptr<openmc::ReflectiveBC>::__shared_ptr<std::allocator<void>>' requested here
+  464 |         : __shared_ptr<_Tp>(__tag, std::forward<_Args>(__args)...)
+      |           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:1009:14: note: in instantiation of function template specialization 'std::shared_ptr<openmc::ReflectiveBC>::shared_ptr<std::allocator<void>>' requested here
+ 1009 |       return shared_ptr<_Tp>(_Sp_alloc_shared_tag<_Alloc>{__a},
+      |              ^
+/home/cbyers/Projects/openmc/src/surface.cpp:165:18: note: in instantiation of function template specialization 'std::make_shared<openmc::ReflectiveBC>' requested here
+  165 |       bc_ = std::make_shared<ReflectiveBC>();
+      |                  ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:19: note: qualify call to silence this warning
+  151 |       __pointer->~_Tp();
+      |                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:7: error: destructor called on non-final 'openmc::WhiteBC' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+  151 |       __pointer->~_Tp();
+      |       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/alloc_traits.h:675:9: note: in instantiation of function template specialization 'std::_Destroy<openmc::WhiteBC>' requested here
+  675 |         { std::_Destroy(__p); }
+      |                ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:613:28: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<void>>::destroy<openmc::WhiteBC>' requested here
+  613 |         allocator_traits<_Alloc>::destroy(_M_impl._M_alloc(), _M_ptr());
+      |                                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:599:2: note: in instantiation of member function 'std::_Sp_counted_ptr_inplace<openmc::WhiteBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_M_dispose' requested here
+  599 |         _Sp_counted_ptr_inplace(_Alloc __a, _Args&&... __args)
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:972:6: note: in instantiation of function template specialization 'std::_Sp_counted_ptr_inplace<openmc::WhiteBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_Sp_counted_ptr_inplace<>' requested here
+  972 |             _Sp_cp_type(__a._M_a, std::forward<_Args>(__args)...);
+      |             ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:1712:14: note: in instantiation of function template specialization 'std::__shared_count<>::__shared_count<openmc::WhiteBC, std::allocator<void>>' requested here
+ 1712 |         : _M_ptr(), _M_refcount(_M_ptr, __tag, std::forward<_Args>(__args)...)
+      |                     ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:464:4: note: in instantiation of function template specialization 'std::__shared_ptr<openmc::WhiteBC>::__shared_ptr<std::allocator<void>>' requested here
+  464 |         : __shared_ptr<_Tp>(__tag, std::forward<_Args>(__args)...)
+      |           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:1009:14: note: in instantiation of function template specialization 'std::shared_ptr<openmc::WhiteBC>::shared_ptr<std::allocator<void>>' requested here
+ 1009 |       return shared_ptr<_Tp>(_Sp_alloc_shared_tag<_Alloc>{__a},
+      |              ^
+/home/cbyers/Projects/openmc/src/surface.cpp:167:18: note: in instantiation of function template specialization 'std::make_shared<openmc::WhiteBC>' requested here
+  167 |       bc_ = std::make_shared<WhiteBC>();
+      |                  ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:19: note: qualify call to silence this warning
+  151 |       __pointer->~_Tp();
+      |                   ^
+/home/cbyers/Projects/openmc/src/physics.cpp:951:16: warning: declaration shadows a local variable [-Wshadow]
+  951 |         double m = (nuc.xs_cdf_[i_E_low + i_E_rel + 1] -
+      |                ^
+/home/cbyers/Projects/openmc/src/physics.cpp:938:14: note: previous declaration is here
+  938 |       double m = (nuc.xs_cdf_[i_E_up + 1] - nuc.xs_cdf_[i_E_up]) /
+      |              ^
+/home/cbyers/Projects/openmc/src/physics.cpp:822:28: warning: unused parameter 'xs_eff' [-Wunused-parameter]
+  822 |   Direction v_neut, double xs_eff, double kT, uint64_t* seed)
+      |                            ^
+8 warnings generated.
+In file included from /home/cbyers/Projects/openmc/src/tallies/trigger.cpp:14:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/tally.h:6:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/tallies/trigger.cpp:199:17: warning: declaration shadows a local variable [-Wshadow]
+  199 |     std::string msg =
+      |                 ^
+/home/cbyers/Projects/openmc/src/tallies/trigger.cpp:178:15: note: previous declaration is here
+  178 |   std::string msg;
+      |               ^
+/home/cbyers/Projects/openmc/src/plot.cpp:1017:21: note: in instantiation of function template specialization 'openmc::PlotBase::get_map<openmc::PropertyData>' requested here
+ 1017 |   auto props = plt->get_map<PropertyData>();
+      |                     ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:611: CMakeFiles/libopenmc.dir/src/plot.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/photon.cpp:7:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:7: error: destructor called on non-final 'openmc::TranslationalPeriodicBC' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+  151 |       __pointer->~_Tp();
+      |       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/alloc_traits.h:675:9: note: in instantiation of function template specialization 'std::_Destroy<openmc::TranslationalPeriodicBC>' requested here
+  675 |         { std::_Destroy(__p); }
+      |                ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:613:28: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<void>>::destroy<openmc::TranslationalPeriodicBC>' requested here
+  613 |         allocator_traits<_Alloc>::destroy(_M_impl._M_alloc(), _M_ptr());
+      |                                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:599:2: note: in instantiation of member function 'std::_Sp_counted_ptr_inplace<openmc::TranslationalPeriodicBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_M_dispose' requested here
+  599 |         _Sp_counted_ptr_inplace(_Alloc __a, _Args&&... __args)
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:972:6: note: in instantiation of function template specialization 'std::_Sp_counted_ptr_inplace<openmc::TranslationalPeriodicBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_Sp_counted_ptr_inplace<int &, int &>' requested here
+  972 |             _Sp_cp_type(__a._M_a, std::forward<_Args>(__args)...);
+      |             ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:1712:14: note: in instantiation of function template specialization 'std::__shared_count<>::__shared_count<openmc::TranslationalPeriodicBC, std::allocator<void>, int &, int &>' requested here
+ 1712 |         : _M_ptr(), _M_refcount(_M_ptr, __tag, std::forward<_Args>(__args)...)
+      |                     ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:464:4: note: in instantiation of function template specialization 'std::__shared_ptr<openmc::TranslationalPeriodicBC>::__shared_ptr<std::allocator<void>, int &, int &>' requested here
+  464 |         : __shared_ptr<_Tp>(__tag, std::forward<_Args>(__args)...)
+      |           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:1009:14: note: in instantiation of function template specialization 'std::shared_ptr<openmc::TranslationalPeriodicBC>::shared_ptr<std::allocator<void>, int &, int &>' requested here
+ 1009 |       return shared_ptr<_Tp>(_Sp_alloc_shared_tag<_Alloc>{__a},
+      |              ^
+/home/cbyers/Projects/openmc/src/surface.cpp:1380:24: note: in instantiation of function template specialization 'std::make_shared<openmc::TranslationalPeriodicBC, int &, int &>' requested here
+ 1380 |       surf1.bc_ = std::make_shared<TranslationalPeriodicBC>(i_surf, j_surf);
+      |                        ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:19: note: qualify call to silence this warning
+  151 |       __pointer->~_Tp();
+      |                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:7: error: destructor called on non-final 'openmc::RotationalPeriodicBC' that has virtual functions but non-virtual destructor [-Werror,-Wdelete-non-abstract-non-virtual-dtor]
+  151 |       __pointer->~_Tp();
+      |       ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/alloc_traits.h:675:9: note: in instantiation of function template specialization 'std::_Destroy<openmc::RotationalPeriodicBC>' requested here
+  675 |         { std::_Destroy(__p); }
+      |                ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:613:28: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<void>>::destroy<openmc::RotationalPeriodicBC>' requested here
+  613 |         allocator_traits<_Alloc>::destroy(_M_impl._M_alloc(), _M_ptr());
+      |                                   ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:599:2: note: in instantiation of member function 'std::_Sp_counted_ptr_inplace<openmc::RotationalPeriodicBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_M_dispose' requested here
+  599 |         _Sp_counted_ptr_inplace(_Alloc __a, _Args&&... __args)
+      |         ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:972:6: note: in instantiation of function template specialization 'std::_Sp_counted_ptr_inplace<openmc::RotationalPeriodicBC, std::allocator<void>, __gnu_cxx::_S_atomic>::_Sp_counted_ptr_inplace<int &, int &>' requested here
+  972 |             _Sp_cp_type(__a._M_a, std::forward<_Args>(__args)...);
+      |             ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr_base.h:1712:14: note: in instantiation of function template specialization 'std::__shared_count<>::__shared_count<openmc::RotationalPeriodicBC, std::allocator<void>, int &, int &>' requested here
+ 1712 |         : _M_ptr(), _M_refcount(_M_ptr, __tag, std::forward<_Args>(__args)...)
+      |                     ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:464:4: note: in instantiation of function template specialization 'std::__shared_ptr<openmc::RotationalPeriodicBC>::__shared_ptr<std::allocator<void>, int &, int &>' requested here
+  464 |         : __shared_ptr<_Tp>(__tag, std::forward<_Args>(__args)...)
+      |           ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/shared_ptr.h:1009:14: note: in instantiation of function template specialization 'std::shared_ptr<openmc::RotationalPeriodicBC>::shared_ptr<std::allocator<void>, int &, int &>' requested here
+ 1009 |       return shared_ptr<_Tp>(_Sp_alloc_shared_tag<_Alloc>{__a},
+      |              ^
+/home/cbyers/Projects/openmc/src/surface.cpp:1383:24: note: in instantiation of function template specialization 'std::make_shared<openmc::RotationalPeriodicBC, int &, int &>' requested here
+ 1383 |       surf1.bc_ = std::make_shared<RotationalPeriodicBC>(i_surf, j_surf);
+      |                        ^
+/usr/bin/../lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/bits/stl_construct.h:151:19: note: qualify call to silence this warning
+  151 |       __pointer->~_Tp();
+      |                   ^
+106 warnings generated.
+ warnings and 5 errors generated.
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:877: CMakeFiles/libopenmc.dir/src/surface.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/particle_data.cpp:6:
+In file included from /home/cbyers/Projects/openmc/include/openmc/nuclide.h:20:
+In file included from /home/cbyers/Projects/openmc/include/openmc/urr.h:9:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_distribcell.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_distribcell.h:6:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:499: CMakeFiles/libopenmc.dir/src/output.cpp.o] Error 1
+7 warnings generated.
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_distribcell.cpp:5:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1204:47: note: expanded from macro 'Expects'
+ 1204 | #define   Expects( x )           gsl_Expects( x )
+      |                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1202:79: note: expanded from macro 'gsl_Expects'
+ 1202 | # define  gsl_Expects( x )       gsl_CONTRACT_CHECK_( "Precondition failure", x )
+      |                                                                               ^
+/home/cbyers/Projects/openmc/openmc/include/gsl/gsl-lite.hpp:1190:47: note: expanded from macro 'gsl_CONTRACT_CHECK_'
+ 1190 | #  define  gsl_CONTRACT_CHECK_( str, x )  ( ( x ) ? static_cast<void>(0) : ::gsl::detail::fail_fast_throw( "GSL: " str " at " __FILE__ ":" gsl_STRINGIFY(__LINE__) ) )
+      |                                               ^
+In file included from /home/cbyers/Projects/openmc/src/lattice.cpp:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+In file included from /home/cbyers/Projects/openmc/src/volume_calc.cpp:4:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+In file included from /home/cbyers/Projects/openmc/src/volume_calc.cpp:7:
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: error: class 'BoundaryInfo' was previously declared as a struct; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+   14 | class BoundaryInfo;
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/particle_data.h:177:8: note: previous use is here
+  177 | struct BoundaryInfo {
+      |        ^
+/home/cbyers/Projects/openmc/include/openmc/geometry.h:14:1: note: did you mean struct here?
+   14 | class BoundaryInfo;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/tallies/filter_distribcell.cpp:39:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   39 |   const Particle& p, TallyEstimator In file included from /home/cbyers/Projects/openmc/src/tallies/tally.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/tally.h:6:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+estim  a299t | o r ,s tFd::siiltze_t size = 1;er
+      |               ^
+Match& match) const
+      |                                     ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter.cpp:14:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_cell_instance.h:9:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/volume_calc.cpp:8:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/lattice.cpp:245:49: warning: unused parameter 'i_xyz' [-Wunused-parameter]
+  245 |   Position r, Direction u, const array<int, 3>& i_xyz) const
+      |                                                 ^
+28 warnings generated.
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+3 warnings and 2 errors generated.
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:527: CMakeFiles/libopenmc.dir/src/particle_data.cpp.o] Error 1
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:1003: CMakeFiles/libopenmc.dir/src/tallies/filter_distribcell.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_cellfrom.cpp:3:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/tallies/filter_cellfrom.cpp:8:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+    8 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+      |                           ~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/cbyers/Projects/openmc/src/track_output.cpp:4:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:947: CMakeFiles/libopenmc.dir/src/tallies/filter_cellfrom.cpp.o] Error 1
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_cellborn.cpp:3:
+/home/cbyers/Projects/openmc/include/openmc/cell.h:373:1: error: 'CellInstance' defined as a struct here but previously declared as a class; this is valid, but may result in linker errors under the Microsoft C++ ABI [-Werror,-Wmismatched-tags]
+  373 | struct CellInstance {
+      | ^
+/home/cbyers/Projects/openmc/include/openmc/cell.h:44:1: note: did you mean struct here?
+   44 | class CellInstance;
+      | ^~~~~
+      | struct
+/home/cbyers/Projects/openmc/src/tallies/filter_cellborn.cpp:8:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+    8 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:373: CMakeFiles/libopenmc.dir/src/lattice.cpp.o] Error 1
+In file included from /home/cbyers/Projects/openmc/src/photon.cpp:7:
+/home/cbyers/Projects/openmc/src/photon.cpp:62:3: note: in instantiation of function template specialization 'openmc::read_dataset<double, 1UL>' requested here
+   62 |   read_dataset(group, "energy", energy_);
+      |   ^
+In file included from /home/cbyers/Projects/openmc/src/tallies/filter_legendre.cpp:1:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter_legendre.h:6:
+In file included from /home/cbyers/Projects/openmc/include/openmc/tallies/filter.h:12:
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:299:15: warning: variable 'size' set but not used [-Wunused-but-set-variable]
+  299 |   std::size_t size = 1;
+      |               ^
+/home/cbyers/Projects/openmc/include/openmc/hdf5_interface.h:325:64: warning: unused parameter 'indep' [-Wunused-parameter]
+  325 |   hid_t obj_id, const char* name, xt::xtensor<T, N>& arr, bool indep = false)
+      |                                                                ^
+/home/cbyers/Projects/openmc/src/tallies/filter_legendre.cpp:25:37: warning: unused parameter 'estimator' [-Wunused-parameter]
+   25 |   const Particle& p, TallyEstimator estimator, FilterMatch& match) const
+      |                                     ^
+4 warnings and 1 error generated.
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:933: CMakeFiles/libopenmc.dir/src/tallies/filter_cellborn.cpp.o] Error 1
+/home/cbyers/Projects/openmc/src/tallies/tally.cpp:752:10: warning: unused variable 'f' [-Wunused-variable]
+  752 |     auto f = Filter::create(node_filt);
+      |          ^
+/home/cbyers/Projects/openmc/src/tallies/tally.cpp:760:13: warning: unused variable 'node' [-Wunused-variable]
+  760 |   for (auto node : root.children("tally"))
+      |             ^~~~
+/home/cbyers/Projects/openmc/src/tallies/tally.cpp:1302:9: warning: unused variable 'tally' [-Wunused-variable]
+ 1302 |   auto& tally = model::tallies[index];
+      |         ^~~~~
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:1353: CMakeFiles/libopenmc.dir/src/volume_calc.cpp.o] Error 1
+3 warnings generated.
+/home/cbyers/Projects/openmc/src/photon.cpp:187:9: note: in instantiation of function template specialization 'openmc::read_dataset<double, 2UL>' requested here
+  187 |         read_dataset(tgroup, "transitions", matrix);
+      |         ^
+4 warnings generated.
+43 warnings generated.
+In file included from /home/cbyers/Projects/openmc/src/photon.cpp:7:
+/home/cbyers/Projects/openmc/src/photon.cpp:265:5: note: in instantiation of function template specialization 'openmc::read_dataset<int, 1UL>' requested here
+  265 |     read_dataset(rgroup, "num_electrons", n_electrons_);
+      |     ^
+3 warnings generated.
+4 warnings and 1 error generated.
+gmake[2]: *** [CMakeFiles/libopenmc.dir/build.make:905: CMakeFiles/libopenmc.dir/src/tallies/filter.cpp.o] Error 1
+
