@@ -80,7 +80,9 @@ int openmc_simulation_init()
     initialize_data();
   }
 
-  if (settings::delta_tracking) create_majorant();
+  std::cerr << "delta_tracking = " << (settings::delta_tracking ? "true" : "false") << "\n";
+  if (settings::delta_tracking) {
+    create_majorant();
 
     // --- DEBUG: probe majorant table at a few energies
     auto probe = [&](double E){
@@ -88,7 +90,7 @@ int openmc_simulation_init()
       std::cerr << fmt::format("[MAJ PROBE] E={:.3e} Sigma_M={:.6e}\n", E, sM);
     };
     for (double E : {1e-5, 1e-3, 1.0, 1e3, 1e6}) probe(E);
-  
+  }
   // Determine how much work each process should do
   calculate_work();
 
@@ -778,6 +780,8 @@ void transport_delta_tracking_single_particle(Particle& p)
     std::fprintf(stderr,
   "[XS] After updating majorant for first segment E=%.6e mat=%d Σ_t=%.6e Σ_c=%.6e Σ_a=%.6e Σ_f=%.6e νΣ_f=%.6e\n",
   p.E(), p.material(), M.total, M.coherent, M.absorption, M.fission, M.nu_fission);
+
+  
   while (true) {
     // If the energy has changed, we need to recalc majorant
     if (p.E() != p.E_last()) {

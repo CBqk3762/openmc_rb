@@ -30,8 +30,8 @@
   </lattice>
   <surface coeffs="0.0 0.0 0.39218" id="1" type="z-cylinder" />
   <surface coeffs="0.0 0.0 0.4572" id="2" type="z-cylinder" />
-  <surface boundary="reflecting" coeffs="-10.71" id="3" type="x-plane" />
-  <surface boundary="reflecting" coeffs="10.71" id="4" type="x-plane" />
-  <surface boundary="reflecting" coeffs="-10.71" id="5" type="y-plane" />
-  <surface boundary="reflecting" coeffs="10.71" id="6" type="y-plane" />
+  <surface boundary="vacuum" coeffs="-10.71" id="3" type="x-plane" />
+  <surface boundary="vacuum" coeffs="10.71" id="4" type="x-plane" />
+  <surface boundary="vacuum" coeffs="-10.71" id="5" type="y-plane" />
+  <surface boundary="vacuum" coeffs="10.71" id="6" type="y-plane" />
 </geometry>

@@ -321,25 +321,25 @@ void cross_lattice(Particle& p, const BoundaryInfo& boundary)
   coord.lattice_i[2] += boundary.lattice_translation[2];
 
   // If we left the lattice and are delta-tracking...
-  if (!lat.are_valid_indices(coord.lattice_i)) {
-    if (p.delta_tracking()) {
-      // DT particles must have BC handled by event_cross_surface_dt rather than marked lost
-      // set the cell to C_NONE so cross_surface() can handle BC
-      // ToDo: Possibly this should be worked into surface tracked particles as well?
-      p.coord(p.n_coord() - 1).cell = C_NONE;
-      // std::cerr << "[LATTICE][DT] Exited lattice bounds; defer to cross_surface().\n";
-      return;
-    } else {
-      // For surface-tracked particles we fallback to full geometry search
-      p.n_coord() = 1;
-      bool found = exhaustive_find_cell(p);
-      if (!found && p.alive()) {
-        p.mark_as_lost(fmt::format("Could not locate particle {} after crossing a lattice"
-          "boundary", p.id()));
-      }
-      return;
-    }
-  }
+  // if (!lat.are_valid_indices(coord.lattice_i)) {
+  //   if (p.delta_tracking()) {
+  //     // DT particles must have BC handled by event_cross_surface_dt rather than marked lost
+  //     // set the cell to C_NONE so cross_surface() can handle BC
+  //     // ToDo: Possibly this should be worked into surface tracked particles as well?
+  //     p.coord(p.n_coord() - 1).cell = C_NONE;
+  //     // std::cerr << "[LATTICE][DT] Exited lattice bounds; defer to cross_surface().\n";
+  //     return;
+  //   } else {
+  //     // For surface-tracked particles we fallback to full geometry search
+  //     p.n_coord() = 1;
+  //     bool found = exhaustive_find_cell(p);
+  //     if (!found && p.alive()) {
+  //       p.mark_as_lost(fmt::format("Could not locate particle {} after crossing a lattice"
+  //         "boundary", p.id()));
+  //     }
+  //     return;
+  //   }
+  // }
 
   // Set the new coordinate position.
   const auto& upper_coord {p.coord(p.n_coord() - 2)};
