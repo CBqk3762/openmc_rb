@@ -1,4 +1,4 @@
-#!/home/cbyers/Projects/openmc/mc_Pyenv/bin/python3.9
+#!/home/ciara-byers/Projects/openmc_rb/mc_Pyenv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

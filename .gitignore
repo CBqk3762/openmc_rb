@@ -13,7 +13,6 @@
 dist/
 openmc.egg-info/
 mc_Pyenv/
-mc_Pyenv/lib/python3.9/
 
 # Inputs generated from Python API
 examples/**/*.xml
@@ -33,6 +32,7 @@ docs/source/pythonapi/generated/
 
 # Source build
 build
+build-clang
 
 # build from src/utils/setup.py
 src/utils/build
@@ -112,6 +112,7 @@ CMakeSettings.json
 *.pkl
 
 # Other from dev
-delta-tracking-tests/*
+delta_tracking-tests/*
 Lost_particle_plot.ipynb
 extract_*
+vendor/Catch2*

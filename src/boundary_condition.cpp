@@ -16,10 +16,10 @@ namespace openmc {
 
 void VacuumBC::handle_particle(Particle& p, const Surface& surf) const
 {
-  if (settings::verbosity >= 10 || p.trace()) {
-    write_message(1, "handle_particle for vacuum surface, id {}", surf.id_);
-  }
   p.cross_vacuum_bc(surf);
+
+  // Set flag indicating particle has just reflected
+  p.set_just_reflected(true);
 }
 
 //==============================================================================
@@ -32,9 +32,6 @@ void ReflectiveBC::handle_particle(Particle& p, const Surface& surf) const
   u /= u.norm();
 
   p.cross_reflective_bc(surf, u);
-
-  // Set flag indicating particle has just reflected
-  p.set_just_reflected(true);
 }
 
 //==============================================================================
